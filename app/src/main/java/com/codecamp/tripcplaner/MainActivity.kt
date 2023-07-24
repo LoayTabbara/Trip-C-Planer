@@ -15,6 +15,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.codecamp.tripcplaner.model.navigation.TripCPlanerNav
 import com.codecamp.tripcplaner.model.permissionHandler.permissionCheck
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -61,6 +62,7 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     permissionCheck(permissionsState = permissionsState,this)
+                    TripCPlanerNav()
                 }
             }
         }

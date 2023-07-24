@@ -6,14 +6,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun CodeCampZNav() {
+fun TripCPlanerNav() {
     val navController= rememberNavController()
 
-    NavHost(navController = navController, startDestination = CodeCampZScreens.SplashScreen.name){
-        composable(CodeCampZScreens.SplashScreen.name){
+    NavHost(navController = navController, startDestination = TripCPlanerScreens.SplashScreen.name){
+        composable(TripCPlanerScreens.SplashScreen.name){
            // SplashScreen(navController)
         }
-        composable(CodeCampZScreens.MainScreen.name){
+        composable(TripCPlanerScreens.MainScreen.name){
             //MainScreen(navController)
         }
     }

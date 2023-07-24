@@ -9,7 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.codecamp.tripcplaner.ui.theme.CodeCampZTheme
+import com.codecamp.tripcplaner.ui.theme.TripCPlanerTheme
 import android.Manifest
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CodeCampZTheme {
+            TripCPlanerTheme {
                 val permissionsState = rememberMultiplePermissionsState(
                     permissions = listOf(
                         Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    CodeCampZTheme {
+    TripCPlanerTheme {
 
     }
 }

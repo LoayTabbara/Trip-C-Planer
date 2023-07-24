@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.codecamp.tripcplaner.model.navigation.TripCPlanerNav
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.isGranted
@@ -35,8 +37,13 @@ fun permissionCheck(permissionsState: MultiplePermissionsState, context:Context)
             Manifest.permission.ACCESS_FINE_LOCATION -> {
                 when {
                     perm.status.isGranted -> {
-                        Text(text = "Fine Location permission accepted")
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Toast.makeText(
+                            context,
+                            "Fine Location permission accepted",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        TripCPlanerNav()
+
                     }
 
                     perm.status.shouldShowRationale -> {
@@ -73,8 +80,12 @@ fun permissionCheck(permissionsState: MultiplePermissionsState, context:Context)
             Manifest.permission.ACCESS_COARSE_LOCATION -> {
                 when {
                     perm.status.isGranted -> {
-                        Text(text = "Coarse Location permission accepted")
-                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Toast.makeText(
+                            context,
+                            "Coarse Location permission accepted",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     perm.status.shouldShowRationale -> {
@@ -99,8 +110,12 @@ fun permissionCheck(permissionsState: MultiplePermissionsState, context:Context)
             Manifest.permission.INTERNET -> {
                 when {
                     perm.status.isGranted -> {
-                        Text(text = "Internet permission accepted")
-                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Toast.makeText(
+                            context,
+                            "Internet permission accepted",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     perm.status.shouldShowRationale -> {

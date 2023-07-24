@@ -13,6 +13,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 
@@ -38,7 +39,7 @@ fun MainScreen(navController: NavController) {
         properties = properties
     ) {
         Marker(
-            position = singapore,
+            state = MarkerState(position = singapore),
             title = "Singapore",
             snippet = "Marker in Singapore"
         )

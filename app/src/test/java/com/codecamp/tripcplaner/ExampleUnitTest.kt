@@ -1,4 +1,4 @@
-package com.codecamp.tripCPlaner
+package com.codecamp.tripcplaner
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.codecamp.tripCPlaner.ui.theme
+package com.codecamp.tripcplaner.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

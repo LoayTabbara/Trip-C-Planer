@@ -1,4 +1,4 @@
-package com.codecamp.tripCPlaner.model.permissionHandler
+package com.codecamp.tripcplaner.model.permissionHandler
 
 import android.Manifest
 import androidx.compose.foundation.layout.Arrangement

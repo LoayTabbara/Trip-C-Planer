@@ -1,4 +1,4 @@
-package com.codecamp.tripCPlaner.model.navigation
+package com.codecamp.tripcplaner.model.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost

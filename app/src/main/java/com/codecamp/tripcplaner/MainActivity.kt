@@ -1,4 +1,4 @@
-package com.codecamp.tripCPlaner
+package com.codecamp.tripcplaner
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,13 +9,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.codecamp.tripCPlaner.ui.theme.CodeCampZTheme
+import com.codecamp.tripcplaner.ui.theme.CodeCampZTheme
 import android.Manifest
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import com.codecamp.tripCPlaner.model.permissionHandler.permissionCheck
+import com.codecamp.tripcplaner.model.permissionHandler.permissionCheck
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dagger.hilt.android.AndroidEntryPoint

@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    permissionCheck(permissionsState = permissionsState)
+                    permissionCheck(permissionsState = permissionsState,this)
                 }
             }
         }

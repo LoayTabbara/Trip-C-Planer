@@ -1,6 +1,10 @@
 package com.codecamp.tripcplaner.model.permissionHandler
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,7 +23,7 @@ import com.google.accompanist.permissions.shouldShowRationale
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun permissionCheck(permissionsState: MultiplePermissionsState){
+fun permissionCheck(permissionsState: MultiplePermissionsState, context:Context){
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -53,7 +57,14 @@ fun permissionCheck(permissionsState: MultiplePermissionsState){
                                     "denied. You can enable it in the app" +
                                     "settings."
                         )
-                        
+                        Button(onClick = { val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            val uri: Uri = Uri.fromParts("package", context.packageName, null)
+                            intent.data = uri
+                            context.startActivity(intent) }) {
+                            Text(text ="Open Settings")
+                        }
+
                         Spacer(modifier = Modifier.height(10.dp))
                     }
                 }

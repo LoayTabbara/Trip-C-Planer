@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     permissionCheck(permissionsState = permissionsState,this)
-                    TripCPlanerNav()
+
                 }
             }
         }

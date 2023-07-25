@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
@@ -22,11 +23,9 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import com.codecamp.tripcplaner.model.permissionHandler.permissionCheck
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.shouldShowRationale
 
 
@@ -59,28 +58,30 @@ fun PermissionSnackbar(permissionsState: MultiplePermissionsState) {
             }
         }
     }
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom){
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom
+    ) {
         var (snackbarVisibleState, setSnackBarState) = remember { mutableStateOf(!permissionsState.allPermissionsGranted) }
-        if(snackbarVisibleState)
+        if (snackbarVisibleState)
             Snackbar(
 
                 action = {
                     Row {
-                        Button(onClick = {
-                            if(permanentlyDenied) {
+                        TextButton(onClick = {
+                            if (permanentlyDenied) {
                                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 val uri: Uri = Uri.fromParts("package", context.packageName, null)
                                 intent.data = uri
                                 context.startActivity(intent)
-                            }else{
+                            } else {
                                 permissionsState.launchMultiplePermissionRequest()
                             }
-
                         }) {
                             Text("grant")
                         }
-                        Button(onClick = { setSnackBarState(!snackbarVisibleState) }) {
+                        TextButton(onClick = { setSnackBarState(!snackbarVisibleState) }) {
                             Text("close")
                         }
                     }
@@ -89,8 +90,8 @@ fun PermissionSnackbar(permissionsState: MultiplePermissionsState) {
                 },
                 modifier = Modifier
                     .padding(8.dp)
-            ) { Text(text = "${if(permanentlyDenied) "permanently " else " " }denied location") }
-        if (permissionsState.allPermissionsGranted){
+            ) { Text(text = "${if (permanentlyDenied) "permanently " else " "}denied location") }
+        if (permissionsState.allPermissionsGranted) {
             setSnackBarState(false)
         }
     }

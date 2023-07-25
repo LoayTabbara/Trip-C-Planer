@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.codecamp.tripcplaner.view.MainScreen
 import com.codecamp.tripcplaner.view.MapScreen
+import com.codecamp.tripcplaner.view.SplashScreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 
@@ -14,12 +15,12 @@ import com.google.accompanist.permissions.MultiplePermissionsState
 fun TripCPlanerNav(){
     val navController= rememberNavController()
 
-    NavHost(navController = navController, startDestination = TripCPlanerScreens.MainScreen.name){
+    NavHost(navController = navController, startDestination = TripCPlanerScreens.SplashScreen.name){
         composable(TripCPlanerScreens.MainScreen.name){
            MainScreen(navController)
         }
         composable(TripCPlanerScreens.SplashScreen.name){
-           // SplashScreen(navController)
+           SplashScreen(navController)
         }
         composable(TripCPlanerScreens.MapScreen.name){
             MapScreen(navController)

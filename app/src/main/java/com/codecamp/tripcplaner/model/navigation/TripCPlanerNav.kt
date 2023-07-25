@@ -22,7 +22,7 @@ fun TripCPlanerNav(){
            // SplashScreen(navController)
         }
         composable(TripCPlanerScreens.MapScreen.name){
-            MapScreen(navController, )
+            MapScreen(navController)
         }
     }
 }

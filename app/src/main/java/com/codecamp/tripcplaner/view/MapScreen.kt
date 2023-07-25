@@ -32,8 +32,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @SuppressLint("MissingPermission")
 @Composable
 fun MapScreen(
-    navController: NavController,
-    locationGranted: Boolean= false,
+    navController: NavController
 ) {
 
     val permissionsState = rememberMultiplePermissionsState(
@@ -69,7 +68,7 @@ fun MapScreen(
             position = CameraPosition.fromLatLngZoom(deviceLatLng, 13f)
         }
 
-        if (locationGranted) {
+        if (permissionsState.allPermissionsGranted) {
             val locationResult = fusedLocationProviderClient.lastLocation
             locationResult.addOnCompleteListener(context as MainActivity) { task ->
                 if (task.isSuccessful) {

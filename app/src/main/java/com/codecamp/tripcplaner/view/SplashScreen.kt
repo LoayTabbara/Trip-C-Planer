@@ -77,7 +77,7 @@ Surface(
 
 }
 suspend fun navigate(navController: NavController){
-    delay(10000L)
+    delay(7000L)
     navController.navigate(TripCPlanerScreens.MainScreen.name)
 }
 fun hideStatusBar(activity: Activity) {
@@ -105,7 +105,7 @@ fun TypewriterText(
                         startIndex = 0,
                         endIndex = charIndex + 1,
                     )
-                delay(160)
+                delay(100)
             }
             textIndex = (textIndex + 1) % texts.size
             delay(300)

@@ -17,7 +17,6 @@ import androidx.navigation.NavController
 import com.codecamp.tripcplaner.MainActivity
 import com.codecamp.tripcplaner.view.widgets.PermissionSnackbar
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
@@ -74,7 +73,8 @@ fun MapScreen(
                 if (task.isSuccessful) {
                     // Set the map's camera position to the current location of the device.
                     lastKnownLocation = task.result
-                    deviceLatLng = LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
+                    deviceLatLng =
+                        LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
                     cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
                 } else {
                     Log.d("TAG", "Current location is null. Using defaults.")
@@ -89,7 +89,7 @@ fun MapScreen(
             cameraPositionState = cameraPositionState,
             uiSettings = uiSettings,
             properties = properties
-        ){
+        ) {
         }
 
     }

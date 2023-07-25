@@ -7,22 +7,22 @@ import androidx.navigation.compose.rememberNavController
 import com.codecamp.tripcplaner.view.MainScreen
 import com.codecamp.tripcplaner.view.MapScreen
 import com.codecamp.tripcplaner.view.SplashScreen
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.MultiplePermissionsState
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun TripCPlanerNav(){
-    val navController= rememberNavController()
+fun TripCPlanerNav() {
+    val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = TripCPlanerScreens.SplashScreen.name){
-        composable(TripCPlanerScreens.MainScreen.name){
-           MainScreen(navController)
+    NavHost(
+        navController = navController,
+        startDestination = TripCPlanerScreens.SplashScreen.name
+    ) {
+        composable(TripCPlanerScreens.MainScreen.name) {
+            MainScreen(navController)
         }
-        composable(TripCPlanerScreens.SplashScreen.name){
-           SplashScreen(navController)
+        composable(TripCPlanerScreens.SplashScreen.name) {
+            SplashScreen(navController)
         }
-        composable(TripCPlanerScreens.MapScreen.name){
+        composable(TripCPlanerScreens.MapScreen.name) {
             MapScreen(navController)
         }
     }

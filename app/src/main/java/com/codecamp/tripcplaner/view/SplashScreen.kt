@@ -106,7 +106,7 @@ fun SplashScreen(navController: NavController) {
 }
 
 suspend fun navigate(navController: NavController) {
-    delay(7000L)
+    delay(3000L)
     navController.navigate(TripCPlanerScreens.MainScreen.name)
 }
 
@@ -131,10 +131,10 @@ fun TypewriterText(
                         startIndex = 0,
                         endIndex = charIndex + 1,
                     )
-                delay(100)
+                delay(45)
             }
             textIndex = (textIndex + 1) % texts.size
-            delay(300)
+            delay(150)
         }
     }
 

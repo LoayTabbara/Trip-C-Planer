@@ -14,7 +14,7 @@ fun TripCPlanerNav() {
 
     NavHost(
         navController = navController,
-        startDestination = TripCPlanerScreens.SplashScreen.name
+        startDestination = TripCPlanerScreens.MapScreen.name
     ) {
         composable(TripCPlanerScreens.MainScreen.name) {
             MainScreen(navController)

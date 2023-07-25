@@ -1,6 +1,7 @@
 package com.codecamp.tripcplaner.view
 
 import android.Manifest
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -50,14 +51,13 @@ fun MainScreen(navController: NavController) {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-//        var goToMapScreen = remember { mutableStateOf(false) }
-//        if(goToMapScreen.value)
-//            permissionCheck(permissionsState = permissionsState, context)
-        Button(onClick = {
-//            goToMapScreen.value = true
-            navController.navigate(TripCPlanerScreens.MapScreen.name)
-        }) {
-            Text(text = "Goto MapScreen")
+        Column {
+            Text(text ="MainScreen")
+            Button(onClick = {
+                navController.navigate(TripCPlanerScreens.MapScreen.name)
+            }) {
+                Text(text = "Goto MapScreen")
+            }
         }
     }
 

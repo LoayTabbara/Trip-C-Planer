@@ -28,3 +28,5 @@ local.properties
 *.properties
 
 .gradle/
+
+app/src/main/java/com/codecamp/tripcplaner/Constants.kt

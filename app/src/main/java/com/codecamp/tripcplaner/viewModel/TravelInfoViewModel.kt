@@ -33,7 +33,7 @@ class TravelInfoViewModel : ViewModel() {
     var packingListJson = mutableStateOf(listOf<String>())
     var activitiesJson = mutableStateOf(mapOf<String, List<String>>())
     var citiesWithActivity: Map<String, List<String>> = mutableMapOf()
-    var packingList: List<String> = listOf()
+    var packingList: MutableList<String> = mutableListOf()
     var hasResult = mutableStateOf(false)
     fun sendMessage(startEnd: List<String>, duration: Int, context: Context) {
         val startCity = startEnd.first()
@@ -74,7 +74,7 @@ Generate a JSON response with: 10 travel items; itinerary from $startCity to $en
 
                 // Copy the state to the publicly accessible variables
                 citiesWithActivity = activitiesJson.value
-                packingList = packingListJson.value
+                packingList = packingListJson.value as MutableList<String>
                 hasResult.value = true
 
                 Log.d("AAAAAAAA","${citiesWithActivity}")
@@ -99,6 +99,12 @@ Generate a JSON response with: 10 travel items; itinerary from $startCity to $en
         val location = geometry.get("location") as JsonObject
         return LatLng(location.get("lat").asDouble, location.get("lng").asDouble)
 
+    }
+    fun addToPackingList(item: String) {
+        packingList.add(item)
+    }
+    fun removeFromPackingList(item: String) {
+        packingList.remove(item)
     }
 }
 

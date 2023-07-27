@@ -1,8 +1,6 @@
 package com.codecamp.tripcplaner.model.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,9 +12,10 @@ import com.codecamp.tripcplaner.view.MapScreen
 import com.codecamp.tripcplaner.view.PackScreen
 import com.codecamp.tripcplaner.view.SplashScreen
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
+import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 
 @Composable
-fun TripCPlanerNav(viewModel: DetailViewModel) {
+fun TripCPlanerNav(viewModel: DetailViewModel, travelInfoViewModel: TravelInfoViewModel) {
     val navController = rememberNavController()
 
     NavHost(
@@ -32,7 +31,7 @@ fun TripCPlanerNav(viewModel: DetailViewModel) {
         composable(TripCPlanerScreens.MapScreen.name+"/{typeActivity}",
                 arguments = listOf(navArgument(name="typeActivity"){type= NavType.StringType})
         ) {backStackEntry->
-            MapScreen(navController,backStackEntry.arguments?.getString("movie"))
+            MapScreen(navController,backStackEntry.arguments?.getString("typeActivity"), travelInfoViewModel)
         }
         composable(TripCPlanerScreens.PackScreen.name) {
             PackScreen(navController = navController, viewModel)

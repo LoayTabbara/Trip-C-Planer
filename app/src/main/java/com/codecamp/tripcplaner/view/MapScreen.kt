@@ -14,14 +14,17 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -34,7 +37,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -44,6 +49,7 @@ import androidx.navigation.NavController
 import com.codecamp.tripcplaner.MAPS_API_KEY
 import com.codecamp.tripcplaner.MainActivity
 import com.codecamp.tripcplaner.view.widgets.PermissionSnackbar
+import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.LocationServices
@@ -74,6 +80,7 @@ import retrofit2.http.Query
 import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 
 
@@ -82,13 +89,15 @@ import java.util.Calendar
 @Composable
 fun MapScreen(
     navController: NavController,
-    typeActivity: String?
+    typeActivity: String?,
+    travelInfoViewModel: TravelInfoViewModel
 ) {
-
     val initialized = remember { mutableStateOf(false) }
     val cameraPositionState = rememberCameraPositionState {
     }
-    
+    var showIndicator = remember { mutableStateOf(false) }
+
+    val formatter = DateTimeFormatter.ofPattern("dd.MM.yy")
     val startMarker = rememberMarkerState()
     val endMarker = rememberMarkerState()
     //start place, end place, start date, end date
@@ -110,146 +119,192 @@ fun MapScreen(
     fun canCreate(): Boolean {
         return (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty() && tripPickerList[2].value.isNotEmpty() && tripPickerList[3].value.isNotEmpty() && LocalDate.parse(
             tripPickerList[2].value,
-            DateTimeFormatter.ofPattern("dd.MM.yy")
+            formatter
         ) < LocalDate.parse(
             tripPickerList[3].value,
-            DateTimeFormatter.ofPattern("dd.MM.yy")
+            formatter
         )) && tripPickerList[0].value != tripPickerList[1].value
     }
 
     val context = LocalContext.current
-    Scaffold(floatingActionButtonPosition = FabPosition.Center, floatingActionButton = {
-        if (canCreate()) FloatingActionButton(
-            onClick = {
-                Toast.makeText(context, "Created!", Toast.LENGTH_SHORT).show()
-            }) {
-            Text(text = "Generate the Trip")
-        }
+    Box {
 
-    }, bottomBar = {
-        Column(
-            Modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Bottom,
-        ) {
+        Scaffold(floatingActionButtonPosition = FabPosition.Center, floatingActionButton = {
+            if (canCreate()) FloatingActionButton(
+                onClick = {
+                    val duration =
+                        ChronoUnit.DAYS.between(
+                            LocalDate.parse(tripPickerList[2].value, formatter),
+                            LocalDate.parse(tripPickerList[3].value, formatter)
+                        )
+                    Toast.makeText(context, "Created!", Toast.LENGTH_SHORT).show()
+                    Log.d("DAYS", duration.toString())
 
-            StopPicker(
-                tripPickerList,
-                true,
-                cameraPositionState,
-                startMarker
-            )
-            StopPicker(
-                tripPickerList,
-                false,
-                cameraPositionState,
-                endMarker
-            )
+                    travelInfoViewModel.sendMessage(
+                        listOf(
+                            tripPickerList[0].value,
+                            tripPickerList[1].value
+                        ), duration.toInt(), context
+                    )
+                    travelInfoViewModel.hasResult.value = false
+                    showIndicator.value = true
 
-        }
-    }) { it ->
-        PermissionSnackbar(permissionsState = permissionsState)
-        val uiSettings = remember {
-            MapUiSettings(
-                myLocationButtonEnabled = permissionsState.allPermissionsGranted,
-                mapToolbarEnabled = true,
-                compassEnabled = true,
-                scrollGesturesEnabled = true
-            )
-        }
-        val properties by remember {
-            mutableStateOf(
-                MapProperties(
-                    isMyLocationEnabled = permissionsState.allPermissionsGranted,
-                    isBuildingEnabled = true
-                )
-            )
-        }
+//                    if (travelInfoViewModel.citiesWithActivity.isNotEmpty()) {
+//                        showIndicator.value = false
+//                    }
+                    Log.d("Result!!!", travelInfoViewModel.citiesWithActivity.toString())
 
-        val fusedLocationProviderClient =
-            remember { LocationServices.getFusedLocationProviderClient(context) }
-
-        var lastKnownLocation by remember {
-            mutableStateOf<Location?>(null)
-        }
-
-        var deviceLatLng by remember {
-            mutableStateOf(LatLng(52.52, 13.41))
-        }
-
-
-        if (!initialized.value) {
-            if (permissionsState.allPermissionsGranted) {
-                val locationResult = fusedLocationProviderClient.lastLocation
-                locationResult.addOnCompleteListener(context as MainActivity) { task ->
-                    if (task.isSuccessful) {
-                        // Set the map's camera position to the current location of the device.
-                        lastKnownLocation = task.result
-                        deviceLatLng =
-                            LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
-                        cameraPositionState.position =
-                            CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
-                    } else {
-                        Log.d("TAG", "Current location is null. Using defaults.")
-                        Log.e("TAG", "Exception: %s", task.exception)
-                    }
-                }
-            } else {
-                cameraPositionState.position =
-                    CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
+                }) {
+                Text(text = "Generate the Trip")
             }
 
-            initialized.value = true
-        }
-        GoogleMap(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-            cameraPositionState = cameraPositionState,
-            uiSettings = uiSettings,
-            properties = properties,
-            onMapClick = {
-                Log.d("TestTTTT", "onMapClick: $it")
+        }, bottomBar = {
+            if (!travelInfoViewModel.hasResult.value) {
+                Column(
+                    Modifier
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Bottom,
+                ) {
 
-            },
-        ) {
-            if (tripPickerList[0].value.isNotEmpty())
-                Marker(
-                    state = startMarker,
-                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                    StopPicker(
+                        tripPickerList,
+                        true,
+                        cameraPositionState,
+                        startMarker
+                    )
+                    StopPicker(
+                        tripPickerList,
+                        false,
+                        cameraPositionState,
+                        endMarker
+                    )
+
+                }
+            }
+        }) { it ->
+            PermissionSnackbar(permissionsState = permissionsState)
+            val uiSettings = remember {
+                MapUiSettings(
+                    myLocationButtonEnabled = permissionsState.allPermissionsGranted,
+                    mapToolbarEnabled = true,
+                    compassEnabled = true,
+                    scrollGesturesEnabled = true
                 )
-            if (tripPickerList[1].value.isNotEmpty())
-                Marker(
-                    state = endMarker,
-                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+            }
+            val properties by remember {
+                mutableStateOf(
+                    MapProperties(
+                        isMyLocationEnabled = permissionsState.allPermissionsGranted,
+                        isBuildingEnabled = true
+                    )
                 )
-            if (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty()) {
-//                val points = mutableListOf(startMarker.position)
-//                val kasselTestMarker = rememberMarkerState()
-                var positions =
-                    mutableListOf(startMarker.position)
-                citiesList.forEach {
-                    val cityMarker = rememberMarkerState()
+            }
 
-                    LaunchedEffect(Unit) {
-                        cityMarker.position = getLatLng(it)
+            val fusedLocationProviderClient =
+                remember { LocationServices.getFusedLocationProviderClient(context) }
+
+            var lastKnownLocation by remember {
+                mutableStateOf<Location?>(null)
+            }
+
+            var deviceLatLng by remember {
+                mutableStateOf(LatLng(52.52, 13.41))
+            }
 
 
+            if (!initialized.value) {
+                if (permissionsState.allPermissionsGranted) {
+                    val locationResult = fusedLocationProviderClient.lastLocation
+                    locationResult.addOnCompleteListener(context as MainActivity) { task ->
+                        if (task.isSuccessful) {
+                            // Set the map's camera position to the current location of the device.
+                            lastKnownLocation = task.result
+                            deviceLatLng =
+                                LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
+                            cameraPositionState.position =
+                                CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
+                        } else {
+                            Log.d("TAG", "Current location is null. Using defaults.")
+                            Log.e("TAG", "Exception: %s", task.exception)
+                        }
                     }
-                    positions.add(cityMarker.position)
+                } else {
+                    cameraPositionState.position =
+                        CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
                 }
 
-//                points.add(kasselTestMarker)
-//                Log.i("FoundCity", LatLng(address.latitude, address.longitude).toString())
-                positions.add(endMarker.position)
-//                points.add(endMarker.position)
-                Polyline(
-                    points = positions, color = Color.Blue
+                initialized.value = true
+            }
+
+
+            GoogleMap(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                cameraPositionState = cameraPositionState,
+                uiSettings = uiSettings,
+                properties = properties,
+                onMapClick = {
+                    Log.d("TestTTTT", "onMapClick: $it")
+
+                },
+            ) {
+
+
+                if (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty()) {
+                    var positions =
+                        mutableListOf(startMarker.position)
+                    if (travelInfoViewModel.hasResult.value) {
+                        for(i in 1 until travelInfoViewModel.citiesWithActivity.size-1){
+                            val cityMarker = rememberMarkerState()
+                            LaunchedEffect(Unit) {
+                                cityMarker.position = getLatLng(travelInfoViewModel.citiesWithActivity.keys.elementAt(i))
+                            }
+                            Marker(
+                                state = cityMarker,
+                                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                            )
+                            positions.add(cityMarker.position)
+                        }
+
+//                        travelInfoViewModel.hasResult.value = false
+                        showIndicator.value = false
+                    }
+
+                    positions.add(endMarker.position)
+                    Polyline(
+                        points = positions, color = Color.Blue
+                    )
+                }
+                if (tripPickerList[0].value.isNotEmpty())
+                    Marker(
+                        state = startMarker,
+                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                    )
+                if (tripPickerList[1].value.isNotEmpty())
+                    Marker(
+                        state = endMarker,
+                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+                    )
+            }
+
+            Log.i("ACTIVITY FROM ASM", "$typeActivity")
+
+
+        }
+        if (showIndicator.value && !travelInfoViewModel.hasResult.value) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xaaffffff)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(64.dp)
                 )
             }
         }
-
-
     }
 }
 
@@ -415,3 +470,4 @@ private fun getCityName(context: Context, lat: Double, lng: Double): String? {
     }
     return cityName
 }
+

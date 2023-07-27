@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerNav
 import com.codecamp.tripcplaner.ui.theme.TripCPlanerTheme
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
+import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,8 +27,9 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             val viewModel : DetailViewModel = hiltViewModel()
+            val travelInfoViewModel : TravelInfoViewModel = hiltViewModel()
             TripCPlanerTheme {
-                TripCPlanerNav(viewModel )
+                TripCPlanerNav(viewModel,travelInfoViewModel )
             }
 
         }

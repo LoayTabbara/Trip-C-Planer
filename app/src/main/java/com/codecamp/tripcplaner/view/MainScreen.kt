@@ -90,7 +90,9 @@ fun MainScreen(navController: NavController) {
         }
     )
     Surface(
-        modifier = Modifier.fillMaxSize().blur(if (popUpOn.value) 20.dp else 0.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .blur(if (popUpOn.value) 20.dp else 0.dp),
         color = MaterialTheme.colorScheme.background
     ) {
         Column(modifier= Modifier
@@ -125,7 +127,7 @@ LazyColumn(){
             .padding(start = 5.dp, end = 5.dp, bottom = 40.dp, top = 10.dp)) {
             Button(onClick = {
                 if(typeActivity.value!="" && !popUpOn.value){
-                    navController.navigate(TripCPlanerScreens.MapScreen.name+"/$typeActivity")
+                    navController.navigate(TripCPlanerScreens.MapScreen.name+"/${typeActivity.value}")
 
                 }
                 else{
@@ -135,7 +137,8 @@ LazyColumn(){
                 }
             }, shape = RoundedCornerShape(10.dp),modifier= Modifier
                 .height(60.dp)
-                .fillMaxWidth().padding(bottom = 10.dp),elevation = ButtonDefaults.buttonElevation(5.dp), colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.DarkGray )) {
+                .fillMaxWidth()
+                .padding(bottom = 10.dp),elevation = ButtonDefaults.buttonElevation(5.dp), colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.DarkGray )) {
 
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add icon")
                 Spacer(modifier = Modifier.width(width = 8.dp))

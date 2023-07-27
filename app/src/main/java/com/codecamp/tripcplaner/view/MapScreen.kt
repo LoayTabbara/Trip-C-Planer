@@ -70,7 +70,8 @@ import java.util.Calendar
 @SuppressLint("MissingPermission")
 @Composable
 fun MapScreen(
-    navController: NavController
+    navController: NavController,
+    typeActivity: String?
 ) {
 
     val permissionsState = rememberMultiplePermissionsState(
@@ -78,6 +79,7 @@ fun MapScreen(
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.INTERNET
+
         )
     )
     val context = LocalContext.current

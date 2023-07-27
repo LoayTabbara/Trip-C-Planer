@@ -31,6 +31,7 @@ fun TripCPlanerNav(viewModel: DetailViewModel, travelInfoViewModel: TravelInfoVi
         composable(TripCPlanerScreens.MapScreen.name+"/{typeActivity}",
                 arguments = listOf(navArgument(name="typeActivity"){type= NavType.StringType})
         ) {backStackEntry->
+            travelInfoViewModel.hasResult.value = false
             MapScreen(navController,backStackEntry.arguments?.getString("typeActivity"), travelInfoViewModel)
         }
         composable(TripCPlanerScreens.PackScreen.name) {

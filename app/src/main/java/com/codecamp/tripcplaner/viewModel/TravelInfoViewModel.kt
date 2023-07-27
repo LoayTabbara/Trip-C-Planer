@@ -7,13 +7,20 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.codecamp.tripcplaner.MAPS_API_KEY
 import com.codecamp.tripcplaner.model.data.Message
+import com.codecamp.tripcplaner.model.remote.LatLngService
 import com.codecamp.tripcplaner.model.remote.OpenAIRequestBody
 import com.codecamp.tripcplaner.model.remote.RetrofitInit
+import com.google.android.gms.maps.model.LatLng
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.net.SocketTimeoutException
 
 data class ItineraryInfo(
@@ -76,6 +83,22 @@ Generate a JSON response with: 10 travel items; itinerary from $startCity to $en
                 Log.e("Error", e.message.toString())
             }
         }
+    }
+    suspend fun getLatLng(locationName: String): LatLng {
+        val serviceLatLng: LatLngService = Retrofit.Builder()
+            .baseUrl("https://maps.googleapis.com/maps/api/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(LatLngService::class.java)
+        val response = serviceLatLng.generateResponse(MAPS_API_KEY, locationName)
+        val results = response.body()?.get("results") as JsonArray
+        if (results.size() == 0) {
+            return LatLng(0.0, 0.0)
+        }
+        val geometry = results[0].asJsonObject.get("geometry") as JsonObject
+        val location = geometry.get("location") as JsonObject
+        return LatLng(location.get("lat").asDouble, location.get("lng").asDouble)
+
     }
 }
 

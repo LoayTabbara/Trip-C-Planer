@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.MainActivity
+import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.CustomMarker
 import com.codecamp.tripcplaner.view.widgets.PermissionSnackbar
 import com.codecamp.tripcplaner.view.widgets.StopPicker
@@ -96,24 +98,37 @@ fun MapScreen(
     Box {
 
         Scaffold(floatingActionButtonPosition = FabPosition.Center, floatingActionButton = {
-            if (canCreate()) FloatingActionButton(
-                onClick = {
-                    val duration =
-                        ChronoUnit.DAYS.between(
-                            LocalDate.parse(tripPickerList[2].value, formatter),
-                            LocalDate.parse(tripPickerList[3].value, formatter)
-                        )
-                    travelInfoViewModel.sendMessage(
-                        listOf(
-                            tripPickerList[0].value,
-                            tripPickerList[1].value
-                        ), duration.toInt(), context
-                    )
-                    travelInfoViewModel.hasResult.value = false
-                    showIndicator.value = true
+            if (canCreate()) {
+                Row{
+                    FloatingActionButton(
+                        onClick = {
+                            val duration =
+                                ChronoUnit.DAYS.between(
+                                    LocalDate.parse(tripPickerList[2].value, formatter),
+                                    LocalDate.parse(tripPickerList[3].value, formatter)
+                                )
+                            travelInfoViewModel.sendMessage(
+                                listOf(
+                                    tripPickerList[0].value,
+                                    tripPickerList[1].value
+                                ), duration.toInt(), context
+                            )
+                            travelInfoViewModel.hasResult.value = false
+                            showIndicator.value = true
 
-                }) {
-                Text(text = "${"Generate"} the Trip")
+                        }) {
+                        Text(text = "${"Generate"} the Trip")
+                    }
+                    if (travelInfoViewModel.hasResult.value)
+                        FloatingActionButton(
+
+                            containerColor = Color.Green,
+                            onClick = {
+                                navController.navigate(TripCPlanerScreens.PackScreen.name)
+                            }) {
+                            Text(text = "ok")
+                        }
+                }
             }
 
         }, bottomBar = {

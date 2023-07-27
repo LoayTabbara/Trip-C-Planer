@@ -10,8 +10,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerNav
 import com.codecamp.tripcplaner.ui.theme.TripCPlanerTheme
+import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,9 +25,9 @@ class MainActivity : ComponentActivity() {
 //        hideStatusBar(this)
         setContent {
 
-
+            val viewModel : DetailViewModel = hiltViewModel()
             TripCPlanerTheme {
-                TripCPlanerNav()
+                TripCPlanerNav(viewModel )
             }
 
         }

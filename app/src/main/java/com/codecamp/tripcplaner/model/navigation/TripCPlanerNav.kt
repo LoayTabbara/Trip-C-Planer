@@ -15,7 +15,7 @@ import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 
 @Composable
-fun TripCPlanerNav(viewModel: DetailViewModel, travelInfoViewModel: TravelInfoViewModel) {
+fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: TravelInfoViewModel) {
     val navController = rememberNavController()
 
     NavHost(
@@ -32,13 +32,13 @@ fun TripCPlanerNav(viewModel: DetailViewModel, travelInfoViewModel: TravelInfoVi
                 arguments = listOf(navArgument(name="typeActivity"){type= NavType.StringType})
         ) {backStackEntry->
             travelInfoViewModel.hasResult.value = false
-            MapScreen(navController,backStackEntry.arguments?.getString("typeActivity"), travelInfoViewModel)
+            MapScreen(navController,backStackEntry.arguments?.getString("typeActivity"), travelInfoViewModel, detailsViewModel)
         }
         composable(TripCPlanerScreens.PackScreen.name) {
-            PackScreen(navController = navController, viewModel, travelInfoViewModel)
+            PackScreen(navController = navController, detailsViewModel, travelInfoViewModel)
         }
         composable(TripCPlanerScreens.DetailsScreen.name) {
-            DetailsScreen(navController = navController, viewModel)
+            DetailsScreen(navController = navController, detailsViewModel)
         }
 
     }

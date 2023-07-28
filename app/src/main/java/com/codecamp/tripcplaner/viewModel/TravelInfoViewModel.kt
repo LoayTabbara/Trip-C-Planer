@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.SocketTimeoutException
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 data class ItineraryInfo(
@@ -38,6 +39,8 @@ class TravelInfoViewModel @Inject constructor() : ViewModel() {
     var citiesWithActivity: Map<String, List<String>> = mutableMapOf()
     var packingList: MutableList<String> = mutableListOf("")
     var hasResult = mutableStateOf(false)
+    var meansOfTransport=""
+    var lateinit startDate : LocalDateTime
     fun sendMessage(
         startEnd: List<String>, duration: Int, context: Context, season: String
     ) {
@@ -45,17 +48,27 @@ class TravelInfoViewModel @Inject constructor() : ViewModel() {
         val endCity = startEnd.last()
 
         val packingMessageContent = """
-Generate a JSON response with: 10 travel items; itinerary from $startCity to $endCity with imagined intermediate stops for $duration days in the $season; 2 activities per city. Follow this format:
-{
-  "Packing List": ["item1", "item2", ...],
-  "Itinerary": {
-    "$startCity": ["activity1", "activity2"],
-    "city2": ["activity1", "activity2"],
-    ...
-    "$endCity": ["activity1", "activity2"]
-  }
-}
-""".trimIndent()
+            Generate a JSON response with: 10 travel items; itinerary from $startCity to $endCity with imagined intermediate stops for $duration days; 2 activities per city; a proposed arrival time in each city. The start date is ${startDate.toString}. The transportation type is $meansOfTransport. Follow this format:
+            {
+              "Packing List": ["item1", "item2", ...],
+              "Itinerary": {
+                "$startCity": {
+                    "Activities": ["activity1", "activity2"],
+                    "Arrival Time": "arrivalTime1"
+                },
+                "city2": {
+                    "Activities": ["activity1", "activity2"],
+                    "Arrival Time": "arrivalTime2"
+                },
+                ...
+                "$endCity": {
+                    "Activities": ["activity1", "activity2"],
+                    "Arrival Time": "arrivalTimeN"
+                }
+              }
+            }
+            """.trimIndent()
+
         messages.add(Message(packingMessageContent, "user"))
 
         viewModelScope.launch {

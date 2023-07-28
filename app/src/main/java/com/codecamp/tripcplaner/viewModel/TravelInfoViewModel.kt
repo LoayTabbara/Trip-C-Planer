@@ -21,7 +21,6 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.net.SocketTimeoutException
 
 data class ItineraryInfo(
     @Json(name = "Packing List") val packingList: List<String>,
@@ -33,14 +32,19 @@ class TravelInfoViewModel : ViewModel() {
     var packingListJson = mutableStateOf(listOf<String>())
     var activitiesJson = mutableStateOf(mapOf<String, List<String>>())
     var citiesWithActivity: Map<String, List<String>> = mutableMapOf()
-    var packingList: List<String> = listOf()
+    var packingList: MutableList<String> = mutableListOf("")
     var hasResult = mutableStateOf(false)
-    fun sendMessage(startEnd: List<String>, duration: Int, context: Context) {
+    fun sendMessage(
+        startEnd: List<String>,
+        duration: Int,
+        context: Context,
+        season: String
+    ) {
         val startCity = startEnd.first()
         val endCity = startEnd.last()
 
         val packingMessageContent = """
-Generate a JSON response with: 10 travel items; itinerary from $startCity to $endCity with imagined intermediate stops for $duration days; 2 activities per city. Follow this format:
+Generate a JSON response with: 10 travel items; itinerary from $startCity to $endCity with imagined intermediate stops for $duration days in the $season; 2 activities per city. Follow this format:
 {
   "Packing List": ["item1", "item2", ...],
   "Itinerary": {
@@ -74,16 +78,33 @@ Generate a JSON response with: 10 travel items; itinerary from $startCity to $en
 
                 // Copy the state to the publicly accessible variables
                 citiesWithActivity = activitiesJson.value
-                packingList = packingListJson.value
-                hasResult.value = true
+                packingList = packingListJson.value as MutableList<String>
+                if (citiesWithActivity.keys.contains("City1") || citiesWithActivity.keys.contains("Stopover 1")) {
+                    Toast.makeText(context, "Faulty result, retrying", Toast.LENGTH_LONG).show()
+                    sendMessage(
+                        startEnd,
+                        duration,
+                        context,
+                        season
+                    )
+                } else {
+                    hasResult.value = true
+                }
 
-                Log.d("AAAAAAAA","${citiesWithActivity}")
-            } catch (e: SocketTimeoutException) {
-                Toast.makeText(context, "Connection timeout error", Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Toast.makeText(context, "Connection timeout error, retrying", Toast.LENGTH_LONG)
+                    .show()
                 Log.e("Error", e.message.toString())
+                sendMessage(
+                    startEnd,
+                    duration,
+                    context,
+                    season
+                )
             }
         }
     }
+
     suspend fun getLatLng(locationName: String): LatLng {
         val serviceLatLng: LatLngService = Retrofit.Builder()
             .baseUrl("https://maps.googleapis.com/maps/api/")
@@ -99,6 +120,14 @@ Generate a JSON response with: 10 travel items; itinerary from $startCity to $en
         val location = geometry.get("location") as JsonObject
         return LatLng(location.get("lat").asDouble, location.get("lng").asDouble)
 
+    }
+
+    fun removeItem(item: String) {
+        packingList.remove(item)
+    }
+
+    fun addItem(item: String) {
+        packingList.add(item)
     }
 }
 

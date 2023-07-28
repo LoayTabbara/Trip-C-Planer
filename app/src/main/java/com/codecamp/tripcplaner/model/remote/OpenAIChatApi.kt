@@ -18,8 +18,6 @@ data class OpenAIRequestBody(
     val max_tokens: Int=2048,
     val n: Int=1,
     val temperature: Double=0.7,
-    //val cities: List<String>,
-    //val duration: Int
 )
 
 data class OpenAIResponse(

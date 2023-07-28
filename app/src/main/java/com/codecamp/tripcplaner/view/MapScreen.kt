@@ -29,7 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.MainActivity
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
@@ -99,34 +102,51 @@ fun MapScreen(
 
         Scaffold(floatingActionButtonPosition = FabPosition.Center, floatingActionButton = {
             if (canCreate()) {
-                Row{
+                Row(
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    modifier = Modifier.fillMaxWidth(0.64f)
+                ) {
                     FloatingActionButton(
+                        modifier = Modifier
+                            .padding(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 0.dp)
+                            .fillMaxWidth(if (travelInfoViewModel.hasResult.value) 0.5f else 1.0f),
+                        containerColor = Color(if (travelInfoViewModel.hasResult.value) 0XFFE0BB70 else 0XFF388E3C),
                         onClick = {
+                            val startDate = LocalDate.parse(tripPickerList[2].value, formatter)
+                            val endDate = LocalDate.parse(tripPickerList[3].value, formatter)
                             val duration =
                                 ChronoUnit.DAYS.between(
-                                    LocalDate.parse(tripPickerList[2].value, formatter),
-                                    LocalDate.parse(tripPickerList[3].value, formatter)
+                                    startDate,
+                                    endDate
                                 )
                             travelInfoViewModel.sendMessage(
                                 listOf(
                                     tripPickerList[0].value,
                                     tripPickerList[1].value
-                                ), duration.toInt(), context
+                                ),
+                                duration.toInt(),
+                                context,
+                                if (startDate.monthValue < 4 || startDate.monthValue > 10) "winter" else "summer"
                             )
                             travelInfoViewModel.hasResult.value = false
                             showIndicator.value = true
 
                         }) {
-                        Text(text = "${"Generate"} the Trip")
+                        Text(
+                            text = if (travelInfoViewModel.hasResult.value) "Generate another" else "Generate a Trip",
+                            color = Color.White
+                        )
                     }
                     if (travelInfoViewModel.hasResult.value)
                         FloatingActionButton(
-
-                            containerColor = Color.Green,
+                            modifier = Modifier
+                                .padding(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 0.dp)
+                                .fillMaxWidth(0.5f),
+                            containerColor = Color(0XFF388E3C),
                             onClick = {
                                 navController.navigate(TripCPlanerScreens.PackScreen.name)
                             }) {
-                            Text(text = "ok")
+                            Text(text = "✔︎", fontSize = 24.sp)
                         }
                 }
             }
@@ -135,7 +155,8 @@ fun MapScreen(
             if (!travelInfoViewModel.hasResult.value) {
                 Column(
                     Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .background(Color.Transparent),
                     verticalArrangement = Arrangement.Bottom,
                 ) {
 
@@ -153,6 +174,41 @@ fun MapScreen(
                     )
 
                 }
+            } else {
+                Column(
+                    Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Text(
+                        text = "Your Generated Trip",
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(8.dp),
+                        fontSize = 24.sp
+                    )
+                    var i = 0
+                    travelInfoViewModel.citiesWithActivity.keys.forEach {
+                        i++
+                        if (i < travelInfoViewModel.citiesWithActivity.keys.size)
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(fontSize = 24.sp, text = it)
+                                Text(
+                                    text = " ➱", fontSize = 24.sp
+                                )
+                                Text(
+                                    fontSize = 24.sp, text =
+                                    travelInfoViewModel.citiesWithActivity.keys.elementAt(i)
+                                )
+                            }
+
+                    }
+
+                }
+
             }
         }) {
             PermissionSnackbar(permissionsState = permissionsState)

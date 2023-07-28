@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -49,6 +50,7 @@ fun StopPicker(
 ) {
     val dateIndex = if (isStart) 2 else 3
     val placeIndex = if (isStart) 0 else 1
+    val backColorHex = if (isStart) 0xFF006E90 else 0xFF9B392B
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
         modifier = Modifier
@@ -125,23 +127,33 @@ fun StopPicker(
             intentLauncher.launch(intent)
         }
 
-        Text(text = if (isStart) "Start:" else "Dest:", modifier = Modifier.padding(10.dp))
+        Text(text = if (isStart) "Start:" else "Dest:", modifier = Modifier.padding(10.dp), color = Color.White)
         Button(
-            modifier = Modifier.fillMaxWidth(0.4f),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(backColorHex),
+                contentColor = Color.White
+            ),
+            modifier = Modifier
+                .fillMaxWidth(0.4f),
             shape = RoundedCornerShape(10),
             onClick = launchMapInputOverlay
         ) {
             Text(
-                color = if (isValidPlace()) Color.Black else Color.Red,
+                color = if (isValidPlace()) Color.White else Color.Red,
                 text = tripPickerList[placeIndex].value.ifEmpty {
                     "Location"
                 })
         }
-        Button(shape = RoundedCornerShape(10), modifier = Modifier.fillMaxWidth(0.55f), onClick = {
-            datePicker.show()
-        }) {
+        Button(colors = ButtonDefaults.buttonColors(
+            containerColor = Color(backColorHex),
+            contentColor = Color.White
+        ), shape = RoundedCornerShape(10), modifier = Modifier
+            .fillMaxWidth(0.55f),
+            onClick = {
+                datePicker.show()
+            }) {
             Text(
-                color = if (isValidDate()) Color.Black else Color.Red,
+                color = if (isValidDate()) Color.White else Color.Red,
                 text = tripPickerList[dateIndex].value.ifEmpty {
                     "Date"
                 })
@@ -156,11 +168,12 @@ fun StopPicker(
                 containerColor = Color.Transparent, contentColor = Color.Red
             )
         ) {
-            Text(text = "\u239A", fontSize = 24.sp, textAlign = TextAlign.Center)
+            Text(text = "⌫", fontSize = 24.sp, textAlign = TextAlign.Center)
         }
     }
 
 }
+
 private fun getCityName(context: Context, lat: Double, lng: Double): String? {
     var cityName: String? = ""
     val geocoder = Geocoder(context)

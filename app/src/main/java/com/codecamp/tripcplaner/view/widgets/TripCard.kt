@@ -53,6 +53,6 @@ fun TripCard(tripName:String,tripDescription:String,tripType:String) {
 
 @Preview(showBackground = true)
 @Composable
-fun Cprvw(){
+fun CPrvw(){
     TripCard(tripName = "Trip Name",tripDescription = "Trip Description",tripType = "Bus")
 }

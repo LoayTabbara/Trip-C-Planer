@@ -43,95 +43,106 @@ import com.codecamp.tripcplaner.viewModel.DetailViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(navController: NavController, viewModel: DetailViewModel) {
-    val paintings = mutableMapOf<String,Int>()
-    when(viewModel.getActivity()){
-        "Walk"->paintings["Walk"]=R.drawable.walk
-        "Car"->paintings["Car"]=R.drawable.car
-        "Bus"->paintings["Bus"]=R.drawable.bus
-        "Bicycle"->paintings["Bicycle"]=R.drawable.bicycle
+    val paintings = mutableMapOf<String, Int>()
+    when (viewModel.getActivity()) {
+        "Walk" -> paintings["Walk"] = R.drawable.walk
+        "Car" -> paintings["Car"] = R.drawable.car
+        "Bus" -> paintings["Bus"] = R.drawable.bus
+        "Bicycle" -> paintings["Bicycle"] = R.drawable.bicycle
     }
 
 
     val popUpOn = remember { mutableStateOf(false) }
     val newItem = remember { mutableStateOf("") }
-Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
-    Column( modifier = Modifier
-        .fillMaxWidth()
-        .padding(if (popUpOn.value) 0.dp else 10.dp)
-        .blur(if (popUpOn.value) 20.dp else 0.dp)
-        .verticalScroll(enabled = true, state = rememberScrollState())) {
-
-        Image(painter = painterResource(id =paintings[viewModel.getActivity()]!!), contentDescription = "walking", modifier = Modifier
+    Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
+    Column(
+        modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp))
-        
-        Spacer(modifier =Modifier.height(10.dp))
-        Text(text = if(viewModel.getNewTitle()!="")viewModel.getNewTitle() else "Anonymous", style = MaterialTheme.typography.displayMedium, modifier = Modifier.padding(start=10.dp))
-        for(item in viewModel.getPackList()) {
-            Spacer(modifier =Modifier.height(10.dp))
+            .padding(if (popUpOn.value) 0.dp else 10.dp)
+            .blur(if (popUpOn.value) 20.dp else 0.dp)
+            .verticalScroll(enabled = true, state = rememberScrollState())
+    ) {
+
+        Image(
+            painter = painterResource(id = paintings[viewModel.getActivity()]!!),
+            contentDescription = "walking",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = if (viewModel.getNewTitle() != "") viewModel.getNewTitle() else "Anonymous",
+            style = MaterialTheme.typography.displayMedium,
+            modifier = Modifier.padding(start = 10.dp)
+        )
+        for (item in viewModel.getPackList()) {
+            Spacer(modifier = Modifier.height(10.dp))
 
             DetailCard(text = item) { checked ->
                 if (checked) {
                     popUpOn.value = true
                 }
             }
-            Spacer(modifier =Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
         }
-        Spacer(modifier =Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
     }
 
-        if (popUpOn.value) {
-            Popup(
-                alignment = Alignment.Center, onDismissRequest = { popUpOn.value = false },
-                properties = PopupProperties(
-                    focusable = true,
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = true
-                )
+    if (popUpOn.value) {
+        Popup(
+            alignment = Alignment.Center, onDismissRequest = { popUpOn.value = false },
+            properties = PopupProperties(
+                focusable = true,
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true
+            )
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .fillMaxHeight(0.3f)
             ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .fillMaxHeight(0.3f)
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "Add new item",
-                            style = MaterialTheme.typography.displaySmall,
-                            modifier = Modifier.padding(10.dp)
+                    Text(
+                        text = "Add new item",
+                        style = MaterialTheme.typography.displaySmall,
+                        modifier = Modifier.padding(10.dp)
+                    )
+                    TextField(
+                        value = newItem.value,
+                        onValueChange = { newItem.value = it },
+                        label = { Text(text = " + Enter new item") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        singleLine = true,
+                        shape = RoundedCornerShape(10.dp),
+                        colors = TextFieldDefaults.textFieldColors(
+                            Color.LightGray
+                        ),
+                        keyboardActions = KeyboardActions(onDone = {
+
+
+                            popUpOn.value = false
+                        }),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done,
+                            keyboardType = KeyboardType.Text
                         )
-                        TextField(value = newItem.value,
-                            onValueChange = { newItem.value = it },
-                            label = { Text(text = " + Enter new item") },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(10.dp),
-                            singleLine = true,
-                            shape = RoundedCornerShape(10.dp),
-                            colors = TextFieldDefaults.textFieldColors(
-                                Color.LightGray
-                            ),
-                            keyboardActions = KeyboardActions(onDone = {
+                    )
 
-
-                                popUpOn.value = false
-                            }),
-                            keyboardOptions = KeyboardOptions(
-                                imeAction = ImeAction.Done,
-                                keyboardType = KeyboardType.Text
-                            )
-                        )
-
-                    }
                 }
             }
         }
-
-
     }
+
+
+}
 

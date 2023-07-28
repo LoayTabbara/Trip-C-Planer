@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -133,6 +134,10 @@ fun MapScreen(
                     }
                     if (travelInfoViewModel.hasResult.value) FloatingActionButton(modifier = Modifier
                         .fillMaxWidth(0.32f), containerColor = Color(0XFF388E3C), onClick = {
+                        travelInfoViewModel.hasResult.value = false
+                        val startDate = LocalDate.parse(tripPickerList[2].value, formatter)
+                        val endDate = LocalDate.parse(tripPickerList[3].value, formatter)
+                        detailsViewModel.setDates(startDate, endDate)
                         navController.navigate(TripCPlanerScreens.PackScreen.name)
                     }) {
                         Text(text = "✔︎", fontSize = 24.sp)
@@ -260,6 +265,7 @@ fun MapScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color(0xaaffffff)),
+
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(

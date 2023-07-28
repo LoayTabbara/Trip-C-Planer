@@ -68,7 +68,6 @@ fun MainScreen(navController: NavController) {
                 }
             }
             lifecycleOwner.lifecycle.addObserver(observer)
-
             onDispose {
                 lifecycleOwner.lifecycle.removeObserver(observer)
             }

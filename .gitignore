@@ -31,3 +31,5 @@ local.properties
 
 app/src/main/java/com/codecamp/tripcplaner/Constants.kt
 java/com/codecamp/tripcplaner/Constants.kt
+
+.idea/

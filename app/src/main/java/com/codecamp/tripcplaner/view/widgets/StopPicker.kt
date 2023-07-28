@@ -96,16 +96,6 @@ fun StopPicker(
                 Activity.RESULT_OK -> {
                     it.data?.let {
                         val place = Autocomplete.getPlaceFromIntent(it)
-                        Log.i(
-                            "MAP_ACTIVITY",
-                            "Place: ${place.name}, ${place.latLng},wooooooooooork: ${
-                                getCityName(
-                                    context,
-                                    place.latLng!!.latitude,
-                                    place.latLng!!.longitude
-                                )
-                            }"
-                        )
                         cameraPositionState.position =
                             CameraPosition.fromLatLngZoom(place.latLng!!, 18f)
 

@@ -30,15 +30,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.MainActivity
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.CustomMarker
+import com.codecamp.tripcplaner.view.widgets.GeneratedTripOverview
 import com.codecamp.tripcplaner.view.widgets.PermissionSnackbar
 import com.codecamp.tripcplaner.view.widgets.StopPicker
+import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -62,11 +63,12 @@ import java.time.temporal.ChronoUnit
 fun MapScreen(
     navController: NavController,
     typeActivity: String?,
-    travelInfoViewModel: TravelInfoViewModel
+    travelInfoViewModel: TravelInfoViewModel,
+    detailsViewModel: DetailViewModel
 ) {
+
     val initialized = remember { mutableStateOf(false) }
-    val cameraPositionState = rememberCameraPositionState {
-    }
+    val cameraPositionState = rememberCameraPositionState {}
     val showIndicator = remember { mutableStateOf(false) }
 
     val formatter = DateTimeFormatter.ofPattern("dd.MM.yy")
@@ -88,127 +90,74 @@ fun MapScreen(
     )
 
     fun canCreate(): Boolean {
-        return (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty() && tripPickerList[2].value.isNotEmpty() && tripPickerList[3].value.isNotEmpty() && LocalDate.parse(
-            tripPickerList[2].value,
-            formatter
-        ) < LocalDate.parse(
-            tripPickerList[3].value,
-            formatter
-        )) && tripPickerList[0].value != tripPickerList[1].value
+        return (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty() &&
+                tripPickerList[2].value.isNotEmpty() && tripPickerList[3].value.isNotEmpty() &&
+                LocalDate.parse(tripPickerList[2].value, formatter) <
+                LocalDate.parse(tripPickerList[3].value, formatter)) &&
+                tripPickerList[0].value != tripPickerList[1].value
     }
 
     val context = LocalContext.current
     Box {
-
         Scaffold(floatingActionButtonPosition = FabPosition.Center, floatingActionButton = {
             if (canCreate()) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceAround,
                     modifier = Modifier.fillMaxWidth(0.64f)
                 ) {
-                    FloatingActionButton(
-                        modifier = Modifier
-                            .padding(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 0.dp)
-                            .fillMaxWidth(if (travelInfoViewModel.hasResult.value) 0.5f else 1.0f),
+                    FloatingActionButton(modifier = if (travelInfoViewModel.hasResult.value) Modifier.fillMaxWidth(
+                        0.25f
+                    ) else Modifier.fillMaxWidth(),
                         containerColor = Color(if (travelInfoViewModel.hasResult.value) 0XFFE0BB70 else 0XFF388E3C),
                         onClick = {
                             val startDate = LocalDate.parse(tripPickerList[2].value, formatter)
                             val endDate = LocalDate.parse(tripPickerList[3].value, formatter)
-                            val duration =
-                                ChronoUnit.DAYS.between(
-                                    startDate,
-                                    endDate
-                                )
+                            val duration = ChronoUnit.DAYS.between(
+                                startDate, endDate
+                            )
                             travelInfoViewModel.sendMessage(
-                                listOf(
-                                    tripPickerList[0].value,
-                                    tripPickerList[1].value
-                                ),
+                                listOf(tripPickerList[0].value, tripPickerList[1].value),
                                 duration.toInt(),
                                 context,
-                                if (startDate.monthValue < 4 || startDate.monthValue > 10) "winter" else "summer"
+                                if (startDate.monthValue < 4 || startDate.monthValue > 10) "Winter" else "Summer"
                             )
                             travelInfoViewModel.hasResult.value = false
                             showIndicator.value = true
-
                         }) {
                         Text(
-                            text = if (travelInfoViewModel.hasResult.value) "Generate another" else "Generate a Trip",
+                            text = if (travelInfoViewModel.hasResult.value) "\u21BA" else "Generate a Trip",
+                            fontWeight = if (travelInfoViewModel.hasResult.value) FontWeight.Bold else FontWeight.Normal,
+                            fontSize = if (travelInfoViewModel.hasResult.value) 24.sp else 16.sp,
                             color = Color.White
                         )
                     }
-                    if (travelInfoViewModel.hasResult.value)
-                        FloatingActionButton(
-                            modifier = Modifier
-                                .padding(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 0.dp)
-                                .fillMaxWidth(0.5f),
-                            containerColor = Color(0XFF388E3C),
-                            onClick = {
-                                navController.navigate(TripCPlanerScreens.PackScreen.name)
-                            }) {
-                            Text(text = "✔︎", fontSize = 24.sp)
-                        }
+                    if (travelInfoViewModel.hasResult.value) FloatingActionButton(modifier = Modifier
+                        .fillMaxWidth(0.32f), containerColor = Color(0XFF388E3C), onClick = {
+                        navController.navigate(TripCPlanerScreens.PackScreen.name)
+                    }) {
+                        Text(text = "✔︎", fontSize = 24.sp)
+                    }
                 }
             }
 
         }, bottomBar = {
             if (!travelInfoViewModel.hasResult.value) {
                 Column(
-                    Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.Transparent),
                     verticalArrangement = Arrangement.Bottom,
                 ) {
 
                     StopPicker(
-                        tripPickerList,
-                        true,
-                        cameraPositionState,
-                        startMarker
+                        tripPickerList, true, cameraPositionState, startMarker
                     )
                     StopPicker(
-                        tripPickerList,
-                        false,
-                        cameraPositionState,
-                        endMarker
+                        tripPickerList, false, cameraPositionState, endMarker
                     )
-
                 }
             } else {
-                Column(
-                    Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Text(
-                        text = "Your Generated Trip",
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(8.dp),
-                        fontSize = 24.sp
-                    )
-                    var i = 0
-                    travelInfoViewModel.citiesWithActivity.keys.forEach {
-                        i++
-                        if (i < travelInfoViewModel.citiesWithActivity.keys.size)
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(fontSize = 24.sp, text = it)
-                                Text(
-                                    text = " ➱", fontSize = 24.sp
-                                )
-                                Text(
-                                    fontSize = 24.sp, text =
-                                    travelInfoViewModel.citiesWithActivity.keys.elementAt(i)
-                                )
-                            }
-
-                    }
-
-                }
-
+                GeneratedTripOverview(typeActivity, travelInfoViewModel)
             }
         }) {
             PermissionSnackbar(permissionsState = permissionsState)
@@ -257,13 +206,11 @@ fun MapScreen(
                         }
                     }
                 } else {
-                    cameraPositionState.position =
-                        CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
+                    cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
                 }
-
+                detailsViewModel.setActivity(typeActivity!!)
                 initialized.value = true
             }
-
 
             GoogleMap(
                 modifier = Modifier
@@ -275,8 +222,7 @@ fun MapScreen(
             ) {
 
                 if (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty()) {
-                    val positions =
-                        mutableListOf(startMarker.position)
+                    val positions = mutableListOf(startMarker.position)
                     if (travelInfoViewModel.hasResult.value) {
                         for (i in 1 until travelInfoViewModel.citiesWithActivity.size - 1) {
                             val cityMarker = rememberMarkerState()
@@ -317,8 +263,7 @@ fun MapScreen(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(64.dp)
+                    modifier = Modifier.size(64.dp)
                 )
             }
         }

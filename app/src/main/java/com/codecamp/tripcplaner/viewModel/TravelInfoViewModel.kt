@@ -22,24 +22,24 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.net.SocketTimeoutException
+import javax.inject.Inject
 
 data class ItineraryInfo(
     @Json(name = "Packing List") val packingList: List<String>,
     @Json(name = "Itinerary") val itinerary: Map<String, List<String>>
 )
+
 @HiltViewModel
 class TravelInfoViewModel @Inject constructor() : ViewModel() {
-    var messages = mutableStateListOf<Message>()
-    var packingListJson = mutableStateOf(listOf<String>())
-    var activitiesJson = mutableStateOf(mapOf<String, List<String>>())
+    private var messages = mutableStateListOf<Message>()
+    private var packingListJson = mutableStateOf(listOf<String>())
+    private var activitiesJson = mutableStateOf(mapOf<String, List<String>>())
     var citiesWithActivity: Map<String, List<String>> = mutableMapOf()
     var packingList: MutableList<String> = mutableListOf("")
     var hasResult = mutableStateOf(false)
     fun sendMessage(
-        startEnd: List<String>,
-        duration: Int,
-        context: Context,
-        season: String
+        startEnd: List<String>, duration: Int, context: Context, season: String
     ) {
         val startCity = startEnd.first()
         val endCity = startEnd.last()
@@ -66,9 +66,7 @@ Generate a JSON response with: 10 travel items; itinerary from $startCity to $en
                 messages.add(packingResponse.choices.first().message)
 
                 // Parse JSON response
-                val moshi = Moshi.Builder()
-                    .add(KotlinJsonAdapterFactory())
-                    .build()
+                val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
                 val jsonAdapter = moshi.adapter(ItineraryInfo::class.java)
                 val itineraryInfo =
                     jsonAdapter.fromJson(packingResponse.choices.first().message.content)
@@ -82,36 +80,39 @@ Generate a JSON response with: 10 travel items; itinerary from $startCity to $en
                 packingList = packingListJson.value as MutableList<String>
                 if (citiesWithActivity.keys.contains("City1") || citiesWithActivity.keys.contains("Stopover 1")) {
                     Toast.makeText(context, "Faulty result, retrying", Toast.LENGTH_LONG).show()
+                    citiesWithActivity = mapOf()
                     sendMessage(
-                        startEnd,
-                        duration,
-                        context,
-                        season
+                        startEnd, duration, context, season
                     )
                 } else {
                     hasResult.value = true
                 }
 
-            } catch (e: Exception) {
+            } catch (e: SocketTimeoutException) {
                 Toast.makeText(context, "Connection timeout error, retrying", Toast.LENGTH_LONG)
                     .show()
                 Log.e("Error", e.message.toString())
+                citiesWithActivity = mapOf()
                 sendMessage(
-                    startEnd,
-                    duration,
-                    context,
-                    season
+                    startEnd, duration, context, season
+                )
+            }catch (e: Exception) {
+                Toast.makeText(context, "Unknown Error!, retrying", Toast.LENGTH_LONG)
+                    .show()
+                Log.e("Error", e.message.toString())
+                citiesWithActivity = mapOf()
+                sendMessage(
+                    startEnd, duration, context, season
                 )
             }
         }
     }
 
     suspend fun getLatLng(locationName: String): LatLng {
-        val serviceLatLng: LatLngService = Retrofit.Builder()
-            .baseUrl("https://maps.googleapis.com/maps/api/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(LatLngService::class.java)
+        val serviceLatLng: LatLngService =
+            Retrofit.Builder().baseUrl("https://maps.googleapis.com/maps/api/")
+                .addConverterFactory(GsonConverterFactory.create()).build()
+                .create(LatLngService::class.java)
         val response = serviceLatLng.generateResponse(MAPS_API_KEY, locationName)
         val results = response.body()?.get("results") as JsonArray
         if (results.size() == 0) {
@@ -122,9 +123,11 @@ Generate a JSON response with: 10 travel items; itinerary from $startCity to $en
         return LatLng(location.get("lat").asDouble, location.get("lng").asDouble)
 
     }
+
     fun addToPackingList(item: String) {
         packingList.add(item)
     }
+
     fun removeFromPackingList(item: String) {
         packingList.remove(item)
     }

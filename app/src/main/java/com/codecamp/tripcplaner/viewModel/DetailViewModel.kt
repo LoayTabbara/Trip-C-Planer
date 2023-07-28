@@ -8,20 +8,27 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor() : ViewModel() {
     private var packList = mutableListOf<String>()
-    private var longPressed= mutableStateOf(false)
+    private var isDeleted= mutableStateOf(false)
+    private var activity= mutableStateOf("Walk")
 
 
-    fun setLongPressed(value: Boolean) {
-        longPressed.value = value
+    fun setIsDeleted(value: Boolean) {
+        isDeleted.value = value
     }
-    fun getLongPressed(): Boolean {
-        return longPressed.value
+    fun getIsDeleted(): Boolean {
+        return isDeleted.value
     }
-    fun setList(value: MutableList<String>) {
+    fun setPackList(value: MutableList<String>) {
         packList = value
     }
 
-    fun getList(): MutableList<String> {
+    fun getPackList(): MutableList<String> {
         return packList
+    }
+    fun setActivity(value: String) {
+        activity.value = value
+    }
+    fun getActivity(): String {
+        return activity.value
     }
 }

@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -55,27 +54,7 @@ fun PackScreen(
     viewModel: DetailViewModel,
     travelInfoViewModel: TravelInfoViewModel
 ) {
-//
-//    var list2part = JsonParser().parse(list2).asJsonObject
-//
-//    // Access the data using the variable
-//    var list3=list2part.get("packing_list")
-//    var list4= list3.asJsonArray.toList()
-//    var list5= list4.get(0).toString()
 
-//    val list =
-//       remember{ mutableStateListOf<String>(
-//            "Clothes",
-//            "Toiletries",
-//            "Travel documents",
-//            "Money/Credit cards",
-//            "Phone and charger",
-//            "Camera",
-//            "Travel adapter",
-//            "Comfortable shoes",
-//            "Guidebook/map",
-//            "Reusable water bottle"
-//        )}
 
     val popUpOn=remember {
         mutableStateOf(false)
@@ -98,10 +77,10 @@ fun PackScreen(
         Text(text = "Your Packlist", style = MaterialTheme.typography.displayMedium)
         Column(modifier = Modifier.padding(top = 10.dp)) {
             for (item in travelInfoViewModel.packingList) {
-                Log.d("item", viewModel.getLongPressed().toString())
-                if (viewModel.getLongPressed()) {
+                Log.d("item", viewModel.getIsDeleted().toString())
+                if (viewModel.getIsDeleted()) {
                     deletedList.add(item) // Collect the items to be deleted
-                    viewModel.setLongPressed(false)
+                    viewModel.setIsDeleted(false)
                 }
                     PackCards(item = item,viewModel = viewModel) {
                         if (it) {
@@ -116,7 +95,7 @@ fun PackScreen(
 
             }
 
-               Row(){
+               Row{
                    Column(
                        modifier = Modifier
                            .fillMaxWidth(0.5f)
@@ -158,7 +137,7 @@ fun PackScreen(
                        Button(
                            onClick = {
 
-                               viewModel.setList(myList)
+                               viewModel.setPackList(myList)
 
                                navController.navigate(TripCPlanerScreens.DetailsScreen.name)
                            },

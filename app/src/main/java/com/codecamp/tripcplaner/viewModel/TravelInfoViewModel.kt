@@ -50,7 +50,7 @@ class TravelInfoViewModel @Inject constructor(
     var packingList: MutableList<String> = mutableListOf("")
     var hasResult = mutableStateOf(false)
     var meansOfTransport=""
-    var lateinit startDate : LocalDateTime
+    var startDate : LocalDateTime = LocalDateTime.now()
     private val _trips = MutableStateFlow<List<Trip>>(emptyList())
     private val trips: StateFlow<List<Trip>> = _trips
     var savedTrips = mutableStateListOf<Trip>()
@@ -62,7 +62,7 @@ class TravelInfoViewModel @Inject constructor(
         val startCity = startEnd.first()
         val endCity = startEnd.last()
         val packingMessageContent = """
-            Generate a JSON response with: 10 travel items; itinerary from $startCity to $endCity with imagined intermediate stops for $duration days; 2 activities per city; a proposed arrival time in each city. The start date is ${startDate.toString}. The transportation type is $meansOfTransport. Follow this format:
+            Generate a JSON response with: 10 travel items; itinerary from $startCity to $endCity with imagined intermediate stops for $duration days; 2 activities per city; a proposed arrival time in each city. The start date is ${startDate}. The transportation type is $meansOfTransport. Follow this format:
             {
               "Packing List": ["item1", "item2", ...],
               "Itinerary": {

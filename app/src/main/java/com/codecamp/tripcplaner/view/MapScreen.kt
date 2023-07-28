@@ -115,6 +115,7 @@ fun MapScreen(
                             val duration = ChronoUnit.DAYS.between(
                                 startDate, endDate
                             )
+                            travelInfoViewModel.startDate = startDate.atStartOfDay()
                             travelInfoViewModel.sendMessage(
                                 listOf(tripPickerList[0].value, tripPickerList[1].value),
                                 duration.toInt(),

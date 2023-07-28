@@ -35,7 +35,12 @@ import com.codecamp.tripcplaner.viewModel.DetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PackCards(viewModel: DetailViewModel,item:String,onDelete :@Composable (item:String)->Unit={}, content : @Composable (checked:Boolean)-> Unit) {
+fun PackCard(
+    viewModel: DetailViewModel,
+    item: String,
+    onDelete: @Composable (item: String) -> Unit = {},
+    content: @Composable (checked: Boolean) -> Unit
+) {
     val checked = remember { mutableStateOf(false) }
     val deleted = remember { mutableStateOf(false) }
     Card(modifier = Modifier
@@ -54,34 +59,44 @@ fun PackCards(viewModel: DetailViewModel,item:String,onDelete :@Composable (item
                     checked = checked.value,
                     onCheckedChange = { checked.value = !checked.value },
                     enabled = true,
-                    modifier = Modifier.scale(2f).padding(start=10.dp),
+                    modifier = Modifier
+                        .scale(2f)
+                        .padding(start = 10.dp),
                     colors = CheckboxDefaults.colors(Color.Gray)
                 )
             }
 
-            Column(modifier = Modifier.weight(1f).padding(start=15.dp), verticalArrangement = Arrangement.Center){
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 15.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
                 Text(text = item, style = MaterialTheme.typography.bodyMedium)
             }
-            Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth(0.2f).padding(end=10.dp).clickable { deleted.value=true }) {
+            Column(
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier
+                    .fillMaxWidth(0.2f)
+                    .padding(end = 10.dp)
+                    .clickable { deleted.value = true }) {
 
-                    Icon(
-                        imageVector = Icons.Rounded.Delete,
-                        contentDescription = "Delete",
-                        modifier = Modifier.scale(2f)
-                    )
+                Icon(
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = "Delete",
+                    modifier = Modifier.scale(2f)
+                )
 
             }
         }
     }
-    if(deleted.value){
+    if (deleted.value) {
         onDelete(item)
-        deleted.value=false
+        deleted.value = false
     }
-        content(checked.value)
+    content(checked.value)
 
-    }
-
-
+}
 
 
 @Preview(showBackground = true)

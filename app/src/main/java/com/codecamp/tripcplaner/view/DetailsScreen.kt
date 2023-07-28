@@ -1,6 +1,8 @@
 package com.codecamp.tripcplaner.view
 
+import android.app.DatePickerDialog
 import android.util.Log
+import android.widget.DatePicker
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,16 +17,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -38,13 +45,17 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.R
+import com.codecamp.tripcplaner.model.reminder.scheduleNotification
 import com.codecamp.tripcplaner.view.widgets.DetailCard
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
+import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
+import java.time.LocalDateTime
+import java.util.Calendar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailsScreen(navController: NavController, viewModel: DetailViewModel) {
+fun DetailsScreen(navController: NavController, viewModel: DetailViewModel, travelInfoViewModel: TravelInfoViewModel) {
     val paintings = mutableMapOf<String, Int>()
     when (viewModel.getActivity()) {
         "Walk" -> paintings["Walk"] = R.drawable.walk
@@ -52,13 +63,33 @@ fun DetailsScreen(navController: NavController, viewModel: DetailViewModel) {
         "Bus" -> paintings["Bus"] = R.drawable.bus
         "Bicycle" -> paintings["Bicycle"] = R.drawable.bicycle
     }
+    var selectedItem by remember { mutableStateOf("") }
+
+    // State to control the visibility of the dropdown menu
+    var isDropdownMenuVisible by remember { mutableStateOf(false) }
+    val calendar = Calendar.getInstance()
+val date=remember{mutableStateOf("")}
+    val year = calendar[Calendar.YEAR]
+    val month = calendar[Calendar.MONTH]
+    val dayOfMonth = calendar[Calendar.DAY_OF_MONTH]
+    val datePicker = DatePickerDialog(
+        LocalContext.current,
+        { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+            val monthText =
+                if ((selectedMonth + 1) < 10) "0${selectedMonth + 1}" else "${selectedMonth + 1}"
+            val dayText =
+                if (selectedDayOfMonth < 10) "0$selectedDayOfMonth" else "$selectedDayOfMonth"
+            date.value = "$dayText.$monthText.${selectedYear % 2000}"
+        },
+        year,
+        month,
+        dayOfMonth
+    )
 
 
     val popUpOn = remember { mutableStateOf(false) }
-    val newItem = remember { mutableStateOf("") }
+    val confirmed = remember { mutableStateOf(false) }
     Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
-    Column(
-        modifier = Modifier
     val id = remember { mutableIntStateOf(0) }
 
 Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
@@ -68,12 +99,7 @@ Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
         .blur(if (popUpOn.value) 20.dp else 0.dp)
         .verticalScroll(enabled = true, state = rememberScrollState())) {
 
-        Image(painter = painterResource(id =paintings[viewModel.getActivity()]!!), contentDescription = "walking", modifier = Modifier
-            .fillMaxWidth()
-            .padding(if (popUpOn.value) 0.dp else 10.dp)
-            .blur(if (popUpOn.value) 20.dp else 0.dp)
-            .verticalScroll(enabled = true, state = rememberScrollState())
-    ) {
+
 
         Image(
             painter = painterResource(id = paintings[viewModel.getActivity()]!!),
@@ -117,53 +143,55 @@ Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
             Card(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
-                    .fillMaxHeight(0.3f)
+                    .fillMaxHeight(0.5f)
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center
+                    verticalArrangement = Arrangement.Center , horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center
-                    ) {
+
                         Text(
                             text = "Add Time",
                             style = MaterialTheme.typography.displaySmall,
-                            modifier = Modifier.padding(10.dp)
-                    Text(
-                        text = "Add new item",
-                        style = MaterialTheme.typography.displaySmall,
-                        modifier = Modifier.padding(10.dp)
-                    )
-                    TextField(
-                        value = newItem.value,
-                        onValueChange = { newItem.value = it },
-                        label = { Text(text = " + Enter new item") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp),
-                        singleLine = true,
-                        shape = RoundedCornerShape(10.dp),
-                        colors = TextFieldDefaults.textFieldColors(
-                            Color.LightGray
-                        ),
-                        keyboardActions = KeyboardActions(onDone = {
+                            modifier = Modifier.padding(10.dp))
+                    Button(onClick = { datePicker.show() }, modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+                        Text(text =if (date.value=="") "Select Date" else date.value)
+                    }
+                    Button(
+                        onClick = { isDropdownMenuVisible = true },
+                        modifier = Modifier.padding(16.dp).fillMaxWidth()
+                    ) {
+                        Text(if (selectedItem == "") "Select City" else selectedItem)
+                    }
+
+                    DropdownMenu(expanded = isDropdownMenuVisible , onDismissRequest = { isDropdownMenuVisible = false }) {
+                        travelInfoViewModel.citiesWithActivity.keys.forEach { city ->
+                            DropdownMenuItem(text = { Text(text =city) }, onClick = { selectedItem = city
+                                isDropdownMenuVisible = false })
+                        }
+                    }
+                    Button(onClick = {
+                        Log.d("DetailsScreen", "DetailsScreen: ${date} and ${selectedItem}")
+                        confirmed.value=true
+                        popUpOn.value = false }) {
+                        Text(text = "Confirm")
+                    }
 
 
-                            popUpOn.value = false
-                        }),
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Done,
-                            keyboardType = KeyboardType.Text
-                        )
-                    )
 
                 }
             }
         }
     }
+    var notificationScheduled by remember { mutableStateOf(false) }
+if (confirmed.value){
 
+    scheduleNotification(LocalContext.current, 2, 7000, "button1"
+    )
+    notificationScheduled = true
+    confirmed.value=false
+
+}
 
 }
 

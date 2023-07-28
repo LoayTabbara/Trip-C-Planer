@@ -78,7 +78,7 @@ Generate a JSON response with: 10 travel items; itinerary from $startCity to $en
                 // Copy the state to the publicly accessible variables
                 citiesWithActivity = activitiesJson.value
                 packingList = packingListJson.value as MutableList<String>
-                if (citiesWithActivity.keys.contains("City1") || citiesWithActivity.keys.contains("Stopover 1")) {
+                if (citiesWithActivity.keys.contains("City A") ||citiesWithActivity.keys.contains("CityA") ||citiesWithActivity.keys.contains("City1") || citiesWithActivity.keys.contains("City 1") || citiesWithActivity.keys.contains("Stopover 1")) {
                     Toast.makeText(context, "Faulty result, retrying", Toast.LENGTH_LONG).show()
                     citiesWithActivity = mapOf()
                     sendMessage(

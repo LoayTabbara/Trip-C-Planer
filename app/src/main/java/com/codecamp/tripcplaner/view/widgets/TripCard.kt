@@ -1,8 +1,10 @@
 package com.codecamp.tripcplaner.view.widgets
 
-import android.media.Image
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,20 +12,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.codecamp.tripcplaner.R
-import javax.annotation.meta.When
 
 
 @Composable
@@ -32,7 +30,7 @@ fun TripCard(tripName:String,tripDescription:String,tripType:String) {
         .fillMaxWidth()
         .height(100.dp),elevation = CardDefaults.cardElevation(5.dp),
         shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray)) {
-        Row() {
+        Row {
 
             when(tripType){
                 "Bus"-> Image(painter = painterResource(id = R.drawable.bus), contentDescription = "Bus", modifier = Modifier.fillMaxWidth(0.3f), contentScale = ContentScale.Crop)
@@ -55,6 +53,6 @@ fun TripCard(tripName:String,tripDescription:String,tripType:String) {
 
 @Preview(showBackground = true)
 @Composable
-fun Cprvw(){
+fun CPrvw(){
     TripCard(tripName = "Trip Name",tripDescription = "Trip Description",tripType = "Bus")
 }

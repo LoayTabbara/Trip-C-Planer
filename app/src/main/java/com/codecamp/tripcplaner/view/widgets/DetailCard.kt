@@ -24,15 +24,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.codecamp.tripcplaner.model.reminder.scheduleNotification
 
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailCard(text:String,content : @Composable (checked:Boolean)-> Unit={}) {
-    val uId= (0..1000).random()
+fun DetailCard(text:String,content : @Composable (checked:Boolean,id:Int)-> Unit) {
+    val uId= (1..1000).random()
     val checked = remember{mutableStateOf(false)}
     Card(modifier = Modifier
         .fillMaxWidth()
@@ -50,7 +52,10 @@ fun DetailCard(text:String,content : @Composable (checked:Boolean)-> Unit={}) {
                 .fillMaxWidth()
                 .height(100.dp), elevation = CardDefaults.cardElevation(5.dp),
                 shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray),
-                onClick = {  checked.value = !checked.value }
+                onClick = {  checked.value = !checked.value
+
+
+                }
             ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
                 Icon(
@@ -66,7 +71,7 @@ fun DetailCard(text:String,content : @Composable (checked:Boolean)-> Unit={}) {
             }
 
 
-    content(checked.value)
+    content(checked.value,uId)
 
         }
     }
@@ -75,5 +80,5 @@ fun DetailCard(text:String,content : @Composable (checked:Boolean)-> Unit={}) {
 @Preview(showBackground = true)
 @Composable
 fun DetailCardPreview() {
-    DetailCard("text")
+
 }

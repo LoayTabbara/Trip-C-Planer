@@ -22,12 +22,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -54,6 +56,8 @@ fun DetailsScreen(navController: NavController, viewModel: DetailViewModel) {
 
     val popUpOn = remember { mutableStateOf(false) }
     val newItem = remember { mutableStateOf("") }
+    val id = remember { mutableIntStateOf(0) }
+
 Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
     Column( modifier = Modifier
         .fillMaxWidth()
@@ -70,8 +74,9 @@ Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
         for(item in viewModel.getPackList()) {
             Spacer(modifier =Modifier.height(10.dp))
 
-            DetailCard(text = item) { checked ->
+            DetailCard(text = item) { checked ,uid->
                 if (checked) {
+                    id.value=uid
                     popUpOn.value = true
                 }
             }
@@ -101,7 +106,7 @@ Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Add new item",
+                            text = "Add Time",
                             style = MaterialTheme.typography.displaySmall,
                             modifier = Modifier.padding(10.dp)
                         )

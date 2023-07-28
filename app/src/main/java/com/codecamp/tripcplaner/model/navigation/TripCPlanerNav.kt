@@ -23,16 +23,16 @@ fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: Trave
         startDestination = TripCPlanerScreens.MainScreen.name
     ) {
         composable(TripCPlanerScreens.MainScreen.name) {
-            MainScreen(navController)
+            MainScreen(navController, travelInfoViewModel)
         }
         composable(TripCPlanerScreens.SplashScreen.name) {
             SplashScreen(navController)
         }
-        composable(TripCPlanerScreens.MapScreen.name+"/{typeActivity}",
-                arguments = listOf(navArgument(name="typeActivity"){type= NavType.StringType})
+        composable(TripCPlanerScreens.MapScreen.name+"/{transportMean}",
+                arguments = listOf(navArgument(name="transportMean"){type= NavType.StringType})
         ) {backStackEntry->
             travelInfoViewModel.hasResult.value = false
-            MapScreen(navController,backStackEntry.arguments?.getString("typeActivity"), travelInfoViewModel, detailsViewModel)
+            MapScreen(navController,backStackEntry.arguments?.getString("transportMean"), travelInfoViewModel, detailsViewModel)
         }
         composable(TripCPlanerScreens.PackScreen.name) {
             PackScreen(navController = navController, detailsViewModel, travelInfoViewModel)

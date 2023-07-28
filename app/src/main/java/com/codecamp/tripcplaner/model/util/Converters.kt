@@ -1,6 +1,7 @@
 package com.codecamp.tripcplaner.model.util
 
 import androidx.room.TypeConverter
+import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.time.LocalDateTime
@@ -42,4 +43,41 @@ class Converters {
         return gson.fromJson(map, type)
     }
 
+    @TypeConverter
+    fun fromLatLng(latLng: LatLng): String {
+        val gson = Gson()
+        return gson.toJson(latLng)
+    }
+    @TypeConverter
+    fun toLatLng(latLng: String): LatLng {
+        val gson = Gson()
+        val type = object : TypeToken<LatLng>() {}.type
+        return gson.fromJson(latLng, type)
+    }
+
+    @TypeConverter
+    fun fromPair(pair: Pair<LatLng,LocalDateTime>): String {
+        val gson = Gson()
+        return gson.toJson(pair)
+    }
+
+    @TypeConverter
+    fun toPair(pair: String): Pair<LatLng,LocalDateTime> {
+        val gson = Gson()
+        val type = object : TypeToken<Pair<LatLng,LocalDateTime>>() {}.type
+        return gson.fromJson(pair, type)
+    }
+
+    @TypeConverter
+    fun fromMapPair(map: Map<String,Pair<LatLng,LocalDateTime>>): String {
+        val gson = Gson()
+        return gson.toJson(map)
+    }
+
+    @TypeConverter
+    fun toMapPair(map: String): Map<String,Pair<LatLng,LocalDateTime>> {
+        val gson = Gson()
+        val type = object : TypeToken<Map<String,Pair<LatLng,LocalDateTime>>>() {}.type
+        return gson.fromJson(map, type)
+    }
 }

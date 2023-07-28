@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,7 +62,7 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun MapScreen(
     navController: NavController,
-    typeActivity: String?,
+    transportMean: String?,
     travelInfoViewModel: TravelInfoViewModel,
     detailsViewModel: DetailViewModel
 ) {
@@ -116,6 +115,7 @@ fun MapScreen(
                             val duration = ChronoUnit.DAYS.between(
                                 startDate, endDate
                             )
+                            travelInfoViewModel.startDate = startDate.atStartOfDay()
                             travelInfoViewModel.sendMessage(
                                 listOf(tripPickerList[0].value, tripPickerList[1].value),
                                 duration.toInt(),
@@ -138,6 +138,7 @@ fun MapScreen(
                         val startDate = LocalDate.parse(tripPickerList[2].value, formatter)
                         val endDate = LocalDate.parse(tripPickerList[3].value, formatter)
                         detailsViewModel.setDates(startDate, endDate)
+
                         navController.navigate(TripCPlanerScreens.PackScreen.name)
                     }) {
                         Text(text = "✔︎", fontSize = 24.sp)
@@ -162,7 +163,7 @@ fun MapScreen(
                     )
                 }
             } else {
-                GeneratedTripOverview(typeActivity, travelInfoViewModel)
+                GeneratedTripOverview(transportMean, travelInfoViewModel)
             }
         }) {
             PermissionSnackbar(permissionsState = permissionsState)
@@ -213,7 +214,7 @@ fun MapScreen(
                 } else {
                     cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
                 }
-                detailsViewModel.setActivity(typeActivity!!)
+                detailsViewModel.setTransportMean(transportMean!!)
                 initialized.value = true
             }
 
@@ -227,6 +228,7 @@ fun MapScreen(
             ) {
 
                 if (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty()) {
+                    travelInfoViewModel.latLngList.clear()
                     val positions = mutableListOf(startMarker.position)
                     if (travelInfoViewModel.hasResult.value) {
                         for (i in 1 until travelInfoViewModel.citiesWithActivity.size - 1) {
@@ -246,6 +248,8 @@ fun MapScreen(
                     Polyline(
                         points = positions, color = Color.Blue
                     )
+                    if (travelInfoViewModel.hasResult.value)
+                        travelInfoViewModel.latLngList = positions
                 }
 
                 if (tripPickerList[0].value.isNotEmpty()) {

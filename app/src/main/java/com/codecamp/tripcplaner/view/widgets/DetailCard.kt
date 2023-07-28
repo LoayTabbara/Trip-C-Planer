@@ -32,7 +32,6 @@ import java.util.UUID
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailCard(text: String, content: @Composable (checked: Boolean) -> Unit = {}) {
-    val uId = (0..1000).random()
     val checked = remember { mutableStateOf(false) }
     Card(
         modifier = Modifier

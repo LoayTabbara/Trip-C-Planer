@@ -22,12 +22,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,6 +59,16 @@ fun DetailsScreen(navController: NavController, viewModel: DetailViewModel) {
     Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
     Column(
         modifier = Modifier
+    val id = remember { mutableIntStateOf(0) }
+
+Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
+    Column( modifier = Modifier
+        .fillMaxWidth()
+        .padding(if (popUpOn.value) 0.dp else 10.dp)
+        .blur(if (popUpOn.value) 20.dp else 0.dp)
+        .verticalScroll(enabled = true, state = rememberScrollState())) {
+
+        Image(painter = painterResource(id =paintings[viewModel.getActivity()]!!), contentDescription = "walking", modifier = Modifier
             .fillMaxWidth()
             .padding(if (popUpOn.value) 0.dp else 10.dp)
             .blur(if (popUpOn.value) 20.dp else 0.dp)
@@ -80,8 +92,9 @@ fun DetailsScreen(navController: NavController, viewModel: DetailViewModel) {
         for (item in viewModel.getPackList()) {
             Spacer(modifier = Modifier.height(10.dp))
 
-            DetailCard(text = item) { checked ->
+            DetailCard(text = item) { checked ,uid->
                 if (checked) {
+                    id.value=uid
                     popUpOn.value = true
                 }
             }
@@ -110,6 +123,14 @@ fun DetailsScreen(navController: NavController, viewModel: DetailViewModel) {
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center
                 ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Add Time",
+                            style = MaterialTheme.typography.displaySmall,
+                            modifier = Modifier.padding(10.dp)
                     Text(
                         text = "Add new item",
                         style = MaterialTheme.typography.displaySmall,

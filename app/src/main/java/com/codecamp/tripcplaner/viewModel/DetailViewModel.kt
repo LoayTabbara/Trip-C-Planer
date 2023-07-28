@@ -8,7 +8,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor() : ViewModel() {
     private var packList = mutableListOf<String>()
-    private var activity= mutableStateOf("Walk")
+    private var activity= mutableStateOf("")
 
 private var newTitle= mutableStateOf("")
 

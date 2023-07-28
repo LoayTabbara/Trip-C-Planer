@@ -18,6 +18,7 @@ import com.google.gson.JsonObject
 import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -26,8 +27,8 @@ data class ItineraryInfo(
     @Json(name = "Packing List") val packingList: List<String>,
     @Json(name = "Itinerary") val itinerary: Map<String, List<String>>
 )
-
-class TravelInfoViewModel : ViewModel() {
+@HiltViewModel
+class TravelInfoViewModel @Inject constructor() : ViewModel() {
     var messages = mutableStateListOf<Message>()
     var packingListJson = mutableStateOf(listOf<String>())
     var activitiesJson = mutableStateOf(mapOf<String, List<String>>())
@@ -121,13 +122,11 @@ Generate a JSON response with: 10 travel items; itinerary from $startCity to $en
         return LatLng(location.get("lat").asDouble, location.get("lng").asDouble)
 
     }
-
-    fun removeItem(item: String) {
-        packingList.remove(item)
-    }
-
-    fun addItem(item: String) {
+    fun addToPackingList(item: String) {
         packingList.add(item)
+    }
+    fun removeFromPackingList(item: String) {
+        packingList.remove(item)
     }
 }
 

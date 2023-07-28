@@ -35,7 +35,7 @@ fun TripCPlanerNav(viewModel: DetailViewModel, travelInfoViewModel: TravelInfoVi
             MapScreen(navController,backStackEntry.arguments?.getString("typeActivity"), travelInfoViewModel)
         }
         composable(TripCPlanerScreens.PackScreen.name) {
-            PackScreen(navController = navController, viewModel)
+            PackScreen(navController = navController, viewModel, travelInfoViewModel)
         }
         composable(TripCPlanerScreens.DetailsScreen.name) {
             DetailsScreen(navController = navController, viewModel)

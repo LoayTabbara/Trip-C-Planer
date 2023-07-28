@@ -96,10 +96,10 @@ class TravelInfoViewModel @Inject constructor(
         messages.add(Message(packingMessageContent, "user"))
 
 
+        val packingBody = OpenAIRequestBody(messages = messages)
         viewModelScope.launch {
             _trips.emit(tripRepo.getAllItems())
             savedTrips = tripRepo.populateTrips(_trips)
-            val packingBody = OpenAIRequestBody(messages = messages)
 
             try {
                 val packingResponse = RetrofitInit.openAIChatApi.generateResponse(packingBody)
@@ -146,7 +146,7 @@ class TravelInfoViewModel @Inject constructor(
                     dates.value = arrivalTimesInCities.value.values.toList() // added this line
                     packingList.addAll(packingListJson.value)
                     Log.i("Ali", dates.toString())
-
+                    times.value= arrivalTimesInCities.value.values.toList()
                     hasResult.value = true
                 }
 
@@ -155,17 +155,17 @@ class TravelInfoViewModel @Inject constructor(
                     .show()
                 Log.e("Error", e.message.toString())
                 citiesWithActivity = mapOf()
-                sendMessage(
-                    coords, duration, context, season
-                )
+//                sendMessage(
+//                    coords, duration, context, season
+//                )
             } catch (e: Exception) {
-                Toast.makeText(context, "Unknown Error!, retrying", Toast.LENGTH_LONG)
+                Toast.makeText(context, "Unknown Error! ${e.message}, retrying", Toast.LENGTH_LONG)
                     .show()
                 Log.e("Error", e.message.toString())
                 citiesWithActivity = mapOf()
-                sendMessage(
-                    coords, duration, context, season
-                )
+//                sendMessage(
+//                    coords, duration, context, season
+//                )
             }
         }
     }

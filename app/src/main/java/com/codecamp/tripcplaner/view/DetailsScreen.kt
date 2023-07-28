@@ -60,12 +60,13 @@ Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
         .padding(if (popUpOn.value) 0.dp else 10.dp)
         .blur(if (popUpOn.value) 20.dp else 0.dp)
         .verticalScroll(enabled = true, state = rememberScrollState())) {
-        paintings[R.drawable.walk.toString()]=R.drawable.walk
-        Image(painter = painterResource(id =paintings[R.drawable.walk.toString()]!!), contentDescription = "walking", modifier = Modifier
+
+        Image(painter = painterResource(id =paintings[viewModel.getActivity()]!!), contentDescription = "walking", modifier = Modifier
             .fillMaxWidth()
             .height(200.dp))
         
         Spacer(modifier =Modifier.height(10.dp))
+        Text(text = if(viewModel.getNewTitle()!="")viewModel.getNewTitle() else "Anonymous", style = MaterialTheme.typography.displayMedium, modifier = Modifier.padding(start=10.dp))
         for(item in viewModel.getPackList()) {
             Spacer(modifier =Modifier.height(10.dp))
 

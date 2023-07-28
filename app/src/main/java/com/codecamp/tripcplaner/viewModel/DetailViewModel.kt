@@ -8,16 +8,10 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor() : ViewModel() {
     private var packList = mutableListOf<String>()
-    private var isDeleted= mutableStateOf(false)
     private var activity= mutableStateOf("Walk")
 
+private var newTitle= mutableStateOf("")
 
-    fun setIsDeleted(value: Boolean) {
-        isDeleted.value = value
-    }
-    fun getIsDeleted(): Boolean {
-        return isDeleted.value
-    }
     fun setPackList(value: MutableList<String>) {
         packList = value
     }
@@ -25,6 +19,13 @@ class DetailViewModel @Inject constructor() : ViewModel() {
     fun getPackList(): MutableList<String> {
         return packList
     }
+    fun setNewTitle(value: String) {
+        newTitle.value = value
+    }
+    fun getNewTitle(): String {
+        return newTitle.value
+    }
+
     fun setActivity(value: String) {
         activity.value = value
     }

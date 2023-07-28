@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -56,33 +57,41 @@ fun PackScreen(
 ) {
 
 
-    val popUpOn=remember {
+    val popUpOnAdd=remember {
+        mutableStateOf(false)
+    }
+    val popUpOnSave=remember {
         mutableStateOf(false)
     }
     val newItem=remember {
         mutableStateOf("")
     }
+    val newTitle=remember {
+        mutableStateOf("")
+
+    }
     val myList =
         mutableListOf<String>()
 
-    val deletedList = mutableListOf<String>()
+    val deletedList = remember{mutableStateListOf<String>()}
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(if (popUpOn.value) 0.dp else 10.dp)
-            .blur(if (popUpOn.value) 20.dp else 0.dp)
+            .padding(if (popUpOnAdd.value||popUpOnSave.value) 0.dp else 10.dp)
+            .blur(if (popUpOnAdd.value||popUpOnSave.value) 20.dp else 0.dp)
             .verticalScroll(enabled = true, state = rememberScrollState())
     ) {
         Text(text = "Your Packlist", style = MaterialTheme.typography.displayMedium)
         Column(modifier = Modifier.padding(top = 10.dp)) {
             for (item in travelInfoViewModel.packingList) {
-                Log.d("item", viewModel.getIsDeleted().toString())
-                if (viewModel.getIsDeleted()) {
-                    deletedList.add(item) // Collect the items to be deleted
-                    viewModel.setIsDeleted(false)
-                }
-                    PackCards(item = item,viewModel = viewModel) {
+
+
+                    PackCards(item = item,viewModel = viewModel, onDelete = {
+
+                            deletedList.add(it)
+
+                    }) {
                         if (it) {
                             myList.add(item)
                             Log.d("myList  +", myList.toString())
@@ -104,7 +113,7 @@ fun PackScreen(
                    ) {
                        Button(
                            onClick = {
-                               popUpOn.value=true
+                               popUpOnAdd.value=true
 
                            },
                            shape = RoundedCornerShape(10.dp),
@@ -138,8 +147,8 @@ fun PackScreen(
                            onClick = {
 
                                viewModel.setPackList(myList)
+                                popUpOnSave.value=true
 
-                               navController.navigate(TripCPlanerScreens.DetailsScreen.name)
                            },
                            shape = RoundedCornerShape(10.dp),
                            modifier = Modifier
@@ -165,8 +174,8 @@ fun PackScreen(
 
         }
 
-        if (popUpOn.value){
-            Popup(alignment = Alignment.Center, onDismissRequest = {popUpOn.value=false},
+        if (popUpOnAdd.value){
+            Popup(alignment = Alignment.Center, onDismissRequest = {popUpOnAdd.value=false},
                 properties = PopupProperties(focusable= true, dismissOnBackPress = true, dismissOnClickOutside = true)) {
                     Card(modifier = Modifier
                         .fillMaxWidth(0.8f)
@@ -180,7 +189,7 @@ fun PackScreen(
 
                                         if (newItem.value!=""){travelInfoViewModel.addToPackingList(newItem.value)}
                                      newItem.value=""
-                                     popUpOn.value=false}),
+                                     popUpOnAdd.value=false}),
                                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Text)
                             )
 
@@ -188,11 +197,40 @@ fun PackScreen(
                     }
             }
         }
+        if (popUpOnSave.value){
+            Popup(alignment = Alignment.Center, onDismissRequest = {popUpOnSave.value=false},
+                properties = PopupProperties(focusable= true, dismissOnBackPress = true, dismissOnClickOutside = true)) {
+                Card(modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .fillMaxHeight(0.5f)){
+                    Column(modifier=Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
+                        Text(text ="Add Title and Save Your Choices", style = MaterialTheme.typography.displaySmall, modifier = Modifier.padding(10.dp))
+                        TextField(value = newTitle.value, onValueChange ={newTitle.value=it}, label = {Text(text = " + Enter Plan Title")}, modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp), singleLine = true, shape = RoundedCornerShape(10.dp), colors = TextFieldDefaults.textFieldColors(Color.LightGray),
+                            keyboardActions = KeyboardActions(onDone = {
+
+                                if (newTitle.value!=""){viewModel.setNewTitle(newTitle.value)}
+                                newTitle.value=""
+                                navController.navigate(TripCPlanerScreens.DetailsScreen.name)
+                                popUpOnSave.value=false
+                                }),
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Text)
+                        )
+
+                    }
+                }
+            }
+        }
     }
+
     for (item in deletedList) {
         travelInfoViewModel.removeFromPackingList(item)
     }
-    deletedList.clear()
+    Log.d("ditem", deletedList.toString())
+        deletedList.clear()
+
+
 
 }
 

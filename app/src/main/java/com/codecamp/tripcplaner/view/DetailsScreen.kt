@@ -66,6 +66,7 @@ Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
             .height(200.dp))
         
         Spacer(modifier =Modifier.height(10.dp))
+        Text(text = if(viewModel.getNewTitle()!="")viewModel.getNewTitle() else "Anonymous", style = MaterialTheme.typography.displayMedium, modifier = Modifier.padding(start=10.dp))
         for(item in viewModel.getPackList()) {
             Spacer(modifier =Modifier.height(10.dp))
 

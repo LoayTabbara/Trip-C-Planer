@@ -35,9 +35,9 @@ import com.codecamp.tripcplaner.viewModel.DetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PackCards(viewModel: DetailViewModel,item:String,content : @Composable (checked:Boolean)-> Unit) {
+fun PackCards(viewModel: DetailViewModel,item:String,onDelete :@Composable (item:String)->Unit={}, content : @Composable (checked:Boolean)-> Unit) {
     val checked = remember { mutableStateOf(false) }
-//    val deleted = remember { mutableStateOf(false) }
+    val deleted = remember { mutableStateOf(false) }
     Card(modifier = Modifier
         .fillMaxWidth()
         .height(100.dp), elevation = CardDefaults.cardElevation(5.dp),
@@ -62,7 +62,7 @@ fun PackCards(viewModel: DetailViewModel,item:String,content : @Composable (chec
             Column(modifier = Modifier.weight(1f).padding(start=15.dp), verticalArrangement = Arrangement.Center){
                 Text(text = item, style = MaterialTheme.typography.bodyMedium)
             }
-            Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth(0.2f).padding(end=10.dp).clickable { viewModel.setIsDeleted(true) }) {
+            Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth(0.2f).padding(end=10.dp).clickable { deleted.value=true }) {
 
                     Icon(
                         imageVector = Icons.Rounded.Delete,
@@ -72,11 +72,15 @@ fun PackCards(viewModel: DetailViewModel,item:String,content : @Composable (chec
 
             }
         }
-
+    }
+    if(deleted.value){
+        onDelete(item)
+        deleted.value=false
+    }
         content(checked.value)
 
     }
-}
+
 
 
 

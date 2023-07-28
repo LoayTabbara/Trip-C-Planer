@@ -41,12 +41,13 @@ data class ItineraryInfo(
     @Json(name = "Itinerary") val itinerary: Map<String, CityInfo>
 
 )
+val pseudoJsonTextForDebugging = "{\"Packing List\":[\"Passport\",\"Clothes\",\"Toiletries\",\"Camera\",\"Phone charger\",\"Snacks\",\"Water bottle\",\"Maps\",\"Travel guidebook\",\"Sunglasses\"],\"Itinerary\":{\"Kassel\":{\"Activities\":[\"Visit Bergpark Wilhelmshöhe\",\"Explore Museum Fridericianum\"],\"Arrival Time\":\"2023-07-28T00:00\"},\"Paderborn\":{\"Activities\":[\"Visit Paderborn Cathedral\",\"Explore Pader Springs\"],\"Arrival Time\":\"2023-07-28T12:00\"},\"Münster\":{\"Activities\":[\"Visit Münster Cathedral\",\"Explore Münster Botanical Garden\"],\"Arrival Time\":\"2023-07-28T16:00\"},\"Dortmund\":{\"Activities\":[\"Visit Dortmund U-Tower\",\"Explore Westfalenpark\"],\"Arrival Time\":\"2023-07-29T07:00\"}}}{\"Packing List\":[\"Passport\",\"Clothes\",\"Toiletries\",\"Camera\",\"Phone charger\",\"Snacks\",\"Water bottle\",\"Maps\",\"Travel guidebook\",\"Sunglasses\"],\"Itinerary\":{\"Kassel\":{\"Activities\":[\"Visit Bergpark Wilhelmshöhe\",\"Explore Museum Fridericianum\"],\"Arrival Time\":\"2023-07-28T00:00\"},\"Paderborn\":{\"Activities\":[\"Visit Paderborn Cathedral\",\"Explore Pader Springs\"],\"Arrival Time\":\"2023-07-28T12:00\"},\"Münster\":{\"Activities\":[\"Visit Münster Cathedral\",\"Explore Münster Botanical Garden\"],\"Arrival Time\":\"2023-07-28T16:00\"},\"Dortmund\":{\"Activities\":[\"Visit Dortmund U-Tower\",\"Explore Westfalenpark\"],\"Arrival Time\":\"2023-07-29T07:00\"}}}"
 @HiltViewModel
 class TravelInfoViewModel @Inject constructor(
 
     private val tripRepository: TripRepositoryImplementation
 ) : ViewModel() {
-    var savedTrips = mutableStateListOf<Trip>()
+//    var savedTrips = mutableStateListOf<Trip>()
     private val _trips = MutableStateFlow<List<Trip>>(emptyList())
     var dates =  mutableStateOf<List<String>>(listOf())
     var localDateTimeList = mutableListOf<LocalDateTime>()

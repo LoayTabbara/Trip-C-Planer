@@ -8,7 +8,7 @@ import androidx.room.Query
 @Dao
 interface TripDao {
     @Query("SELECT * FROM trips")
-    fun getAll(): List<Trip>
+    fun getAll(): MutableList<Trip>
 
     @Query("SELECT * FROM trips WHERE id = :id")
     fun getById(id: Int): Trip
@@ -36,7 +36,7 @@ interface TripDao {
     suspend fun insertTrip(trip: Trip)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(trips: List<Trip>)
+    suspend fun insertAll(trips: MutableList<Trip>)
 
     @Query("SELECT COUNT(*) FROM trips")
     fun getCount(): Int

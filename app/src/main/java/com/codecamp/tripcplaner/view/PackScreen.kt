@@ -46,8 +46,6 @@ import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.PackCard
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -148,7 +146,7 @@ fun PackScreen(
                     Button(
                         onClick = {
 
-                            viewModel.setPackList(myList)
+//                            viewModel.setPackList(myList)
                             popUpOnSave.value = true
 
                         },
@@ -259,7 +257,7 @@ fun PackScreen(
                             shape = RoundedCornerShape(10.dp),
                             colors = TextFieldDefaults.textFieldColors(Color.LightGray),
                             keyboardActions = KeyboardActions(onDone = {
-                                var activities = mutableListOf<String>()
+                                val activities = mutableListOf<String>()
                                 travelInfoViewModel.citiesWithActivity.values.forEach {
                                     activities.addAll(it)
                                 }

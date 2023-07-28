@@ -31,42 +31,54 @@ import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailCard(text:String,content : @Composable (checked:Boolean)-> Unit={}) {
-    val uId= (0..1000).random()
-    val checked = remember{mutableStateOf(false)}
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .height(100.dp), elevation = CardDefaults.cardElevation(5.dp),
+fun DetailCard(text: String, content: @Composable (checked: Boolean) -> Unit = {}) {
+    val uId = (0..1000).random()
+    val checked = remember { mutableStateOf(false) }
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp),
+        elevation = CardDefaults.cardElevation(5.dp),
         shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray),
 
-    ) {
+        ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
 
-        
-                Column(modifier = Modifier.fillMaxWidth(0.6f)) {
-                    Text(text =text, modifier = Modifier.padding(start=10.dp), style = MaterialTheme.typography.bodyMedium)
-                }
+
+            Column(modifier = Modifier.fillMaxWidth(0.6f)) {
+                Text(
+                    text = text,
+                    modifier = Modifier.padding(start = 10.dp),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
             Card(modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp), elevation = CardDefaults.cardElevation(5.dp),
                 shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray),
-                onClick = {  checked.value = !checked.value }
+                onClick = { checked.value = !checked.value }
             ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = "reminder",
-                    modifier = Modifier.padding(bottom = 10.dp)
-                )
-                Text(
-                    text = "Press to set reminder",
-                    modifier = Modifier.padding(horizontal = 10.dp),style = MaterialTheme.typography.bodySmall
-                )
-            }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "reminder",
+                        modifier = Modifier.padding(bottom = 10.dp)
+                    )
+                    Text(
+                        text = "Press to set reminder",
+                        modifier = Modifier.padding(horizontal = 10.dp),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
 
 
-    content(checked.value)
+            content(checked.value)
+            if (checked.value) checked.value = false
 
         }
     }

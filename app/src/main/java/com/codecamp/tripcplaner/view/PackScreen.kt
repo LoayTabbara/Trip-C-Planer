@@ -43,7 +43,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
-import com.codecamp.tripcplaner.view.widgets.PackCards
+import com.codecamp.tripcplaner.view.widgets.PackCard
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 
@@ -87,7 +87,7 @@ fun PackScreen(
             for (item in travelInfoViewModel.packingList) {
 
 
-                    PackCards(item = item,viewModel = viewModel, onDelete = {
+                    PackCard(item = item,viewModel = viewModel, onDelete = {
 
                             deletedList.add(it)
 

@@ -9,7 +9,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor() : ViewModel() {
     private var packList = mutableListOf<String>()
-    private var activity= mutableStateOf("")
+    private var transportMean= mutableStateOf("")
     private lateinit var  startDate: LocalDate
     private lateinit var endDate:LocalDate
 
@@ -38,10 +38,10 @@ private var newTitle= mutableStateOf("")
         return newTitle.value
     }
 
-    fun setActivity(value: String) {
-        activity.value = value
+    fun setTransportMean(value: String) {
+        transportMean.value = value
     }
-    fun getActivity(): String {
-        return activity.value
+    fun getTransportMean(): String {
+        return transportMean.value
     }
 }

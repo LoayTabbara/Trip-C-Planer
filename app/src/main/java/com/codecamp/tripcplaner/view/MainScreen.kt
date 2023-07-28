@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -39,14 +40,15 @@ import androidx.navigation.NavController
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.MainScreenDCard
 import com.codecamp.tripcplaner.view.widgets.TripCard
+import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MainScreen(navController: NavController) {
+fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoViewModel) {
     Text("MainScreen")
-    val typeActivity = remember { mutableStateOf("") }
+    val transportMean = remember { mutableStateOf("") }
     val popUpOn = remember {
         mutableStateOf(false)
     }
@@ -59,20 +61,17 @@ fun MainScreen(navController: NavController) {
         )
     )
     val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(
-        key1 = lifecycleOwner,
-        effect = {
-            val observer = LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_START) {
-                    permissionsState.launchMultiplePermissionRequest()
-                }
-            }
-            lifecycleOwner.lifecycle.addObserver(observer)
-            onDispose {
-                lifecycleOwner.lifecycle.removeObserver(observer)
+    DisposableEffect(key1 = lifecycleOwner, effect = {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) {
+                permissionsState.launchMultiplePermissionRequest()
             }
         }
-    )
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    })
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -90,38 +89,17 @@ fun MainScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(10.dp))
 
             LazyColumn() {
-                items(1) {
+                items(items = travelInfoViewModel.savedTrips) { item ->
                     TripCard(
-                        tripName = "Mt. Everest",
-                        tripDescription = "Mount Everest is Earth's highest mountain above sea level, located in the Mahalangur Himal sub-range of the Himalayas.",
-                        tripType = "Walk"
+                        tripName = item.title,
+                        tripDescription = item.startDate.toString() + " -" +
+                                " " + item.endDate + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." +
+                                ". ${ item.cities.keys.last()}(${item.activities[item.activities.lastIndex-1]}, ${item.activities.last()})",
+                        tripType = item.transportType
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                 }
-                items(1) {
-                    TripCard(
-                        tripName = "Berlin",
-                        tripDescription = "The Capital of Germany",
-                        tripType = "Car"
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
-                items(1) {
-                    TripCard(
-                        tripName = "Paris",
-                        tripDescription = "A wonderful journey. Traveled by bus",
-                        tripType = "Bus"
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
-                items(1) {
-                    TripCard(
-                        tripName = "Gottingen",
-                        tripDescription = "Visited with a b and c for fun",
-                        tripType = "Bicycle"
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
+
                 items(1) {
                     Column(
                         modifier = Modifier
@@ -130,8 +108,8 @@ fun MainScreen(navController: NavController) {
                     ) {
                         Button(
                             onClick = {
-                                if (typeActivity.value != "" && !popUpOn.value) {
-                                    navController.navigate(TripCPlanerScreens.MapScreen.name + "/${typeActivity.value}")
+                                if (transportMean.value != "" && !popUpOn.value) {
+                                    navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
                                 } else {
                                     popUpOn.value = true
                                 }
@@ -162,11 +140,10 @@ fun MainScreen(navController: NavController) {
 
     if (popUpOn.value) {
         Popup(
-            alignment = Alignment.Center, onDismissRequest = { popUpOn.value = false },
+            alignment = Alignment.Center,
+            onDismissRequest = { popUpOn.value = false },
             properties = PopupProperties(
-                focusable = true,
-                dismissOnBackPress = true,
-                dismissOnClickOutside = true
+                focusable = true, dismissOnBackPress = true, dismissOnClickOutside = true
             )
         ) {
             Card(
@@ -177,18 +154,19 @@ fun MainScreen(navController: NavController) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 10.dp), verticalArrangement = Arrangement.SpaceAround
+                        .padding(horizontal = 10.dp),
+                    verticalArrangement = Arrangement.SpaceAround
                 ) {
                     Text(
-                        text = "Add Activity",
+                        text = "Choose Transport Mean",
                         style = MaterialTheme.typography.displaySmall,
                         modifier = Modifier.padding(10.dp)
                     )
                     Button(
                         onClick = {
-                            typeActivity.value = "Walk"
+                            transportMean.value = "Walk"
                             popUpOn.value = false
-                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${typeActivity.value}")
+                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
 
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -198,9 +176,9 @@ fun MainScreen(navController: NavController) {
                     }
                     Button(
                         onClick = {
-                            typeActivity.value = "Car"
+                            transportMean.value = "Car"
                             popUpOn.value = false
-                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${typeActivity.value}")
+                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
 
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -210,10 +188,9 @@ fun MainScreen(navController: NavController) {
                     }
                     Button(
                         onClick = {
-                            typeActivity.value = "Bus"
+                            transportMean.value = "Bus"
                             popUpOn.value = false
-                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${typeActivity.value}")
-
+                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(Color.Gray)
@@ -222,9 +199,9 @@ fun MainScreen(navController: NavController) {
                     }
                     Button(
                         onClick = {
-                            typeActivity.value = "Bicycle"
+                            transportMean.value = "Bicycle"
                             popUpOn.value = false
-                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${typeActivity.value}")
+                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(Color.Gray)

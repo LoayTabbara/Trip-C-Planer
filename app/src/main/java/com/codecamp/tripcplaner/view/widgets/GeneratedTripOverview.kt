@@ -20,7 +20,7 @@ import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 
 @Composable
 fun GeneratedTripOverview(
-    typeActivity: String?,
+    transportMean: String?,
     travelInfoViewModel: TravelInfoViewModel
 ) {
     Column(
@@ -32,7 +32,7 @@ fun GeneratedTripOverview(
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Text(
-            text = "Generated Trip\n(Means of travel: $typeActivity)",
+            text = "Generated Trip\n(Means of travel: $transportMean)",
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(8.dp),

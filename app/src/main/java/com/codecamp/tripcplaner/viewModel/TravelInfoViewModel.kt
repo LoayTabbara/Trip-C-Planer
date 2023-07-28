@@ -5,10 +5,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codecamp.tripcplaner.MAPS_API_KEY
 import com.codecamp.tripcplaner.model.data.Message
+import com.codecamp.tripcplaner.model.data.Trip
+import com.codecamp.tripcplaner.model.data.TripRepository
 import com.codecamp.tripcplaner.model.remote.LatLngService
 import com.codecamp.tripcplaner.model.remote.OpenAIRequestBody
 import com.codecamp.tripcplaner.model.remote.RetrofitInit
@@ -19,6 +22,8 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -32,7 +37,12 @@ data class ItineraryInfo(
 )
 
 @HiltViewModel
-class TravelInfoViewModel @Inject constructor() : ViewModel() {
+class TravelInfoViewModel @Inject constructor(
+
+    private val tripRepository: TripRepository
+) : ViewModel() {
+
+    var dates: List<LocalDateTime> = listOf()
     private var messages = mutableStateListOf<Message>()
     private var packingListJson = mutableStateOf(listOf<String>())
     private var activitiesJson = mutableStateOf(mapOf<String, List<String>>())
@@ -41,12 +51,16 @@ class TravelInfoViewModel @Inject constructor() : ViewModel() {
     var hasResult = mutableStateOf(false)
     var meansOfTransport=""
     var lateinit startDate : LocalDateTime
+    private val _trips = MutableStateFlow<List<Trip>>(emptyList())
+    private val trips: StateFlow<List<Trip>> = _trips
+    var savedTrips = mutableStateListOf<Trip>()
+    var tripRepo = tripRepository
+    var latLngList = mutableListOf<LatLng>()
     fun sendMessage(
         startEnd: List<String>, duration: Int, context: Context, season: String
     ) {
         val startCity = startEnd.first()
         val endCity = startEnd.last()
-
         val packingMessageContent = """
             Generate a JSON response with: 10 travel items; itinerary from $startCity to $endCity with imagined intermediate stops for $duration days; 2 activities per city; a proposed arrival time in each city. The start date is ${startDate.toString}. The transportation type is $meansOfTransport. Follow this format:
             {
@@ -72,6 +86,8 @@ class TravelInfoViewModel @Inject constructor() : ViewModel() {
         messages.add(Message(packingMessageContent, "user"))
 
         viewModelScope.launch {
+            _trips.emit(tripRepo.getAllItems())
+            savedTrips = tripRepo.populateTrips(_trips) as SnapshotStateList<Trip>
             val packingBody = OpenAIRequestBody(messages = messages)
 
             try {
@@ -91,7 +107,12 @@ class TravelInfoViewModel @Inject constructor() : ViewModel() {
                 // Copy the state to the publicly accessible variables
                 citiesWithActivity = activitiesJson.value
                 packingList = packingListJson.value as MutableList<String>
-                if (citiesWithActivity.keys.contains("City A") ||citiesWithActivity.keys.contains("CityA") ||citiesWithActivity.keys.contains("City1") || citiesWithActivity.keys.contains("City 1") || citiesWithActivity.keys.contains("Stopover 1")) {
+                if (citiesWithActivity.keys.contains("City A") || citiesWithActivity.keys.contains("CityA") || citiesWithActivity.keys.contains(
+                        "City1"
+                    ) || citiesWithActivity.keys.contains("City 1") || citiesWithActivity.keys.contains(
+                        "Stopover 1"
+                    )
+                ) {
                     Toast.makeText(context, "Faulty result, retrying", Toast.LENGTH_LONG).show()
                     citiesWithActivity = mapOf()
                     sendMessage(
@@ -109,7 +130,7 @@ class TravelInfoViewModel @Inject constructor() : ViewModel() {
                 sendMessage(
                     startEnd, duration, context, season
                 )
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 Toast.makeText(context, "Unknown Error!, retrying", Toast.LENGTH_LONG)
                     .show()
                 Log.e("Error", e.message.toString())
@@ -143,6 +164,28 @@ class TravelInfoViewModel @Inject constructor() : ViewModel() {
 
     fun removeFromPackingList(item: String) {
         packingList.remove(item)
+    }
+
+    fun sendDateToSave(
+        title: String,
+        startDate: LocalDateTime?,
+        endDate: LocalDateTime?,
+        activities: MutableList<String>,
+        transportType: String
+    ) {
+        viewModelScope.launch {
+            tripRepo.saveData(
+                title = title,
+                startDate = startDate!!,
+                endDate = endDate!!,
+                cities = citiesWithActivity.keys as List<String>,
+                packingList = packingList,
+                latLngList = latLngList,
+                activities = activities,
+                dates = dates,
+                transportType = transportType,
+            )
+        }
     }
 }
 

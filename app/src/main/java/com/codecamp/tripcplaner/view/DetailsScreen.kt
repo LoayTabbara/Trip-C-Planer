@@ -46,7 +46,7 @@ import com.codecamp.tripcplaner.viewModel.DetailViewModel
 @Composable
 fun DetailsScreen(navController: NavController, viewModel: DetailViewModel) {
     val paintings = mutableMapOf<String, Int>()
-    when (viewModel.getActivity()) {
+    when (viewModel.getTransportMean()) {
         "Walk" -> paintings["Walk"] = R.drawable.walk
         "Car" -> paintings["Car"] = R.drawable.car
         "Bus" -> paintings["Bus"] = R.drawable.bus
@@ -76,7 +76,7 @@ Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
     ) {
 
         Image(
-            painter = painterResource(id = paintings[viewModel.getActivity()]!!),
+            painter = painterResource(id = paintings[viewModel.getTransportMean()]!!),
             contentDescription = "walking",
             modifier = Modifier
                 .fillMaxWidth()

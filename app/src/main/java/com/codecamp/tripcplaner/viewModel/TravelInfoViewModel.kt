@@ -11,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.codecamp.tripcplaner.MAPS_API_KEY
 import com.codecamp.tripcplaner.model.data.Message
 import com.codecamp.tripcplaner.model.data.Trip
-import com.codecamp.tripcplaner.model.data.TripRepository
+import com.codecamp.tripcplaner.model.data.TripRepositoryImplementation
 import com.codecamp.tripcplaner.model.remote.LatLngService
 import com.codecamp.tripcplaner.model.remote.OpenAIRequestBody
 import com.codecamp.tripcplaner.model.remote.RetrofitInit
@@ -44,7 +44,7 @@ data class ItineraryInfo(
 @HiltViewModel
 class TravelInfoViewModel @Inject constructor(
 
-    private val tripRepository: TripRepository
+    private val tripRepository: TripRepositoryImplementation
 ) : ViewModel() {
     var savedTrips = mutableStateListOf<Trip>()
     private val _trips = MutableStateFlow<List<Trip>>(emptyList())
@@ -52,6 +52,7 @@ class TravelInfoViewModel @Inject constructor(
     var localDateTimeList = mutableListOf<LocalDateTime>()
     var meansOfTransport=""
     private val trips: StateFlow<List<Trip>> = _trips
+    var savedTrips = mutableListOf<Trip>()
     var latLngList = mutableListOf<LatLng>()
     var tripRepo = tripRepository
     var hasResult = mutableStateOf(false)
@@ -96,7 +97,7 @@ class TravelInfoViewModel @Inject constructor(
 
         viewModelScope.launch {
             _trips.emit(tripRepo.getAllItems())
-            savedTrips = tripRepo.populateTrips(_trips) as SnapshotStateList<Trip>
+            savedTrips = tripRepo.populateTrips(_trips)
             val packingBody = OpenAIRequestBody(messages = messages)
 
             try {
@@ -208,7 +209,7 @@ class TravelInfoViewModel @Inject constructor(
                 title = title,
                 startDate = startDate!!,
                 endDate = endDate!!,
-                cities = citiesWithActivity.keys as List<String>,
+                cities = citiesWithActivity.keys.toMutableList(),
                 packingList = packingList,
                 latLngList = latLngList,
                 activities = activities,

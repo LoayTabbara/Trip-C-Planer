@@ -48,6 +48,8 @@ import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PackScreen(
@@ -55,6 +57,10 @@ fun PackScreen(
     viewModel: DetailViewModel,
     travelInfoViewModel: TravelInfoViewModel
 ) {
+    val counter = remember {
+        mutableStateOf(0)
+    }
+
 
 
     val popUpOnAdd = remember {
@@ -88,7 +94,7 @@ fun PackScreen(
 
 
                 PackCard(item = item, viewModel = viewModel, onDelete = {
-
+                    counter.value++
                     deletedList.add(it)
 
                 }) {
@@ -285,12 +291,15 @@ fun PackScreen(
             }
         }
     }
-
-    for (item in deletedList) {
-        travelInfoViewModel.removeFromPackingList(item)
+    if(counter.value>0)
+    {
+        for (item in deletedList) {
+            travelInfoViewModel.removeFromPackingList(item)
+            counter.value--
+        }
+        Log.d("ditem", deletedList.toString())
+        deletedList.clear()
     }
-    Log.d("ditem", deletedList.toString())
-    deletedList.clear()
 
 
 }

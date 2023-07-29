@@ -41,7 +41,7 @@ data class ItineraryInfo(
     @Json(name = "Itinerary") val itinerary: Map<String, CityInfo>
 
 )
-val pseudoJsonTextForDebugging = "{\"Packing List\":[\"Passport\",\"Clothes\",\"Toiletries\",\"Camera\",\"Phone charger\",\"Snacks\",\"Water bottle\",\"Maps\",\"Travel guidebook\",\"Sunglasses\"],\"Itinerary\":{\"Kassel\":{\"Activities\":[\"Visit Bergpark Wilhelmshöhe\",\"Explore Museum Fridericianum\"],\"Arrival Time\":\"2023-07-28T00:00\"},\"Paderborn\":{\"Activities\":[\"Visit Paderborn Cathedral\",\"Explore Pader Springs\"],\"Arrival Time\":\"2023-07-28T12:00\"},\"Münster\":{\"Activities\":[\"Visit Münster Cathedral\",\"Explore Münster Botanical Garden\"],\"Arrival Time\":\"2023-07-28T16:00\"},\"Dortmund\":{\"Activities\":[\"Visit Dortmund U-Tower\",\"Explore Westfalenpark\"],\"Arrival Time\":\"2023-07-29T07:00\"}}}{\"Packing List\":[\"Passport\",\"Clothes\",\"Toiletries\",\"Camera\",\"Phone charger\",\"Snacks\",\"Water bottle\",\"Maps\",\"Travel guidebook\",\"Sunglasses\"],\"Itinerary\":{\"Kassel\":{\"Activities\":[\"Visit Bergpark Wilhelmshöhe\",\"Explore Museum Fridericianum\"],\"Arrival Time\":\"2023-07-28T00:00\"},\"Paderborn\":{\"Activities\":[\"Visit Paderborn Cathedral\",\"Explore Pader Springs\"],\"Arrival Time\":\"2023-07-28T12:00\"},\"Münster\":{\"Activities\":[\"Visit Münster Cathedral\",\"Explore Münster Botanical Garden\"],\"Arrival Time\":\"2023-07-28T16:00\"},\"Dortmund\":{\"Activities\":[\"Visit Dortmund U-Tower\",\"Explore Westfalenpark\"],\"Arrival Time\":\"2023-07-29T07:00\"}}}"
+
 @HiltViewModel
 class TravelInfoViewModel @Inject constructor(
 
@@ -69,9 +69,9 @@ class TravelInfoViewModel @Inject constructor(
     fun sendMessage(
         coords: List<String>, duration: Int, context: Context, season: String
     ) {
+        var generatePseudo = false
         val startCity = coords.first()
         val endCity = coords.last()
-
         val packingMessageContent = """
             Generate a JSON response with: 10 travel items; itinerary from $startCity to $endCity with imagined intermediate stops for $duration days; 2 activities per city; a proposed arrival time in each city. The start date is $startDate. The transportation type is $meansOfTransport. Follow this format:
             {
@@ -123,11 +123,9 @@ class TravelInfoViewModel @Inject constructor(
                         "Stopover 1"
                     )
                 ) {
-                    Toast.makeText(context, "Faulty result, retrying", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Faulty result, generating standard answer", Toast.LENGTH_LONG).show()
                     citiesWithActivity = mapOf()
-                    sendMessage(
-                        coords, duration, context, season
-                    )
+                    generatePseudo = true
                 } else {
                     val packingResponse = RetrofitInit.openAIChatApi.generateResponse(packingBody)
                     messages.add(packingResponse.choices.first().message)
@@ -147,26 +145,37 @@ class TravelInfoViewModel @Inject constructor(
                     packingList.addAll(packingListJson.value)
                     Log.i("Ali", dates.toString())
                     times.value= arrivalTimesInCities.value.values.toList()
-                    hasResult.value = true
                 }
-
             } catch (e: SocketTimeoutException) {
-                Toast.makeText(context, "Connection timeout error, retrying", Toast.LENGTH_LONG)
+                Toast.makeText(context, "Connection timeout error, generating standard answer", Toast.LENGTH_LONG)
                     .show()
                 Log.e("Error", e.message.toString())
                 citiesWithActivity = mapOf()
-//                sendMessage(
-//                    coords, duration, context, season
-//                )
+
+                generatePseudo = true
+
             } catch (e: Exception) {
-                Toast.makeText(context, "Unknown Error! ${e.message}, retrying", Toast.LENGTH_LONG)
+                Toast.makeText(context, "Unknown Error! ${e.message}, generating standard answer", Toast.LENGTH_LONG)
                     .show()
                 Log.e("Error", e.message.toString())
                 citiesWithActivity = mapOf()
-//                sendMessage(
-//                    coords, duration, context, season
-//                )
+
+
+                generatePseudo = true
+
             }
+            if(generatePseudo){
+                packingList = mutableListOf("Passport","Clothes","Toiletries","Camera","Phone charger","Snacks","Water bottle","Maps","Travel guidebook","Sunglasses")
+                citiesWithActivity= mapOf(
+                    "Kassel" to listOf("Visit Bergpark Wilhelmshöhe", "Explore Museum Fridericianum"),
+                    "Paderborn" to listOf("Visit Paderborn Cathedral", "Explore Pader Springs"),
+                    "Münster" to listOf("Visit Münster Cathedral","Explore Münster Botanical Garden"),
+                    "Dortmund" to listOf("Visit Dortmund U-Tower","Explore Westfalenpark"),
+                )
+                times = mutableStateOf(listOf(startDate.toString(), startDate.plusDays(1).toString(), startDate.plusDays(2).toString(),startDate.plusDays(3).toString(), startDate.plusDays(5).toString() ))
+                generatePseudo=false
+            }
+            hasResult.value = true
         }
     }
 

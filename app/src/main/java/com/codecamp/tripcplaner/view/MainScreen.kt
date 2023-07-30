@@ -97,7 +97,7 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
             Spacer(modifier = Modifier.height(10.dp))
 
             LazyColumn {
-                items(items = travelInfoViewModel.savedTrips) { item ->
+                items(items = travelInfoViewModel.savedTrips.reversed()) { item ->
                     TripCard(
                         tripName = item.title+"\n${item.cities.keys.first()} - ${item.cities.keys.last()}",
                         tripDescription = item.startDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + " -" +

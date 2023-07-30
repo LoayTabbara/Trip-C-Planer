@@ -67,7 +67,7 @@ class TravelInfoViewModel @Inject constructor(
         val startCity = startEndCities.first()
         val endCity = startEndCities.last()
         val packingMessageContent = """
-            Generate a JSON response with: 10 travel items; itinerary from $startCity to $endCity with imagined intermediate stops for $duration days; 2 activities per city; a proposed arrival time in each city. The start date is $startDate. The transportation type is $meansOfTransport. Follow this format:
+            Generate a JSON response with: 10 travel items based on $season; itinerary from $startCity to $endCity with imagined intermediate stops for $duration days; 2 activities per city; a proposed arrival time in each city. The start date is $startDate. The transportation type is $meansOfTransport. Follow this format:
             {
               "Packing List": ["item1", "item2", ...],
               "Itinerary": {

@@ -174,7 +174,7 @@ class TravelInfoViewModel @Inject constructor(
         val response = serviceLatLng.generateResponse(MAPS_API_KEY, locationName)
         val results = response.body()?.get("results") as JsonArray
         if (results.size() == 0) {
-            return LatLng(0.0, 0.0)
+            return LatLng(52.3128, 9.5815)
         }
         val geometry = results[0].asJsonObject.get("geometry") as JsonObject
         val location = geometry.get("location") as JsonObject

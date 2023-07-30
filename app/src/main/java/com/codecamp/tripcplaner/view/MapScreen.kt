@@ -88,7 +88,7 @@ fun MapScreen(
 
         )
     )
-
+    var presentationLatLngList = mutableListOf<LatLng>()
     fun canCreate(): Boolean {
         return (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty() &&
                 tripPickerList[2].value.isNotEmpty() && tripPickerList[3].value.isNotEmpty() &&
@@ -225,26 +225,31 @@ fun MapScreen(
                 properties = properties,
             ) {
                 if (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty()) {
-                    travelInfoViewModel.latLngList = mutableListOf(startMarker.position)
+
+
                     if (travelInfoViewModel.hasResult.value) {
+                        travelInfoViewModel.latLngList = mutableListOf(startMarker.position)
                         for (i in 1 until travelInfoViewModel.citiesWithActivity.size - 1) {
                             val cityMarker = rememberMarkerState()
                             LaunchedEffect(Unit) {
                                 cityMarker.position = travelInfoViewModel.getLatLng(
                                     travelInfoViewModel.citiesWithActivity.keys.elementAt(i)
                                 )
-
                             }
                             CustomMarker(cityMarker, travelInfoViewModel, i)
                             travelInfoViewModel.latLngList.add(cityMarker.position)
                         }
+                        travelInfoViewModel.latLngList.add(endMarker.position)
                         showIndicator.value = false
                     }
-
-                    travelInfoViewModel.latLngList.add(endMarker.position)
                     Polyline(
-                        points = travelInfoViewModel.latLngList, color = Color.Blue
+                        points = if (travelInfoViewModel.hasResult.value) travelInfoViewModel.latLngList else listOf(
+                            startMarker.position,
+                            endMarker.position
+                        ), color = Color.Blue
                     )
+
+
                 }
                 if (tripPickerList[0].value.isNotEmpty()) {
                     CustomMarker(startMarker, travelInfoViewModel, 0)

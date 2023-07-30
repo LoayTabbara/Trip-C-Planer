@@ -94,7 +94,6 @@ class TripRepositoryImplementation @Inject constructor(private val tripDao: Trip
             transportType = transportType
         )
         withContext(Dispatchers.IO){
-
             insertTrip(trip)
         }
     }

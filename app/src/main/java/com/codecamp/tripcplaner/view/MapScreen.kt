@@ -88,7 +88,7 @@ fun MapScreen(
 
         )
     )
-
+    var presentationLatLngList = mutableListOf<LatLng>()
     fun canCreate(): Boolean {
         return (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty() &&
                 tripPickerList[2].value.isNotEmpty() && tripPickerList[3].value.isNotEmpty() &&
@@ -183,7 +183,6 @@ fun MapScreen(
                     )
                 )
             }
-
             val fusedLocationProviderClient =
                 remember { LocationServices.getFusedLocationProviderClient(context) }
 
@@ -217,7 +216,6 @@ fun MapScreen(
                 detailsViewModel.setTransportMean(transportMean!!)
                 initialized.value = true
             }
-
             GoogleMap(
                 modifier = Modifier
                     .fillMaxSize()
@@ -226,32 +224,39 @@ fun MapScreen(
                 uiSettings = uiSettings,
                 properties = properties,
             ) {
-
                 if (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty()) {
-                    travelInfoViewModel.latLngList.clear()
-                    val positions = mutableListOf(startMarker.position)
+
+
                     if (travelInfoViewModel.hasResult.value) {
+                        if (!travelInfoViewModel.generatePseudo) travelInfoViewModel.latLngList =
+                            mutableListOf(startMarker.position) else startMarker.position =
+                            travelInfoViewModel.latLngList.first()
                         for (i in 1 until travelInfoViewModel.citiesWithActivity.size - 1) {
                             val cityMarker = rememberMarkerState()
                             LaunchedEffect(Unit) {
-                                cityMarker.position = travelInfoViewModel.getLatLng(
-                                    travelInfoViewModel.citiesWithActivity.keys.elementAt(i)
-                                )
+                                cityMarker.position =
+                                    if (!travelInfoViewModel.generatePseudo) travelInfoViewModel.getLatLng(
+                                        travelInfoViewModel.citiesWithActivity.keys.elementAt(i)
+                                    ) else
+                                        travelInfoViewModel.latLngList[i]
                             }
                             CustomMarker(cityMarker, travelInfoViewModel, i)
-                            positions.add(cityMarker.position)
+                            travelInfoViewModel.latLngList.add(cityMarker.position)
                         }
+                        if (!travelInfoViewModel.generatePseudo)
+                            travelInfoViewModel.latLngList.add(endMarker.position) else endMarker.position =
+                            travelInfoViewModel.latLngList.last()
                         showIndicator.value = false
                     }
-
-                    positions.add(endMarker.position)
                     Polyline(
-                        points = positions, color = Color.Blue
+                        points = if (travelInfoViewModel.hasResult.value) travelInfoViewModel.latLngList else listOf(
+                            startMarker.position,
+                            endMarker.position
+                        ), color = Color.Blue
                     )
-                    if (travelInfoViewModel.hasResult.value)
-                        travelInfoViewModel.latLngList = positions
-                }
 
+
+                }
                 if (tripPickerList[0].value.isNotEmpty()) {
                     CustomMarker(startMarker, travelInfoViewModel, 0)
                 }

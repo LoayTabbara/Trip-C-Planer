@@ -66,10 +66,11 @@ class TravelInfoViewModel @Inject constructor(
     var arrivalTimesInCities = mutableStateOf<Map<String, String>>(mapOf())
     var times = mutableStateOf<List<String>>(listOf()) // added this line
     var packingList: MutableList<String> = mutableListOf()
+    var generatePseudo = false
     fun sendMessage(
         coords: List<String>, duration: Int, context: Context, season: String
     ) {
-        var generatePseudo = false
+            generatePseudo = false
         val startCity = coords.first()
         val endCity = coords.last()
         val packingMessageContent = """
@@ -124,24 +125,12 @@ class TravelInfoViewModel @Inject constructor(
                     )
                 ) {
                     Toast.makeText(context, "Faulty result, generating standard answer", Toast.LENGTH_LONG).show()
-                    citiesWithActivity = mapOf()
                     generatePseudo = true
                 } else {
-                    val packingResponse = RetrofitInit.openAIChatApi.generateResponse(packingBody)
-                    messages.add(packingResponse.choices.first().message)
-
-                    val moshi = Moshi.Builder()
-                        .add(KotlinJsonAdapterFactory())
-                        .build()
-                    val jsonAdapter = moshi.adapter(ItineraryInfo::class.java)
-                    val itineraryInfo = jsonAdapter.fromJson(packingResponse.choices.first().message.content)
-
-                    packingListJson.value = itineraryInfo?.packingList ?: listOf()
-                    activitiesJson.value = itineraryInfo?.itinerary ?: mapOf()
 
                     citiesWithActivity = activitiesJson.value.mapValues { entry -> entry.value.activities }
                     arrivalTimesInCities.value = activitiesJson.value.mapValues { entry -> entry.value.arrivalTime }
-                    dates.value = arrivalTimesInCities.value.values.toList() // added this line
+                    dates.value = arrivalTimesInCities.value.values.toList()
                     packingList.addAll(packingListJson.value)
                     Log.i("Ali", dates.toString())
                     times.value= arrivalTimesInCities.value.values.toList()
@@ -150,8 +139,6 @@ class TravelInfoViewModel @Inject constructor(
                 Toast.makeText(context, "Connection timeout error, generating standard answer", Toast.LENGTH_LONG)
                     .show()
                 Log.e("Error", e.message.toString())
-                citiesWithActivity = mapOf()
-
                 generatePseudo = true
 
             } catch (e: Exception) {
@@ -172,6 +159,7 @@ class TravelInfoViewModel @Inject constructor(
                     "Münster" to listOf("Visit Münster Cathedral","Explore Münster Botanical Garden"),
                     "Dortmund" to listOf("Visit Dortmund U-Tower","Explore Westfalenpark"),
                 )
+                latLngList= mutableListOf(LatLng(51.3128,9.4815), LatLng(51.71, 8.766),LatLng(51.9615,7.6282),LatLng(51.5142,7.4684))
                 times = mutableStateOf(listOf(startDate.toString(), startDate.plusDays(1).toString(), startDate.plusDays(2).toString(),startDate.plusDays(3).toString(), startDate.plusDays(5).toString() ))
                 generatePseudo=false
             }
@@ -187,7 +175,7 @@ class TravelInfoViewModel @Inject constructor(
         val response = serviceLatLng.generateResponse(MAPS_API_KEY, locationName)
         val results = response.body()?.get("results") as JsonArray
         if (results.size() == 0) {
-            return LatLng(0.0, 0.0)
+            return LatLng(52.3128, 9.5815)
         }
         val geometry = results[0].asJsonObject.get("geometry") as JsonObject
         val location = geometry.get("location") as JsonObject

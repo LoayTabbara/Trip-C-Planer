@@ -129,7 +129,7 @@ class TravelInfoViewModel @Inject constructor(
 
                     citiesWithActivity = activitiesJson.value.mapValues { entry -> entry.value.activities }
                     arrivalTimesInCities.value = activitiesJson.value.mapValues { entry -> entry.value.arrivalTime }
-                    dates.value = arrivalTimesInCities.value.values.toList() 
+                    dates.value = arrivalTimesInCities.value.values.toList()
                     packingList.addAll(packingListJson.value)
                     Log.i("Ali", dates.toString())
                     times.value= arrivalTimesInCities.value.values.toList()
@@ -158,6 +158,7 @@ class TravelInfoViewModel @Inject constructor(
                     "Münster" to listOf("Visit Münster Cathedral","Explore Münster Botanical Garden"),
                     "Dortmund" to listOf("Visit Dortmund U-Tower","Explore Westfalenpark"),
                 )
+                latLngList= mutableListOf(LatLng(51.3128,9.4815), LatLng(51.71, 8.766),LatLng(51.9615,7.6282),LatLng(51.5142,7.4684))
                 times = mutableStateOf(listOf(startDate.toString(), startDate.plusDays(1).toString(), startDate.plusDays(2).toString(),startDate.plusDays(3).toString(), startDate.plusDays(5).toString() ))
                 generatePseudo=false
             }

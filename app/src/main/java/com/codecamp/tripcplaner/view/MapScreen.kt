@@ -183,7 +183,6 @@ fun MapScreen(
                     )
                 )
             }
-
             val fusedLocationProviderClient =
                 remember { LocationServices.getFusedLocationProviderClient(context) }
 
@@ -217,7 +216,6 @@ fun MapScreen(
                 detailsViewModel.setTransportMean(transportMean!!)
                 initialized.value = true
             }
-
             GoogleMap(
                 modifier = Modifier
                     .fillMaxSize()
@@ -226,7 +224,6 @@ fun MapScreen(
                 uiSettings = uiSettings,
                 properties = properties,
             ) {
-
                 if (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty()) {
                     travelInfoViewModel.latLngList.clear()
                     val positions = mutableListOf(startMarker.position)
@@ -248,10 +245,9 @@ fun MapScreen(
                     Polyline(
                         points = positions, color = Color.Blue
                     )
-                    if (travelInfoViewModel.hasResult.value)
-                        travelInfoViewModel.latLngList = positions
+                    travelInfoViewModel.latLngList.clear()
+                    travelInfoViewModel.latLngList.addAll(positions)
                 }
-
                 if (tripPickerList[0].value.isNotEmpty()) {
                     CustomMarker(startMarker, travelInfoViewModel, 0)
                 }

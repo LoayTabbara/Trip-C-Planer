@@ -151,7 +151,7 @@ fun PackScreen(
                     Button(
                         onClick = {
 
-//                            viewModel.setPackList(myList)
+//
                             popUpOnSave.value = true
 
                         },
@@ -262,22 +262,30 @@ fun PackScreen(
                             shape = RoundedCornerShape(10.dp),
                             colors = TextFieldDefaults.textFieldColors(Color.LightGray),
                             keyboardActions = KeyboardActions(onDone = {
-                                val activities = mutableListOf<String>()
+
                                 travelInfoViewModel.citiesWithActivity.values.forEach {
-                                    activities.addAll(it)
+                                    viewModel.activities.addAll(it)
                                 }
                                 if (newTitle.value != "") {
                                     viewModel.setNewTitle(newTitle.value)
                                 }
+                                Log.d("vor packlist",travelInfoViewModel.packingList.toString())
+
+                                viewModel.setPackList(myList)
+                                travelInfoViewModel.packingList=viewModel.getPackList()
+
+                                Log.d("nach packlist",travelInfoViewModel.packingList.toString()+"mylsit:"+myList.toString())
                                 travelInfoViewModel.sendDateToSave(
-                                    title = newTitle.value,
+                                    title = viewModel.getNewTitle(),
                                     startDate = viewModel.getStartDate().atStartOfDay(),
                                     endDate = viewModel.getEndDate().atStartOfDay(),
-                                    activities = activities,
-                                    transportType = viewModel.getTransportMean(),)
+                                    activities = viewModel.activities,
+                                    transportType = viewModel.getTransportMean(),
+                                    )
                                 newTitle.value = ""
-                                navController.navigate(TripCPlanerScreens.DetailsScreen.name)
                                 popUpOnSave.value = false
+                                navController.navigate(TripCPlanerScreens.DetailsScreen.name)
+
                             }),
                             keyboardOptions = KeyboardOptions(
                                 imeAction = ImeAction.Done,

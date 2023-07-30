@@ -12,6 +12,7 @@ class DetailViewModel @Inject constructor() : ViewModel() {
     private var transportMean= mutableStateOf("")
     private lateinit var  startDate: LocalDate
     private lateinit var endDate:LocalDate
+     var activities= mutableListOf<String>()
 
 private var newTitle= mutableStateOf("")
 
@@ -32,7 +33,8 @@ private var newTitle= mutableStateOf("")
         return packList
     }
     fun setNewTitle(value: String) {
-        newTitle.value = value
+        val capValue= value.replaceFirstChar { char-> char.uppercase() }
+        newTitle.value = capValue
     }
     fun getNewTitle(): String {
         return newTitle.value

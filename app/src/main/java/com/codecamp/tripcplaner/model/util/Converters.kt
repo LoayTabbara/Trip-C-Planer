@@ -19,27 +19,27 @@ class Converters {
         LocalDateTime.parse(t, DateTimeFormatter.ISO_DATE_TIME)
 
     @TypeConverter
-    fun fromList(list: List<String>): String {
+    fun fromList(list: MutableList<String>): String {
         val gson = Gson()
         return gson.toJson(list)
     }
     @TypeConverter
-    fun toList(list: String): List<String> {
+    fun toList(mutableList: String): MutableList<String> {
         val gson = Gson()
-        val type = object : TypeToken<List<String>>() {}.type
-        return gson.fromJson(list, type)
+        val type = object : TypeToken<MutableList<String>>() {}.type
+        return gson.fromJson(mutableList, type)
     }
 
     @TypeConverter
-    fun fromMap(map: Map<String,Boolean>): String {
+    fun fromMap(map: MutableMap<String,Boolean>): String {
         val gson = Gson()
         return gson.toJson(map)
     }
 
     @TypeConverter
-    fun toMap(map: String): Map<String,Boolean> {
+    fun toMap(map: String): MutableMap<String,Boolean> {
         val gson = Gson()
-        val type = object : TypeToken<Map<String,Boolean>>() {}.type
+        val type = object : TypeToken<MutableMap<String,Boolean>>() {}.type
         return gson.fromJson(map, type)
     }
 
@@ -69,15 +69,15 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromMapPair(map: Map<String,Pair<LatLng,LocalDateTime>>): String {
+    fun fromMapPair(map: MutableMap<String,Pair<LatLng,LocalDateTime>>): String {
         val gson = Gson()
         return gson.toJson(map)
     }
 
     @TypeConverter
-    fun toMapPair(map: String): Map<String,Pair<LatLng,LocalDateTime>> {
+    fun toMapPair(map: String): MutableMap<String,Pair<LatLng,LocalDateTime>> {
         val gson = Gson()
-        val type = object : TypeToken<Map<String,Pair<LatLng,LocalDateTime>>>() {}.type
+        val type = object : TypeToken<MutableMap<String,Pair<LatLng,LocalDateTime>>>() {}.type
         return gson.fromJson(map, type)
     }
 }

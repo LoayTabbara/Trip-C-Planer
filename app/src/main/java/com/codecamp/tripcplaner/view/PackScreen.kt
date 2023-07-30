@@ -46,8 +46,8 @@ import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.PackCard
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,6 +57,10 @@ fun PackScreen(
     viewModel: DetailViewModel,
     travelInfoViewModel: TravelInfoViewModel
 ) {
+    val counter = remember {
+        mutableStateOf(0)
+    }
+
 
 
     val popUpOnAdd = remember {
@@ -90,7 +94,7 @@ fun PackScreen(
 
 
                 PackCard(item = item, viewModel = viewModel, onDelete = {
-
+                    counter.value++
                     deletedList.add(it)
 
                 }) {
@@ -148,7 +152,7 @@ fun PackScreen(
                     Button(
                         onClick = {
 
-                            viewModel.setPackList(myList)
+//                            viewModel.setPackList(myList)
                             popUpOnSave.value = true
 
                         },
@@ -259,7 +263,7 @@ fun PackScreen(
                             shape = RoundedCornerShape(10.dp),
                             colors = TextFieldDefaults.textFieldColors(Color.LightGray),
                             keyboardActions = KeyboardActions(onDone = {
-                                var activities = mutableListOf<String>()
+                                val activities = mutableListOf<String>()
                                 travelInfoViewModel.citiesWithActivity.values.forEach {
                                     activities.addAll(it)
                                 }
@@ -287,12 +291,15 @@ fun PackScreen(
             }
         }
     }
-
-    for (item in deletedList) {
-        travelInfoViewModel.removeFromPackingList(item)
+    if(counter.value>0)
+    {
+        for (item in deletedList) {
+            travelInfoViewModel.removeFromPackingList(item)
+            counter.value--
+        }
+        Log.d("ditem", deletedList.toString())
+        deletedList.clear()
     }
-    Log.d("ditem", deletedList.toString())
-    deletedList.clear()
 
 
 }

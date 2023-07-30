@@ -38,8 +38,7 @@ fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: Trave
             PackScreen(navController = navController, detailsViewModel, travelInfoViewModel)
         }
         composable(TripCPlanerScreens.DetailsScreen.name) {
-            DetailsScreen(navController = navController, detailsViewModel)
+            DetailsScreen(navController = navController, detailsViewModel, travelInfoViewModel)
         }
-
     }
 }

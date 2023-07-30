@@ -11,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.codecamp.tripcplaner.MAPS_API_KEY
 import com.codecamp.tripcplaner.model.data.Message
 import com.codecamp.tripcplaner.model.data.Trip
-import com.codecamp.tripcplaner.model.data.TripRepository
+import com.codecamp.tripcplaner.model.data.TripRepositoryImplementation
 import com.codecamp.tripcplaner.model.remote.LatLngService
 import com.codecamp.tripcplaner.model.remote.OpenAIRequestBody
 import com.codecamp.tripcplaner.model.remote.RetrofitInit
@@ -28,67 +28,78 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.SocketTimeoutException
+import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 
+data class CityInfo(
+    @Json(name = "Activities") val activities: List<String>,
+    @Json(name = "Arrival Time") val arrivalTime: String
+)
 data class ItineraryInfo(
     @Json(name = "Packing List") val packingList: List<String>,
-    @Json(name = "Itinerary") val itinerary: Map<String, List<String>>
+    @Json(name = "Itinerary") val itinerary: Map<String, CityInfo>
+
 )
 
 @HiltViewModel
 class TravelInfoViewModel @Inject constructor(
 
-    private val tripRepository: TripRepository
+    private val tripRepository: TripRepositoryImplementation
 ) : ViewModel() {
-
-    var dates: List<LocalDateTime> = listOf()
-    private var messages = mutableStateListOf<Message>()
-    private var packingListJson = mutableStateOf(listOf<String>())
-    private var activitiesJson = mutableStateOf(mapOf<String, List<String>>())
-    var citiesWithActivity: Map<String, List<String>> = mutableMapOf()
-    var packingList: MutableList<String> = mutableListOf("")
-    var hasResult = mutableStateOf(false)
-    var meansOfTransport=""
-    var startDate : LocalDateTime = LocalDateTime.now()
+//    var savedTrips = mutableStateListOf<Trip>()
     private val _trips = MutableStateFlow<List<Trip>>(emptyList())
+    var dates =  mutableStateOf<List<String>>(listOf())
+    var localDateTimeList = mutableListOf<LocalDateTime>()
+    var meansOfTransport=""
     private val trips: StateFlow<List<Trip>> = _trips
-    var savedTrips = mutableStateListOf<Trip>()
-    var tripRepo = tripRepository
+    var savedTrips = mutableListOf<Trip>()
     var latLngList = mutableListOf<LatLng>()
+    var tripRepo = tripRepository
+    var hasResult = mutableStateOf(false)
+
+    var startDate = LocalDateTime.now()
+    var messages = mutableStateListOf<Message>()
+    var packingListJson = mutableStateOf(listOf<String>())
+    var activitiesJson = mutableStateOf(mapOf<String, CityInfo>())
+    var citiesWithActivity: Map<String, List<String>> = mapOf()
+    var arrivalTimesInCities = mutableStateOf<Map<String, String>>(mapOf())
+    var times = mutableStateOf<List<String>>(listOf()) // added this line
+    var packingList: MutableList<String> = mutableListOf()
     fun sendMessage(
-        startEnd: List<String>, duration: Int, context: Context, season: String
+        coords: List<String>, duration: Int, context: Context, season: String
     ) {
-        val startCity = startEnd.first()
-        val endCity = startEnd.last()
+        var generatePseudo = false
+        val startCity = coords.first()
+        val endCity = coords.last()
         val packingMessageContent = """
-            Generate a JSON response with: 10 travel items; itinerary from $startCity to $endCity with imagined intermediate stops for $duration days; 2 activities per city; a proposed arrival time in each city. The start date is ${startDate}. The transportation type is $meansOfTransport. Follow this format:
+            Generate a JSON response with: 10 travel items; itinerary from $startCity to $endCity with imagined intermediate stops for $duration days; 2 activities per city; a proposed arrival time in each city. The start date is $startDate. The transportation type is $meansOfTransport. Follow this format:
             {
               "Packing List": ["item1", "item2", ...],
               "Itinerary": {
                 "$startCity": {
                     "Activities": ["activity1", "activity2"],
-                    "Arrival Time": "arrivalTime1"
+                    "Arrival Time": "$startDate"
                 },
                 "city2": {
                     "Activities": ["activity1", "activity2"],
-                    "Arrival Time": "arrivalTime2"
+                    "Arrival Time": "${startDate.plusDays(1)}"
                 },
                 ...
                 "$endCity": {
                     "Activities": ["activity1", "activity2"],
-                    "Arrival Time": "arrivalTimeN"
+                    "Arrival Time": "${startDate.plusDays(1).plusHours(7)}"
                 }
               }
             }
             """.trimIndent()
-
         messages.add(Message(packingMessageContent, "user"))
 
+
+        val packingBody = OpenAIRequestBody(messages = messages)
         viewModelScope.launch {
             _trips.emit(tripRepo.getAllItems())
-            savedTrips = tripRepo.populateTrips(_trips) as SnapshotStateList<Trip>
-            val packingBody = OpenAIRequestBody(messages = messages)
+            savedTrips = tripRepo.populateTrips(_trips)
 
             try {
                 val packingResponse = RetrofitInit.openAIChatApi.generateResponse(packingBody)
@@ -105,40 +116,66 @@ class TravelInfoViewModel @Inject constructor(
                 activitiesJson.value = itineraryInfo?.itinerary ?: mapOf()
 
                 // Copy the state to the publicly accessible variables
-                citiesWithActivity = activitiesJson.value
-                packingList = packingListJson.value as MutableList<String>
+                packingList.addAll( packingListJson.value)
                 if (citiesWithActivity.keys.contains("City A") || citiesWithActivity.keys.contains("CityA") || citiesWithActivity.keys.contains(
                         "City1"
                     ) || citiesWithActivity.keys.contains("City 1") || citiesWithActivity.keys.contains(
                         "Stopover 1"
                     )
                 ) {
-                    Toast.makeText(context, "Faulty result, retrying", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Faulty result, generating standard answer", Toast.LENGTH_LONG).show()
                     citiesWithActivity = mapOf()
-                    sendMessage(
-                        startEnd, duration, context, season
-                    )
+                    generatePseudo = true
                 } else {
-                    hasResult.value = true
-                }
+                    val packingResponse = RetrofitInit.openAIChatApi.generateResponse(packingBody)
+                    messages.add(packingResponse.choices.first().message)
 
+                    val moshi = Moshi.Builder()
+                        .add(KotlinJsonAdapterFactory())
+                        .build()
+                    val jsonAdapter = moshi.adapter(ItineraryInfo::class.java)
+                    val itineraryInfo = jsonAdapter.fromJson(packingResponse.choices.first().message.content)
+
+                    packingListJson.value = itineraryInfo?.packingList ?: listOf()
+                    activitiesJson.value = itineraryInfo?.itinerary ?: mapOf()
+
+                    citiesWithActivity = activitiesJson.value.mapValues { entry -> entry.value.activities }
+                    arrivalTimesInCities.value = activitiesJson.value.mapValues { entry -> entry.value.arrivalTime }
+                    dates.value = arrivalTimesInCities.value.values.toList() // added this line
+                    packingList.addAll(packingListJson.value)
+                    Log.i("Ali", dates.toString())
+                    times.value= arrivalTimesInCities.value.values.toList()
+                }
             } catch (e: SocketTimeoutException) {
-                Toast.makeText(context, "Connection timeout error, retrying", Toast.LENGTH_LONG)
+                Toast.makeText(context, "Connection timeout error, generating standard answer", Toast.LENGTH_LONG)
                     .show()
                 Log.e("Error", e.message.toString())
                 citiesWithActivity = mapOf()
-                sendMessage(
-                    startEnd, duration, context, season
-                )
+
+                generatePseudo = true
+
             } catch (e: Exception) {
-                Toast.makeText(context, "Unknown Error!, retrying", Toast.LENGTH_LONG)
+                Toast.makeText(context, "Unknown Error! ${e.message}, generating standard answer", Toast.LENGTH_LONG)
                     .show()
                 Log.e("Error", e.message.toString())
                 citiesWithActivity = mapOf()
-                sendMessage(
-                    startEnd, duration, context, season
-                )
+
+
+                generatePseudo = true
+
             }
+            if(generatePseudo){
+                packingList = mutableListOf("Passport","Clothes","Toiletries","Camera","Phone charger","Snacks","Water bottle","Maps","Travel guidebook","Sunglasses")
+                citiesWithActivity= mapOf(
+                    "Kassel" to listOf("Visit Bergpark Wilhelmshöhe", "Explore Museum Fridericianum"),
+                    "Paderborn" to listOf("Visit Paderborn Cathedral", "Explore Pader Springs"),
+                    "Münster" to listOf("Visit Münster Cathedral","Explore Münster Botanical Garden"),
+                    "Dortmund" to listOf("Visit Dortmund U-Tower","Explore Westfalenpark"),
+                )
+                times = mutableStateOf(listOf(startDate.toString(), startDate.plusDays(1).toString(), startDate.plusDays(2).toString(),startDate.plusDays(3).toString(), startDate.plusDays(5).toString() ))
+                generatePseudo=false
+            }
+            hasResult.value = true
         }
     }
 
@@ -173,16 +210,20 @@ class TravelInfoViewModel @Inject constructor(
         activities: MutableList<String>,
         transportType: String
     ) {
+
+        times.value.forEach(){
+            localDateTimeList.add(LocalDateTime.parse(it))
+        }
         viewModelScope.launch {
             tripRepo.saveData(
                 title = title,
                 startDate = startDate!!,
                 endDate = endDate!!,
-                cities = citiesWithActivity.keys as List<String>,
+                cities = citiesWithActivity.keys.toMutableList(),
                 packingList = packingList,
                 latLngList = latLngList,
                 activities = activities,
-                dates = dates,
+                dates = localDateTimeList,
                 transportType = transportType,
             )
         }

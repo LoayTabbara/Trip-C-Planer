@@ -66,10 +66,11 @@ class TravelInfoViewModel @Inject constructor(
     var arrivalTimesInCities = mutableStateOf<Map<String, String>>(mapOf())
     var times = mutableStateOf<List<String>>(listOf()) // added this line
     var packingList: MutableList<String> = mutableListOf()
+    var generatePseudo = false
     fun sendMessage(
         coords: List<String>, duration: Int, context: Context, season: String
     ) {
-        var generatePseudo = false
+            generatePseudo = false
         val startCity = coords.first()
         val endCity = coords.last()
         val packingMessageContent = """

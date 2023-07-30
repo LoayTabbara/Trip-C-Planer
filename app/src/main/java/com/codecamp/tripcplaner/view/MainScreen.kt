@@ -18,10 +18,13 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
@@ -50,7 +53,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoViewModel) {
 
@@ -80,17 +83,18 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     })
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .blur(if (popUpOn.value) 20.dp else 0.dp),
-        color = MaterialTheme.colorScheme.background
-    ) {
+    Scaffold(bottomBar = {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 30.dp, start = 5.dp, end = 5.dp)
+                .fillMaxWidth()
+                .padding(start = 5.dp, end = 5.dp, bottom = 10.dp, top = 10.dp)
         ) {
+            Button(
+                onClick = {
+                    if (transportMean.value != "" && !popUpOn.value) {
+                        navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
+                    } else {
+                        popUpOn.value = true
             Text(text = "This Week", style = MaterialTheme.typography.displayMedium)
             Spacer(modifier = Modifier.height(10.dp))
             MainScreenDCard()
@@ -138,14 +142,61 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                             Text(text = "Choose Means of Transport to create a trip")
                         }
                     }
+                },
+                shape = RoundedCornerShape(10.dp),
+                modifier = Modifier
+                    .height(60.dp)
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp),
+                elevation = ButtonDefaults.buttonElevation(5.dp),
+                colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.DarkGray)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add icon"
+                )
+                Spacer(modifier = Modifier.width(width = 8.dp))
+                Text(text = "Choose Means of Transport to create a trip")
+            }
+        }
+    }) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+                .blur(if (popUpOn.value) 20.dp else 0.dp),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 30.dp, start = 5.dp, end = 5.dp)
+            ) {
+                Text(text = "This Week", style = MaterialTheme.typography.displayMedium)
+                Spacer(modifier = Modifier.height(10.dp))
+                MainScreenDCard()
+                Spacer(modifier = Modifier.height(10.dp))
+
+                LazyColumn {
+                    items(items = travelInfoViewModel.savedTrips.reversed()) { item ->
+                        TripCard(
+                            tripName = item.title + "\n${item.cities.keys.first()} - ${item.cities.keys.last()}",
+                            tripDescription = item.startDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + " -" +
+                                    " " + item.endDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." +
+                                    ". ${item.cities.keys.last()}(${item.activities[item.activities.lastIndex - 1]}, ${item.activities.last()})",
+                            tripType = item.transportType
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+
                 }
 
 
             }
-
-
         }
     }
+
 
 
 

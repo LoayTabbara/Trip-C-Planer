@@ -124,24 +124,12 @@ class TravelInfoViewModel @Inject constructor(
                     )
                 ) {
                     Toast.makeText(context, "Faulty result, generating standard answer", Toast.LENGTH_LONG).show()
-                    citiesWithActivity = mapOf()
                     generatePseudo = true
                 } else {
-                    val packingResponse = RetrofitInit.openAIChatApi.generateResponse(packingBody)
-                    messages.add(packingResponse.choices.first().message)
-
-                    val moshi = Moshi.Builder()
-                        .add(KotlinJsonAdapterFactory())
-                        .build()
-                    val jsonAdapter = moshi.adapter(ItineraryInfo::class.java)
-                    val itineraryInfo = jsonAdapter.fromJson(packingResponse.choices.first().message.content)
-
-                    packingListJson.value = itineraryInfo?.packingList ?: listOf()
-                    activitiesJson.value = itineraryInfo?.itinerary ?: mapOf()
 
                     citiesWithActivity = activitiesJson.value.mapValues { entry -> entry.value.activities }
                     arrivalTimesInCities.value = activitiesJson.value.mapValues { entry -> entry.value.arrivalTime }
-                    dates.value = arrivalTimesInCities.value.values.toList() // added this line
+                    dates.value = arrivalTimesInCities.value.values.toList() 
                     packingList.addAll(packingListJson.value)
                     Log.i("Ali", dates.toString())
                     times.value= arrivalTimesInCities.value.values.toList()
@@ -150,8 +138,6 @@ class TravelInfoViewModel @Inject constructor(
                 Toast.makeText(context, "Connection timeout error, generating standard answer", Toast.LENGTH_LONG)
                     .show()
                 Log.e("Error", e.message.toString())
-                citiesWithActivity = mapOf()
-
                 generatePseudo = true
 
             } catch (e: Exception) {

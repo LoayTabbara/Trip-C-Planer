@@ -36,17 +36,24 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.codecamp.tripcplaner.model.data.Trip
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.MainScreenDCard
 import com.codecamp.tripcplaner.view.widgets.TripCard
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoViewModel) {
+
     Text("MainScreen")
     val transportMean = remember { mutableStateOf("") }
     val popUpOn = remember {
@@ -62,6 +69,7 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
     )
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(key1 = lifecycleOwner, effect = {
+
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_START) {
                 permissionsState.launchMultiplePermissionRequest()
@@ -88,15 +96,16 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
             MainScreenDCard()
             Spacer(modifier = Modifier.height(10.dp))
 
-            LazyColumn() {
+            LazyColumn {
                 items(items = travelInfoViewModel.savedTrips) { item ->
                     TripCard(
-                        tripName = item.title,
-                        tripDescription = item.startDate.toString() + " -" +
-                                " " + item.endDate + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." +
+                        tripName = item.title+"\n${item.cities.keys.first()} - ${item.cities.keys.last()}",
+                        tripDescription = item.startDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + " -" +
+                                " " + item.endDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." +
                                 ". ${ item.cities.keys.last()}(${item.activities[item.activities.lastIndex-1]}, ${item.activities.last()})",
                         tripType = item.transportType
                     )
+
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 

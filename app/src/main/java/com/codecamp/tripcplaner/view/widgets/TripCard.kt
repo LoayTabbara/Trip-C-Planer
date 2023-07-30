@@ -28,7 +28,7 @@ import com.codecamp.tripcplaner.R
 fun TripCard(tripName:String,tripDescription:String,tripType:String) {
     Card(modifier = Modifier
         .fillMaxWidth()
-        .height(100.dp),elevation = CardDefaults.cardElevation(5.dp),
+        .height(192.dp),elevation = CardDefaults.cardElevation(5.dp),
         shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray)) {
         Row {
 

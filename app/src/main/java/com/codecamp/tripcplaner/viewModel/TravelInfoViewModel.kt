@@ -5,7 +5,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codecamp.tripcplaner.MAPS_API_KEY
@@ -22,13 +21,10 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.SocketTimeoutException
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -45,20 +41,17 @@ data class ItineraryInfo(
 @HiltViewModel
 class TravelInfoViewModel @Inject constructor(
 
-    private val tripRepository: TripRepositoryImplementation
+    tripRepository: TripRepositoryImplementation
 ) : ViewModel() {
-//    var savedTrips = mutableStateListOf<Trip>()
-    private val _trips = MutableStateFlow<List<Trip>>(emptyList())
     var dates =  mutableStateOf<List<String>>(listOf())
     var localDateTimeList = mutableListOf<LocalDateTime>()
     var meansOfTransport=""
-    private val trips: StateFlow<List<Trip>> = _trips
     var savedTrips = mutableListOf<Trip>()
     var latLngList = mutableListOf<LatLng>()
     var tripRepo = tripRepository
     var hasResult = mutableStateOf(false)
 
-    var startDate = LocalDateTime.now()
+    var startDate: LocalDateTime = LocalDateTime.now()
     var messages = mutableStateListOf<Message>()
     var packingListJson = mutableStateOf(listOf<String>())
     var activitiesJson = mutableStateOf(mapOf<String, CityInfo>())
@@ -68,11 +61,11 @@ class TravelInfoViewModel @Inject constructor(
     var packingList: MutableList<String> = mutableListOf()
     var generatePseudo = false
     fun sendMessage(
-        coords: List<String>, duration: Int, context: Context, season: String
+        startEndCities: List<String>, duration: Int, context: Context, season: String
     ) {
             generatePseudo = false
-        val startCity = coords.first()
-        val endCity = coords.last()
+        val startCity = startEndCities.first()
+        val endCity = startEndCities.last()
         val packingMessageContent = """
             Generate a JSON response with: 10 travel items; itinerary from $startCity to $endCity with imagined intermediate stops for $duration days; 2 activities per city; a proposed arrival time in each city. The start date is $startDate. The transportation type is $meansOfTransport. Follow this format:
             {
@@ -99,9 +92,6 @@ class TravelInfoViewModel @Inject constructor(
 
         val packingBody = OpenAIRequestBody(messages = messages)
         viewModelScope.launch {
-            _trips.emit(tripRepo.getAllItems())
-            savedTrips = tripRepo.populateTrips(_trips)
-
             try {
                 val packingResponse = RetrofitInit.openAIChatApi.generateResponse(packingBody)
                 messages.add(packingResponse.choices.first().message)
@@ -131,7 +121,7 @@ class TravelInfoViewModel @Inject constructor(
                     citiesWithActivity = activitiesJson.value.mapValues { entry -> entry.value.activities }
                     arrivalTimesInCities.value = activitiesJson.value.mapValues { entry -> entry.value.arrivalTime }
                     dates.value = arrivalTimesInCities.value.values.toList()
-                    packingList.addAll(packingListJson.value)
+                    packingList = packingListJson.value.toMutableList()
                     Log.i("Ali", dates.toString())
                     times.value= arrivalTimesInCities.value.values.toList()
                 }
@@ -146,7 +136,6 @@ class TravelInfoViewModel @Inject constructor(
                     .show()
                 Log.e("Error", e.message.toString())
                 citiesWithActivity = mapOf()
-
 
                 generatePseudo = true
 

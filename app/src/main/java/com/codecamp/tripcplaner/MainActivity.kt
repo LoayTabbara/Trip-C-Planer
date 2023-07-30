@@ -8,14 +8,21 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.viewModelScope
+import com.codecamp.tripcplaner.model.data.Trip
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerNav
 import com.codecamp.tripcplaner.ui.theme.TripCPlanerTheme
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -23,12 +30,27 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val tripsStateFlow = MutableStateFlow<List<Trip>>(emptyList())
+
 //        hideStatusBar(this)
         setContent {
-
             val viewModel : DetailViewModel = hiltViewModel()
             val travelInfoViewModel : TravelInfoViewModel = hiltViewModel()
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_START) {
+                    travelInfoViewModel.viewModelScope.launch {
+                        tripsStateFlow.emit(travelInfoViewModel.tripRepo.getAllItems())
+                        travelInfoViewModel.savedTrips = travelInfoViewModel.tripRepo.populateTrips(tripsStateFlow)
+                    }
+
+                }else if(event == Lifecycle.Event.ON_DESTROY){
+
+                }
+            }
+            LocalLifecycleOwner.current.lifecycle.addObserver(observer)
+
             TripCPlanerTheme {
+
                 TripCPlanerNav(viewModel,travelInfoViewModel )
             }
 

@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,10 +59,8 @@ fun PackScreen(
     travelInfoViewModel: TravelInfoViewModel
 ) {
     val counter = remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
-
-
 
     val popUpOnAdd = remember {
         mutableStateOf(false)

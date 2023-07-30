@@ -6,8 +6,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitInit {
-    private val okHttpClient = OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS)
-        .connectTimeout(30, TimeUnit.SECONDS).build()
+    private val okHttpClient = OkHttpClient.Builder().readTimeout(45, TimeUnit.SECONDS)
+        .connectTimeout(45, TimeUnit.SECONDS).build()
 
     private val retrofit = Retrofit.Builder().baseUrl("https://api.openai.com/")
         .addConverterFactory(GsonConverterFactory.create()).client(okHttpClient).build()

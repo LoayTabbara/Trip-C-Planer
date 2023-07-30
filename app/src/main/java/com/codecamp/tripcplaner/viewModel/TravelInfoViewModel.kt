@@ -182,8 +182,7 @@ class TravelInfoViewModel @Inject constructor(
 
     fun sendDateToSave(
         title: String,
-        startDate: LocalDateTime?,
-        endDate: LocalDateTime?,
+
         activities: MutableList<String>,
         transportType: String
     ) {
@@ -194,8 +193,8 @@ class TravelInfoViewModel @Inject constructor(
         viewModelScope.launch {
             tripRepo.saveData(
                 title = title,
-                startDate = startDate!!,
-                endDate = endDate!!,
+                startDate = LocalDateTime.parse(times.value.first()) ,
+                endDate = LocalDateTime.parse(times.value.last()),
                 cities = citiesWithActivity.keys.toMutableList(),
                 packingList = packingList,
                 latLngList = latLngList,

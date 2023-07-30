@@ -37,8 +37,11 @@ fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: Trave
         composable(TripCPlanerScreens.PackScreen.name) {
             PackScreen(navController = navController, detailsViewModel, travelInfoViewModel)
         }
-        composable(TripCPlanerScreens.DetailsScreen.name) {
-            DetailsScreen(navController = navController, detailsViewModel, travelInfoViewModel)
+        composable(TripCPlanerScreens.DetailsScreen.name+"/{id}",
+            arguments = listOf(navArgument(name="id"){type= NavType.IntType}
+            )) {backStackEntry->
+            detailsViewModel.clearVM()
+            DetailsScreen(navController,backStackEntry.arguments?.getInt("id"), detailsViewModel, travelInfoViewModel)
         }
     }
 }

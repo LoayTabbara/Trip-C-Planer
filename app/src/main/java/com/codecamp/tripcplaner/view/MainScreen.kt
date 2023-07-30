@@ -103,7 +103,9 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                         tripDescription = item.startDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + " -" +
                                 " " + item.endDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." +
                                 ". ${ item.cities.keys.last()}(${item.activities[item.activities.lastIndex-1]}, ${item.activities.last()})",
-                        tripType = item.transportType
+                        tripType = item.transportType,
+                        id=item.id,
+                        navController = navController
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))

@@ -53,6 +53,7 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
@@ -135,8 +136,8 @@ fun MapScreen(
                     if (travelInfoViewModel.hasResult.value) FloatingActionButton(modifier = Modifier
                         .fillMaxWidth(0.32f), containerColor = Color(0XFF388E3C), onClick = {
                         travelInfoViewModel.hasResult.value = false
-                        val startDate = LocalDate.parse(tripPickerList[2].value, formatter)
-                        val endDate = LocalDate.parse(tripPickerList[3].value, formatter)
+                        val startDate = LocalDateTime.parse(tripPickerList[2].value, formatter)
+                        val endDate = LocalDateTime.parse(tripPickerList[3].value, formatter)
                         detailsViewModel.setDates(startDate, endDate)
 
                         navController.navigate(TripCPlanerScreens.PackScreen.name)

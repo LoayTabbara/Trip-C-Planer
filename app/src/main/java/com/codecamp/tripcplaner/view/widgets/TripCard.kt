@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,15 +22,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.codecamp.tripcplaner.R
+import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TripCard(tripName:String,tripDescription:String,tripType:String) {
+fun TripCard(tripName:String,tripDescription:String,tripType:String,id:Int,navController:NavController) {
     Card(modifier = Modifier
         .fillMaxWidth()
         .height(192.dp),elevation = CardDefaults.cardElevation(5.dp),
-        shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray)) {
+        shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray), onClick = {
+            navController.navigate(TripCPlanerScreens.DetailsScreen.name+ "/${id}")
+        }) {
         Row {
 
             when(tripType){
@@ -54,5 +60,5 @@ fun TripCard(tripName:String,tripDescription:String,tripType:String) {
 @Preview(showBackground = true)
 @Composable
 fun CPrvw(){
-    TripCard(tripName = "Trip Name",tripDescription = "Trip Description",tripType = "Bus")
+
 }

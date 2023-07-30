@@ -225,8 +225,7 @@ fun MapScreen(
                 properties = properties,
             ) {
                 if (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty()) {
-                    travelInfoViewModel.latLngList.clear()
-                    val positions = mutableListOf(startMarker.position)
+                    travelInfoViewModel.latLngList = mutableListOf(startMarker.position)
                     if (travelInfoViewModel.hasResult.value) {
                         for (i in 1 until travelInfoViewModel.citiesWithActivity.size - 1) {
                             val cityMarker = rememberMarkerState()
@@ -234,19 +233,18 @@ fun MapScreen(
                                 cityMarker.position = travelInfoViewModel.getLatLng(
                                     travelInfoViewModel.citiesWithActivity.keys.elementAt(i)
                                 )
+
                             }
                             CustomMarker(cityMarker, travelInfoViewModel, i)
-                            positions.add(cityMarker.position)
+                            travelInfoViewModel.latLngList.add(cityMarker.position)
                         }
                         showIndicator.value = false
                     }
 
-                    positions.add(endMarker.position)
+                    travelInfoViewModel.latLngList.add(endMarker.position)
                     Polyline(
-                        points = positions, color = Color.Blue
+                        points = travelInfoViewModel.latLngList, color = Color.Blue
                     )
-                    travelInfoViewModel.latLngList.clear()
-                    travelInfoViewModel.latLngList.addAll(positions)
                 }
                 if (tripPickerList[0].value.isNotEmpty()) {
                     CustomMarker(startMarker, travelInfoViewModel, 0)

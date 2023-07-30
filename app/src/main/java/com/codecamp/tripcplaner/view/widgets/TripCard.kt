@@ -35,7 +35,7 @@ import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TripCard(tripName: String, tripDescription: String, tripType: String) {
+fun TripCard(tripName: String, tripDescription: String, tripType: String,id:Int,navController: NavController) {
     Scaffold(floatingActionButton = {
         Button(
             onClick = {
@@ -52,7 +52,11 @@ fun TripCard(tripName: String, tripDescription: String, tripType: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(it), elevation = CardDefaults.cardElevation(5.dp),
-            shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray)
+            shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray), onClick = {
+
+                    navController.navigate(TripCPlanerScreens.DetailsScreen.name+ "/${id}")
+
+            }
         ) {
             Row {
 

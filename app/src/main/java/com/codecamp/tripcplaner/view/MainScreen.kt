@@ -94,55 +94,8 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     if (transportMean.value != "" && !popUpOn.value) {
                         navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
                     } else {
-                        popUpOn.value = true
-            Text(text = "This Week", style = MaterialTheme.typography.displayMedium)
-            Spacer(modifier = Modifier.height(10.dp))
-            MainScreenDCard()
-            Spacer(modifier = Modifier.height(10.dp))
-
-            LazyColumn {
-                items(items = travelInfoViewModel.savedTrips.reversed()) { item ->
-                    TripCard(
-                        tripName = item.title+"\n${item.cities.keys.first()} - ${item.cities.keys.last()}",
-                        tripDescription = item.startDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + " -" +
-                                " " + item.endDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." +
-                                ". ${ item.cities.keys.last()}(${item.activities[item.activities.lastIndex-1]}, ${item.activities.last()})",
-                        tripType = item.transportType,
-                        id=item.id,
-                        navController = navController
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
-
-                items(1) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 5.dp, end = 5.dp, bottom = 40.dp, top = 10.dp)
-                    ) {
-                        Button(
-                            onClick = {
-                                if (transportMean.value != "" && !popUpOn.value) {
-                                    navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
-                                } else {
-                                    popUpOn.value = true
-                                }
-                            },
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier
-                                .height(60.dp)
-                                .fillMaxWidth()
-                                .padding(bottom = 10.dp),
-                            elevation = ButtonDefaults.buttonElevation(5.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.DarkGray)
-                        ) {
-                            Icon(imageVector = Icons.Default.Add, contentDescription = "Add icon")
-                            Spacer(modifier = Modifier.width(width = 8.dp))
-                            Text(text = "Choose Means of Transport to create a trip")
-                        }
-                    }
-                },
+                        popUpOn.value = true}}
+           ,
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
                     .height(60.dp)
@@ -184,21 +137,23 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                             tripDescription = item.startDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + " -" +
                                     " " + item.endDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." +
                                     ". ${item.cities.keys.last()}(${item.activities[item.activities.lastIndex - 1]}, ${item.activities.last()})",
-                            tripType = item.transportType
+                            tripType = item.transportType,
+                            id = item.id,
+                            navController = navController
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
                     }
 
+                  
+
+
                 }
-
-
             }
         }
+
+
     }
-
-
-
 
     if (popUpOn.value) {
         Popup(

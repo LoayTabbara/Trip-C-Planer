@@ -88,9 +88,8 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     if (transportMean.value != "" && !popUpOn.value) {
                         navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
                     } else {
-                        popUpOn.value = true
-                    }
-                },
+                        popUpOn.value = true}}
+           ,
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
                     .height(60.dp)
@@ -136,20 +135,20 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                                 travelInfoViewModel.tripRepo.deleteById(item.id)
                             },
                             onClicked = {
-                                navController.navigate(TripCPlanerScreens.MainScreen.name + "/${item.id}")
+                                navController.navigate(TripCPlanerScreens.DetailsScreen.name + "/${item.id}")
                             },
                         )
                     }
 
+                  
+
+
                 }
-
-
             }
         }
+
+
     }
-
-
-
 
     if (popUpOn.value) {
         Popup(

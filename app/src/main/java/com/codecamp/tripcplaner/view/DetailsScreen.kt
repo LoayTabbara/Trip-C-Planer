@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -24,8 +21,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -35,11 +30,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
@@ -47,15 +39,18 @@ import androidx.navigation.NavController
 import com.codecamp.tripcplaner.R
 import com.codecamp.tripcplaner.model.reminder.scheduleNotification
 import com.codecamp.tripcplaner.view.widgets.DetailCard
+import com.codecamp.tripcplaner.view.widgets.saveToDVM
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
-import java.time.LocalDateTime
 import java.util.Calendar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailsScreen(navController: NavController, viewModel: DetailViewModel, travelInfoViewModel: TravelInfoViewModel) {
+fun DetailsScreen(navController: NavController,id:Int?, viewModel: DetailViewModel, travelInfoViewModel: TravelInfoViewModel) {
+    val myId:Int = id ?: travelInfoViewModel.tripRepo.getAllItems().last().id
+    saveToDVM(myId,travelInfoViewModel,viewModel)
+
     val paintings = mutableMapOf<String, Int>()
     when (viewModel.getTransportMean()) {
         "Walk" -> paintings["Walk"] = R.drawable.walk
@@ -118,7 +113,7 @@ fun DetailsScreen(navController: NavController, viewModel: DetailViewModel, trav
         for (item in viewModel.getPackList()) {
             Spacer(modifier = Modifier.height(10.dp))
 
-            DetailCard(text = item) { checked ->
+            DetailCard(text = item.key) { checked ->
                 if (checked) {
                     popUpOn.value = true
                 }
@@ -164,7 +159,7 @@ fun DetailsScreen(navController: NavController, viewModel: DetailViewModel, trav
                     }
 
                     DropdownMenu(expanded = isDropdownMenuVisible , onDismissRequest = { isDropdownMenuVisible = false }) {
-                        travelInfoViewModel.citiesWithActivity.keys.forEach { city ->
+                        viewModel.cities.forEach { city ->
                             DropdownMenuItem(text = { Text(text =city) }, onClick = { selectedItem = city
                                 isDropdownMenuVisible = false })
                         }

@@ -47,8 +47,7 @@ import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.PackCard
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
-
-
+import java.time.LocalDateTime
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,7 +75,7 @@ fun PackScreen(
 
     }
     val myList =
-        mutableListOf<String>()
+        mutableMapOf<String,Boolean>()
 
     val deletedList = remember { mutableStateListOf<String>() }
 
@@ -98,7 +97,7 @@ fun PackScreen(
 
                 }) {
                     if (it) {
-                        myList.add(item)
+                        myList[item]=false
                         Log.d("myList  +", myList.toString())
                     } else {
                         myList.remove(item)
@@ -272,19 +271,20 @@ fun PackScreen(
                                 Log.d("vor packlist",travelInfoViewModel.packingList.toString())
 
                                 viewModel.setPackList(myList)
-                                travelInfoViewModel.packingList=viewModel.getPackList()
+                                viewModel.cities=travelInfoViewModel.citiesWithActivity.keys.toMutableList()
+                                viewModel.setDates(LocalDateTime.parse(travelInfoViewModel.times.value.first()),LocalDateTime.parse(travelInfoViewModel.times.value.last()))
+                                travelInfoViewModel.packingList=viewModel.getPackList().keys.toMutableList()
 
                                 Log.d("nach packlist",travelInfoViewModel.packingList.toString()+"mylsit:"+myList.toString())
                                 travelInfoViewModel.sendDateToSave(
                                     title = viewModel.getNewTitle(),
-                                    startDate = viewModel.getStartDate().atStartOfDay(),
-                                    endDate = viewModel.getEndDate().atStartOfDay(),
                                     activities = viewModel.activities,
                                     transportType = viewModel.getTransportMean(),
                                     )
+                                val id = travelInfoViewModel.tripRepo.getAllItems().last().id
                                 newTitle.value = ""
                                 popUpOnSave.value = false
-                                navController.navigate(TripCPlanerScreens.DetailsScreen.name)
+                                navController.navigate(TripCPlanerScreens.DetailsScreen.name+ "/${id}")
 
                             }),
                             keyboardOptions = KeyboardOptions(

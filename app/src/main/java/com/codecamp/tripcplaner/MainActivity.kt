@@ -6,6 +6,8 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -34,22 +36,28 @@ class MainActivity : ComponentActivity() {
 
 //        hideStatusBar(this)
         setContent {
-            val viewModel : DetailViewModel = hiltViewModel()
             val travelInfoViewModel : TravelInfoViewModel = hiltViewModel()
-            val observer = LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_START) {
-                    travelInfoViewModel.viewModelScope.launch {
-                        tripsStateFlow.emit(travelInfoViewModel.tripRepo.getAllItems())
-                        travelInfoViewModel.savedTrips = travelInfoViewModel.tripRepo.populateTrips(tripsStateFlow)
+
+            val viewModel : DetailViewModel = hiltViewModel()
+            val lifecycleOwner = LocalLifecycleOwner.current
+            DisposableEffect(key1 = lifecycleOwner, effect = {
+
+                val observer = LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_START) {
+                        travelInfoViewModel.viewModelScope.launch {
+                            tripsStateFlow.emit(travelInfoViewModel.tripRepo.getAllItems())
+                            travelInfoViewModel.savedTrips = travelInfoViewModel.tripRepo.populateTrips(tripsStateFlow)
+                        }
                     }
-
-                }else if(event == Lifecycle.Event.ON_DESTROY){
-
                 }
-            }
-            LocalLifecycleOwner.current.lifecycle.addObserver(observer)
+                lifecycleOwner.lifecycle.addObserver(observer)
+                onDispose {
+                    lifecycleOwner.lifecycle.removeObserver(observer)
+                }
+            })
 
             TripCPlanerTheme {
+
 
                 TripCPlanerNav(viewModel,travelInfoViewModel )
             }

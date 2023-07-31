@@ -24,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
@@ -39,18 +38,13 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.codecamp.tripcplaner.model.data.Trip
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.MainScreenDCard
 import com.codecamp.tripcplaner.view.widgets.TripCard
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
@@ -132,16 +126,19 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                 Spacer(modifier = Modifier.height(10.dp))
 
                 LazyColumn {
-                    items(items = travelInfoViewModel.savedTrips.reversed()) { item ->
+                    items(items = travelInfoViewModel.tripRepo.getAllItems().reversed()) { item ->
                         TripCard(
                             tripName = item.title + "\n${item.cities.keys.first()} - ${item.cities.keys.last()}",
                             tripDescription = item.startDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + " -" +
                                     " " + item.endDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." +
                                     ". ${item.cities.keys.last()}(${item.activities[item.activities.lastIndex - 1]}, ${item.activities.last()})",
-                            tripType = item.transportType
+                            tripType = item.transportType,  onDeleteClicked = {
+                                travelInfoViewModel.tripRepo.deleteById(item.id)
+                            },
+                            onClicked = {
+                                navController.navigate(TripCPlanerScreens.MainScreen.name + "/${item.id}")
+                            },
                         )
-
-                        Spacer(modifier = Modifier.height(10.dp))
                     }
 
                 }

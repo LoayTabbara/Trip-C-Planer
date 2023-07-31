@@ -60,10 +60,13 @@ class TravelInfoViewModel @Inject constructor(
     var times = mutableStateOf<List<String>>(listOf()) // added this line
     var packingList: MutableList<String> = mutableListOf()
     var generatePseudo = false
+    val stateList = mutableStateListOf<Trip>()
+
+
     fun sendMessage(
         startEndCities: List<String>, duration: Int, context: Context, season: String
     ) {
-            generatePseudo = false
+        generatePseudo = false
         val startCity = startEndCities.first()
         val endCity = startEndCities.last()
         val packingMessageContent = """
@@ -122,7 +125,6 @@ class TravelInfoViewModel @Inject constructor(
                     arrivalTimesInCities.value = activitiesJson.value.mapValues { entry -> entry.value.arrivalTime }
                     dates.value = arrivalTimesInCities.value.values.toList()
                     packingList = packingListJson.value.toMutableList()
-                    Log.i("Ali", dates.toString())
                     times.value= arrivalTimesInCities.value.values.toList()
                 }
             } catch (e: SocketTimeoutException) {
@@ -150,7 +152,6 @@ class TravelInfoViewModel @Inject constructor(
                 )
                 latLngList= mutableListOf(LatLng(51.3128,9.4815), LatLng(51.71, 8.766),LatLng(51.9615,7.6282),LatLng(51.5142,7.4684))
                 times = mutableStateOf(listOf(startDate.toString(), startDate.plusDays(1).toString(), startDate.plusDays(2).toString(),startDate.plusDays(3).toString(), startDate.plusDays(5).toString() ))
-                generatePseudo=false
             }
             hasResult.value = true
         }

@@ -38,16 +38,16 @@ fun TripCard(
     tripName: String,
     tripDescription: String,
     tripType: String,
-    onDeleteClicked: () -> Unit,
+    onShareClicked: () -> Unit,
     onClicked: () -> Unit
 ) {
     Scaffold(floatingActionButton = {
         Button(
-            onClick = onDeleteClicked, colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent, contentColor = Color.Red
+            onClick = onShareClicked, colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent, contentColor = Color.White
             ), modifier = Modifier
         ) {
-            Text(text = "\uD83D\uDDD1", fontSize = 24.sp, textAlign = TextAlign.Right)
+            Text(text = "\u27A6", fontSize = 24.sp, textAlign = TextAlign.Right)
         }
     }, modifier = Modifier
         .fillMaxWidth()

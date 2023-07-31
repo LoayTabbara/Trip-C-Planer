@@ -1,8 +1,10 @@
 package com.codecamp.tripcplaner.view
 
 import android.Manifest
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,12 +35,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
+import com.codecamp.tripcplaner.R
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.MainScreenDCard
 import com.codecamp.tripcplaner.view.widgets.TripCard
@@ -119,7 +123,12 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     .fillMaxSize()
                     .padding(top = 30.dp, start = 5.dp, end = 5.dp)
             ) {
-                Text(text = "This Week", style = MaterialTheme.typography.displayMedium)
+                Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                    Text(text = "This Week", style = MaterialTheme.typography.displayMedium)
+                    Button(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = Color.White)){
+                        Image(painter = painterResource(id = R.drawable.add_trip_icon), contentDescription = "Add Trip")
+                    }
+                }
                 Spacer(modifier = Modifier.height(10.dp))
                 MainScreenDCard()
                 Spacer(modifier = Modifier.height(10.dp))
@@ -128,15 +137,17 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     items(items = travelInfoViewModel.tripRepo.getAllItems().reversed()) { item ->
                         TripCard(
                             tripName = item.title + "\n${item.cities.keys.first()} - ${item.cities.keys.last()}",
-                            tripDescription = item.startDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + " -" +
-                                    " " + item.endDate.format(DateTimeFormatter.ofPattern("dd.MM.yy")) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." +
+                            tripDescription = item.startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " -" +
+                                    " " + item.endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." +
                                     ". ${item.cities.keys.last()}(${item.activities[item.activities.lastIndex - 1]}, ${item.activities.last()})",
-                            tripType = item.transportType,  onDeleteClicked = {
-                                travelInfoViewModel.tripRepo.deleteById(item.id)
+                            tripType = item.transportType,  onShareClicked = {
+                                
                             },
                             onClicked = {
                                 navController.navigate(TripCPlanerScreens.DetailsScreen.name + "/${item.id}")
                             },
+//                            travelInfoViewModel.tripRepo.deleteById(item.id)
+//                                    travelInfoViewModel.savedTrips.remove(item)
                         )
                     }
 

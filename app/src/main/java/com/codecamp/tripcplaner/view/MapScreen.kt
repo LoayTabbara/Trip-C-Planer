@@ -72,7 +72,7 @@ fun MapScreen(
     val cameraPositionState = rememberCameraPositionState {}
     val showIndicator = remember { mutableStateOf(false) }
 
-    val formatter = DateTimeFormatter.ofPattern("dd.MM.yy")
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val startMarker = rememberMarkerState()
     val endMarker = rememberMarkerState()
     //start place, end place, start date, end date
@@ -136,8 +136,8 @@ fun MapScreen(
                     if (travelInfoViewModel.hasResult.value) FloatingActionButton(modifier = Modifier
                         .fillMaxWidth(0.32f), containerColor = Color(0XFF388E3C), onClick = {
                         travelInfoViewModel.hasResult.value = false
-                        val startDate = LocalDateTime.parse(tripPickerList[2].value, formatter)
-                        val endDate = LocalDateTime.parse(tripPickerList[3].value, formatter)
+                        val startDate = if(travelInfoViewModel.generatePseudo) LocalDateTime.parse(travelInfoViewModel.times.value.first()) else LocalDate.parse(tripPickerList[2].value, formatter).atStartOfDay()
+                        val endDate = if(travelInfoViewModel.generatePseudo) LocalDateTime.parse(travelInfoViewModel.times.value.last()) else LocalDate.parse(tripPickerList[3].value, formatter).atStartOfDay()
                         detailsViewModel.setDates(startDate, endDate)
 
                         navController.navigate(TripCPlanerScreens.PackScreen.name)

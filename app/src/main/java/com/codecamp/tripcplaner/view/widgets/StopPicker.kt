@@ -61,8 +61,8 @@ fun StopPicker(
         fun isValidDate(): Boolean {
             return tripPickerList[2].value.isEmpty() || tripPickerList[3].value.isEmpty() || (LocalDate.parse(
                 tripPickerList[2].value,
-                DateTimeFormatter.ofPattern("dd.MM.yy")
-            ) < LocalDate.parse(tripPickerList[3].value, DateTimeFormatter.ofPattern("dd.MM.yy")))
+                DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            ) < LocalDate.parse(tripPickerList[3].value, DateTimeFormatter.ofPattern("yyyy-MM-dd")))
         }
 
         fun isValidPlace(): Boolean {
@@ -81,7 +81,7 @@ fun StopPicker(
                     if ((selectedMonth + 1) < 10) "0${selectedMonth + 1}" else "${selectedMonth + 1}"
                 val dayText =
                     if (selectedDayOfMonth < 10) "0$selectedDayOfMonth" else "$selectedDayOfMonth"
-                tripPickerList[dateIndex].value = "$dayText.$monthText.${selectedYear % 2000}"
+                tripPickerList[dateIndex].value = "$selectedYear-$monthText-$dayText"
             },
             year,
             month,

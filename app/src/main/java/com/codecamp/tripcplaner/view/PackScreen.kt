@@ -281,10 +281,9 @@ fun PackScreen(
                                     activities = viewModel.activities,
                                     transportType = viewModel.getTransportMean(),
                                     )
-                                val id = travelInfoViewModel.savedTrips.last().id
                                 newTitle.value = ""
                                 popUpOnSave.value = false
-                                navController.navigate(TripCPlanerScreens.DetailsScreen.name+ "/${id}")
+                                navController.navigate(TripCPlanerScreens.MainScreen.name)
 
                             }),
                             keyboardOptions = KeyboardOptions(

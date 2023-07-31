@@ -28,20 +28,31 @@ fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: Trave
         composable(TripCPlanerScreens.SplashScreen.name) {
             SplashScreen(navController)
         }
-        composable(TripCPlanerScreens.MapScreen.name+"/{transportMean}",
-                arguments = listOf(navArgument(name="transportMean"){type= NavType.StringType})
-        ) {backStackEntry->
+        composable(
+            TripCPlanerScreens.MapScreen.name + "/{transportMean}",
+            arguments = listOf(navArgument(name = "transportMean") { type = NavType.StringType })
+        ) { backStackEntry ->
             travelInfoViewModel.hasResult.value = false
-            MapScreen(navController,backStackEntry.arguments?.getString("transportMean"), travelInfoViewModel, detailsViewModel)
+            MapScreen(
+                navController,
+                backStackEntry.arguments?.getString("transportMean"),
+                travelInfoViewModel,
+                detailsViewModel
+            )
         }
         composable(TripCPlanerScreens.PackScreen.name) {
             PackScreen(navController = navController, detailsViewModel, travelInfoViewModel)
         }
-        composable(TripCPlanerScreens.DetailsScreen.name+"/{id}",
-            arguments = listOf(navArgument(name="id"){type= NavType.IntType}
-            )) {backStackEntry->
-            detailsViewModel.clearVM()
-            DetailsScreen(navController,backStackEntry.arguments?.getInt("id"), detailsViewModel, travelInfoViewModel)
+        composable(TripCPlanerScreens.DetailsScreen.name + "/{id}",
+            arguments = listOf(navArgument(name = "id") { type = NavType.IntType }
+            )) { backStackEntry ->
+//            detailsViewModel.clearVM()    //to ask
+            DetailsScreen(
+                navController,
+                backStackEntry.arguments?.getInt("id"),
+                detailsViewModel,
+                travelInfoViewModel
+            )
         }
     }
 }

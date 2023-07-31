@@ -141,13 +141,12 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                                     " " + item.endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." +
                                     ". ${item.cities.keys.last()}(${item.activities[item.activities.lastIndex - 1]}, ${item.activities.last()})",
                             tripType = item.transportType,  onShareClicked = {
-                                
+
                             },
                             onClicked = {
                                 navController.navigate(TripCPlanerScreens.DetailsScreen.name + "/${item.id}")
                             },
-//                            travelInfoViewModel.tripRepo.deleteById(item.id)
-//                                    travelInfoViewModel.savedTrips.remove(item)
+
                         )
                     }
 

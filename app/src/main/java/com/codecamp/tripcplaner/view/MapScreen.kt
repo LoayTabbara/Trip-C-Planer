@@ -136,8 +136,8 @@ fun MapScreen(
                     if (travelInfoViewModel.hasResult.value) FloatingActionButton(modifier = Modifier
                         .fillMaxWidth(0.32f), containerColor = Color(0XFF388E3C), onClick = {
                         travelInfoViewModel.hasResult.value = false
-                        val startDate = if(travelInfoViewModel.generatePseudo) LocalDateTime.parse(travelInfoViewModel.times.value.first()) else LocalDate.parse(tripPickerList[2].value, formatter).atStartOfDay()
-                        val endDate = if(travelInfoViewModel.generatePseudo) LocalDateTime.parse(travelInfoViewModel.times.value.last()) else LocalDate.parse(tripPickerList[3].value, formatter).atStartOfDay()
+                        val startDate = if(travelInfoViewModel.generatePseudo) LocalDateTime.parse(travelInfoViewModel.times.value.first()) else LocalDate.parse(tripPickerList[2].value).atStartOfDay()
+                        val endDate = if(travelInfoViewModel.generatePseudo) LocalDateTime.parse(travelInfoViewModel.times.value.last()) else LocalDate.parse(tripPickerList[3].value).atStartOfDay()
                         detailsViewModel.setDates(startDate, endDate)
 
                         navController.navigate(TripCPlanerScreens.PackScreen.name)

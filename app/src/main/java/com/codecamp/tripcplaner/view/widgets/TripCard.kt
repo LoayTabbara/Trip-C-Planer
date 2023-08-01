@@ -106,8 +106,8 @@ fun TripCard(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(10.dp))
 
     }
+    Spacer(modifier = Modifier.height(10.dp))
 
 }

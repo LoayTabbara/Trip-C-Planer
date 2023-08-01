@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -86,10 +87,32 @@ fun PackScreen(
             .blur(if (popUpOnAdd.value || popUpOnSave.value) 20.dp else 0.dp)
             .verticalScroll(enabled = true, state = rememberScrollState())
     ) {
+        Text(text = "Travel Period ", style = MaterialTheme.typography.displaySmall)
+        Row {
+
+            Text(text = "from ${travelInfoViewModel.times.value.first().substring(0,10)} to ${travelInfoViewModel.times.value.last().substring(0,9)}", style = MaterialTheme.typography.bodyMedium)
+        }
+        Text(text = "Places to Visit", style = MaterialTheme.typography.displaySmall)
+        travelInfoViewModel.citiesWithActivity.forEach{
+            Row(Modifier.fillMaxWidth()) {
+                Column(Modifier.fillMaxWidth(0.2f)) {
+
+                    Text(text = "${it.key}:", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                }
+                Column(Modifier.fillMaxWidth()) {
+
+                    Text(text = "${it.value[0]}\n${it.value[1]}\n", style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+        }
+
+        travelInfoViewModel.citiesWithActivity.keys.forEach {
+            Log.d("citiesWithActivity", it)
+        }
         Text(text = "Your Packlist", style = MaterialTheme.typography.displayMedium)
         Column(modifier = Modifier.padding(top = 10.dp)) {
-            for (item in travelInfoViewModel.packingList) {
 
+            for (item in travelInfoViewModel.packingList) {
 
                 PackCard(item = item, viewModel = viewModel, onDelete = {
                     counter.value++

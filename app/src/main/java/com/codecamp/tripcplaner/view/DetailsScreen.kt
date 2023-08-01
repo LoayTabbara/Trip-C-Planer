@@ -1,11 +1,15 @@
 package com.codecamp.tripcplaner.view
 
 import android.app.DatePickerDialog
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
@@ -35,9 +38,12 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.R
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
@@ -46,6 +52,7 @@ import com.codecamp.tripcplaner.view.widgets.DetailCard
 import com.codecamp.tripcplaner.view.widgets.saveToDVM
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
+import com.google.android.gms.maps.model.LatLng
 import java.util.Calendar
 
 
@@ -63,10 +70,10 @@ fun DetailsScreen(
 
     val paintings = mutableMapOf<String, Int>()
     when (viewModel.getTransportMean()) {
-        "Walk" -> paintings["Walk"] = R.drawable.walk
-        "Car" -> paintings["Car"] = R.drawable.car
-        "Bus" -> paintings["Bus"] = R.drawable.bus
-        "Bicycle" -> paintings["Bicycle"] = R.drawable.bicycle
+        "walking" -> paintings["walking"] = R.drawable.walk
+        "driving" -> paintings["driving"] = R.drawable.car
+        "transit" -> paintings["transit"] = R.drawable.bus
+        "bicycling" -> paintings["bicycling"] = R.drawable.bicycle
     }
     var selectedItem by remember { mutableStateOf("") }
 
@@ -94,7 +101,6 @@ fun DetailsScreen(
 
     val popUpOn = remember { mutableStateOf(false) }
     val confirmed = remember { mutableStateOf(false) }
-    Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
     val id = remember { mutableIntStateOf(0) }
 
     Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
@@ -121,6 +127,53 @@ fun DetailsScreen(
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier.padding(start = 10.dp)
         )
+        for (i in 1 until thisTrip.cities.size) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+
+            ) {
+                Text(
+                    fontSize = 16.sp, text = thisTrip.cities.keys.elementAt(i-1),
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.fillMaxWidth(0.3f)
+                )
+                Text(
+                    text = " ➱",
+                    fontSize = 20.sp,
+                    modifier = Modifier.fillMaxWidth(0.16f)
+                )
+                Text(
+                    fontSize = 16.sp,
+                    text = thisTrip.cities.keys.elementAt(i),
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.fillMaxWidth(0.45f)
+                )
+                val startLatLng = thisTrip.cities.values.elementAt(i-1).first
+                val endLatLng = thisTrip.cities.values.elementAt(i).first
+                GoogleMapsButton(
+                    start=startLatLng,
+                    target= endLatLng,
+                    travelMode= viewModel.getTransportMean(),
+                    context= LocalContext.current
+                )
+//                Button(
+//                    onClick = { /*TODO*/ },
+//                    colors = ButtonDefaults.buttonColors(
+//                        containerColor = Color.Transparent,
+//                    )
+//                ) {
+//                    Image(
+//                        painter = painterResource(id = R.drawable.navigate_icon),
+//                        contentDescription = "Directions",
+//                        modifier = Modifier
+//                            .height(24.dp)
+//                            .width(24.dp)
+//                    )
+//                }
+            }
+        }
         for (item in viewModel.getPackList()) {
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -226,4 +279,27 @@ fun DetailsScreen(
 
     }
 
+}
+@Composable
+fun GoogleMapsButton(
+    start:LatLng,
+    target:LatLng,
+    travelMode:String,
+    context: Context
+) {
+    val googleMapsUrl = buildGoogleMapsUrl(start, target,travelMode)
+
+    Button(
+        onClick = {
+            // Open the URL in a web browser or the Google Maps app
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(googleMapsUrl))
+            ContextCompat.startActivity(context, intent, null)
+        },
+        modifier = Modifier.padding(16.dp)
+    ) {
+        Text("In Google Maps")
+    }
+}
+fun buildGoogleMapsUrl(start: LatLng, target: LatLng, travelMode: String): String {
+    return "https://www.google.com/maps/dir/?api=1&origin=${start.latitude},${start.longitude}&destination=${target.latitude},${target.longitude}&travelmode=$travelMode"
 }

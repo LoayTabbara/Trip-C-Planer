@@ -238,7 +238,7 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     )
                     Button(
                         onClick = {
-                            transportMean.value = "Walk"
+                            transportMean.value = "walking"
                             popUpOn.value = false
                             navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
 
@@ -246,11 +246,11 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(Color.Gray)
                     ) {
-                        Text(text = "Walk")
+                        Text(text = "Walking")
                     }
                     Button(
                         onClick = {
-                            transportMean.value = "Car"
+                            transportMean.value = "driving"
                             popUpOn.value = false
                             navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
 
@@ -262,7 +262,7 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     }
                     Button(
                         onClick = {
-                            transportMean.value = "Bus"
+                            transportMean.value = "transit"
                             popUpOn.value = false
                             navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
                         },
@@ -273,14 +273,14 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     }
                     Button(
                         onClick = {
-                            transportMean.value = "Bicycle"
+                            transportMean.value = "bicycling"
                             popUpOn.value = false
                             navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(Color.Gray)
                     ) {
-                        Text(text = "Bicycle")
+                        Text(text = "Bicycling")
                     }
 
                 }

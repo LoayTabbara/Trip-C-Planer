@@ -14,7 +14,7 @@ import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 fun TravelSegmentRow(
     it: String,
     travelInfoViewModel: TravelInfoViewModel,
-    i: Int
+    i: Int,
 ) {
     Row(
         Modifier.fillMaxWidth(),

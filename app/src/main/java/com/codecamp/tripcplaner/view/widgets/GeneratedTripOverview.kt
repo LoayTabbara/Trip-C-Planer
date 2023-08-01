@@ -38,11 +38,11 @@ fun GeneratedTripOverview(
             modifier = Modifier.padding(8.dp),
             fontSize = 24.sp
         )
-        var i = 0
-        travelInfoViewModel.citiesWithActivity.keys.forEach {
-            i++
-            if (i < travelInfoViewModel.citiesWithActivity.keys.size)
-                TravelSegmentRow(it, travelInfoViewModel, i)
+
+        for (i in 1 until travelInfoViewModel.citiesWithActivity.keys.size) {
+            TravelSegmentRow(
+                travelInfoViewModel.citiesWithActivity.keys.elementAt(i-1),
+                travelInfoViewModel, i)
         }
         Text(
             fontSize = 20.sp,

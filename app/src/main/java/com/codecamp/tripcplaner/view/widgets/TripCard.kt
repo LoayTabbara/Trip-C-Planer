@@ -74,30 +74,30 @@ fun TripCard(
             Row {
 
                 when (tripType) {
-                    "Bus" -> Image(
+                    "transit" -> Image(
                         painter = painterResource(id = R.drawable.bus),
-                        contentDescription = "Bus",
+                        contentDescription = "transit",
                         modifier = Modifier.fillMaxWidth(0.3f),
                         contentScale = ContentScale.Crop
                     )
 
-                    "Car" -> Image(
+                    "driving" -> Image(
                         painter = painterResource(id = R.drawable.car),
-                        contentDescription = "Car",
+                        contentDescription = "driving",
                         modifier = Modifier.fillMaxWidth(0.3f),
                         contentScale = ContentScale.Crop
                     )
 
-                    "Bicycle" -> Image(
+                    "bicycling" -> Image(
                         painter = painterResource(id = R.drawable.bicycle),
-                        contentDescription = "Bicycle",
+                        contentDescription = "bicycling",
                         modifier = Modifier.fillMaxWidth(0.3f),
                         contentScale = ContentScale.Crop
                     )
 
-                    "Walk" -> Image(
+                    "walking" -> Image(
                         painter = painterResource(id = R.drawable.walk),
-                        contentDescription = "Walk",
+                        contentDescription = "walking",
                         modifier = Modifier.fillMaxWidth(0.3f),
                         contentScale = ContentScale.Crop
                     )

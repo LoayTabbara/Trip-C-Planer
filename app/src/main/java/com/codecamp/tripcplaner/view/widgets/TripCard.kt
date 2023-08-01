@@ -1,5 +1,6 @@
 package com.codecamp.tripcplaner.view.widgets
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -18,18 +21,22 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.codecamp.tripcplaner.R
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
-import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
+import java.time.LocalDateTime
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,24 +46,30 @@ fun TripCard(
     tripDescription: String,
     tripType: String,
     onShareClicked: () -> Unit,
-    onClicked: () -> Unit
+    onClicked: () -> Unit,
 ) {
-    Scaffold(floatingActionButton = {
-        Button(
-            onClick = onShareClicked, colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent, contentColor = Color.White
-            ), modifier = Modifier
-        ) {
-            Text(text = "\u27A6", fontSize = 24.sp, textAlign = TextAlign.Right)
-        }
-    }, modifier = Modifier
-        .fillMaxWidth()
-        .height(192.dp)) {
+    Scaffold(
+        floatingActionButton = {
+
+            Button(
+                onClick = onShareClicked, colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent, contentColor = Color.White
+                ), modifier = Modifier
+            ) {
+                Text(text = "\u27A6", fontSize = 24.sp, textAlign = TextAlign.Right)
+            }
+        }, modifier = Modifier
+            .fillMaxWidth()
+            .height(192.dp)
+    ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(it), elevation = CardDefaults.cardElevation(5.dp),
-            shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray), onClick = onClicked
+                .padding(it),
+            elevation = CardDefaults.cardElevation(5.dp),
+            shape = RoundedCornerShape(10.dp),
+            border = BorderStroke(2.dp, color = Color.Gray),
+            onClick = onClicked
         ) {
             Row {
 
@@ -111,3 +124,4 @@ fun TripCard(
     Spacer(modifier = Modifier.height(10.dp))
 
 }
+

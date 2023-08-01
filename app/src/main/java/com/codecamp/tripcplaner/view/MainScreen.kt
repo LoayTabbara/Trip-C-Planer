@@ -57,6 +57,9 @@ import com.codecamp.tripcplaner.view.widgets.TripCard
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.gson.JsonObject
+import org.json.JSONArray
+import org.json.JSONObject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -195,6 +198,32 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                             tripType = item.transportType,
                             onShareClicked = {
 
+                                var packingListJsonArray = JSONArray()
+                                item.packingList.keys.forEach{packingListObject->
+                                    packingListJsonArray.put(packingListObject)
+                                }
+                                var latLngJsonArray=JSONArray()
+                                var timesJsonArray=JSONArray()
+                                var citiesJsonArray=JSONArray()
+                                var activitiesJsonArray=JSONArray()
+                                item.cities.values.forEach(){pair ->
+                                    latLngJsonArray.put(pair.first.latitude.toString()+","+pair.first.longitude.toString())
+                                    timesJsonArray.put(pair.second.toString())
+                                }
+                                item.cities.keys.forEach(){city->
+                                    citiesJsonArray.put(city)
+                                }
+                                item.activities.forEach(){  activity->
+                                    activitiesJsonArray.put(activity)
+                                }
+                                var bodyForPostRequestForSharing = JSONObject().apply {
+                                    put("title", item.title)
+                                    put("packingList", packingListJsonArray)
+                                    put("latLng",latLngJsonArray)
+                                    put("times",timesJsonArray)
+                                    put("cities",citiesJsonArray)
+                                    put("activities",activitiesJsonArray)
+                                }
                             },
                             onClicked = {
                                 navController.navigate(TripCPlanerScreens.DetailsScreen.name + "/${item.id}")

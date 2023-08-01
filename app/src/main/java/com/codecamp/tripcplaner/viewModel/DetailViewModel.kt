@@ -3,7 +3,6 @@ package com.codecamp.tripcplaner.viewModel
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 

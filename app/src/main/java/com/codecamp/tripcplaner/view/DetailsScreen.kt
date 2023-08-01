@@ -9,7 +9,6 @@ import android.widget.DatePicker
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +25,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -38,9 +38,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.core.content.ContextCompat
@@ -49,6 +47,7 @@ import com.codecamp.tripcplaner.R
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.model.reminder.scheduleNotification
 import com.codecamp.tripcplaner.view.widgets.DetailCard
+import com.codecamp.tripcplaner.view.widgets.NavigableRoutes
 import com.codecamp.tripcplaner.view.widgets.saveToDVM
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
@@ -70,10 +69,10 @@ fun DetailsScreen(
 
     val paintings = mutableMapOf<String, Int>()
     when (viewModel.getTransportMean()) {
-        "walking" -> paintings["walking"] = R.drawable.walk
-        "driving" -> paintings["driving"] = R.drawable.car
-        "transit" -> paintings["transit"] = R.drawable.bus
-        "bicycling" -> paintings["bicycling"] = R.drawable.bicycle
+        "walking" -> paintings["walking"] = R.drawable.walking
+        "driving" -> paintings["driving"] = R.drawable.driving
+        "transit" -> paintings["transit"] = R.drawable.transit
+        "bicycling" -> paintings["bicycling"] = R.drawable.bicycling
     }
     var selectedItem by remember { mutableStateOf("") }
 
@@ -123,57 +122,11 @@ fun DetailsScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = if (viewModel.getNewTitle() != "") viewModel.getNewTitle() else "Anonymous",
+            text = if (viewModel.getNewTitle() != "") viewModel.getNewTitle() else "Untitled Trip",
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier.padding(start = 10.dp)
         )
-        for (i in 1 until thisTrip.cities.size) {
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-
-            ) {
-                Text(
-                    fontSize = 16.sp, text = thisTrip.cities.keys.elementAt(i-1),
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.fillMaxWidth(0.3f)
-                )
-                Text(
-                    text = " ➱",
-                    fontSize = 20.sp,
-                    modifier = Modifier.fillMaxWidth(0.16f)
-                )
-                Text(
-                    fontSize = 16.sp,
-                    text = thisTrip.cities.keys.elementAt(i),
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.fillMaxWidth(0.45f)
-                )
-                val startLatLng = thisTrip.cities.values.elementAt(i-1).first
-                val endLatLng = thisTrip.cities.values.elementAt(i).first
-                GoogleMapsButton(
-                    start=startLatLng,
-                    target= endLatLng,
-                    travelMode= viewModel.getTransportMean(),
-                    context= LocalContext.current
-                )
-//                Button(
-//                    onClick = { /*TODO*/ },
-//                    colors = ButtonDefaults.buttonColors(
-//                        containerColor = Color.Transparent,
-//                    )
-//                ) {
-//                    Image(
-//                        painter = painterResource(id = R.drawable.navigate_icon),
-//                        contentDescription = "Directions",
-//                        modifier = Modifier
-//                            .height(24.dp)
-//                            .width(24.dp)
-//                    )
-//                }
-            }
-        }
+        NavigableRoutes(thisTrip, viewModel)
         for (item in viewModel.getPackList()) {
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -280,24 +233,27 @@ fun DetailsScreen(
     }
 
 }
+
 @Composable
 fun GoogleMapsButton(
-    start:LatLng,
-    target:LatLng,
-    travelMode:String,
+    start: LatLng,
+    target: LatLng,
+    travelMode: String,
     context: Context
 ) {
-    val googleMapsUrl = buildGoogleMapsUrl(start, target,travelMode)
-
-    Button(
+    val googleMapsUrl = buildGoogleMapsUrl(start, target, travelMode)
+    TextButton(
         onClick = {
             // Open the URL in a web browser or the Google Maps app
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(googleMapsUrl))
             ContextCompat.startActivity(context, intent, null)
         },
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier.fillMaxSize(0.2f)
     ) {
-        Text("In Google Maps")
+        Image(
+            painter = painterResource(id = R.drawable.directions_icon),
+            contentDescription = "Directions",
+        )
     }
 }
 fun buildGoogleMapsUrl(start: LatLng, target: LatLng, travelMode: String): String {

@@ -1,6 +1,5 @@
 package com.codecamp.tripcplaner.view.widgets
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -11,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -21,22 +18,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codecamp.tripcplaner.R
-import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
-import java.time.LocalDateTime
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,28 +65,28 @@ fun TripCard(
 
                 when (tripType) {
                     "transit" -> Image(
-                        painter = painterResource(id = R.drawable.bus),
+                        painter = painterResource(id = R.drawable.transit),
                         contentDescription = "transit",
                         modifier = Modifier.fillMaxWidth(0.3f),
                         contentScale = ContentScale.Crop
                     )
 
                     "driving" -> Image(
-                        painter = painterResource(id = R.drawable.car),
+                        painter = painterResource(id = R.drawable.driving),
                         contentDescription = "driving",
                         modifier = Modifier.fillMaxWidth(0.3f),
                         contentScale = ContentScale.Crop
                     )
 
                     "bicycling" -> Image(
-                        painter = painterResource(id = R.drawable.bicycle),
+                        painter = painterResource(id = R.drawable.bicycling),
                         contentDescription = "bicycling",
                         modifier = Modifier.fillMaxWidth(0.3f),
                         contentScale = ContentScale.Crop
                     )
 
                     "walking" -> Image(
-                        painter = painterResource(id = R.drawable.walk),
+                        painter = painterResource(id = R.drawable.walking),
                         contentDescription = "walking",
                         modifier = Modifier.fillMaxWidth(0.3f),
                         contentScale = ContentScale.Crop

@@ -171,18 +171,6 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                             keyboardType = KeyboardType.Text
                         )
                     )
-//                    Button(
-//                        onClick = { /*TODO*/ },
-//                        colors = ButtonDefaults.buttonColors(
-//                            containerColor = Color.Transparent,
-//                            contentColor = Color.White
-//                        )
-//                    ) {
-//                        Image(
-//                            painter = painterResource(id = R.drawable.add_trip_icon),
-//                            contentDescription = "Add Trip"
-//                        )
-//                    }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 MainScreenDCard()

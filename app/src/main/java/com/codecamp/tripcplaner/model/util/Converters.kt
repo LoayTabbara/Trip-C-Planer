@@ -3,7 +3,9 @@ package com.codecamp.tripcplaner.model.util
 import androidx.room.TypeConverter
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import org.json.JSONObject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -70,14 +72,31 @@ class Converters {
 
     @TypeConverter
     fun fromMapPair(map: MutableMap<String,Pair<LatLng,LocalDateTime>>): String {
-        val gson = Gson()
-        return gson.toJson(map)
+        var mapJson = JSONObject()
+        map.entries.forEach {
+            var cityJson = JSONObject()
+            var cityLatLngJson = JSONObject()
+            cityLatLngJson.put("latitude",it.value.first.latitude)
+            cityLatLngJson.put("longitude",it.value.first.longitude)
+            cityJson.put("first",cityLatLngJson)
+            cityJson.put("second",it.value.second)
+            mapJson.put(it.key,cityJson)
+        }
+        return mapJson.toString()
     }
 
     @TypeConverter
     fun toMapPair(map: String): MutableMap<String,Pair<LatLng,LocalDateTime>> {
-        val gson = Gson()
-        val type = object : TypeToken<MutableMap<String,Pair<LatLng,LocalDateTime>>>() {}.type
-        return gson.fromJson(map, type)
+
+        val mapJson = JSONObject(map)
+        val map = mutableMapOf<String,Pair<LatLng,LocalDateTime>>()
+        mapJson.keys().forEach { cityJsonObject ->
+            val cityJson = mapJson.getJSONObject(cityJsonObject)
+            val cityLatLngJson = cityJson.getJSONObject("first")
+            val cityLatLng = LatLng(cityLatLngJson.getDouble("latitude"),cityLatLngJson.getDouble("longitude"))
+            val cityDateTime = LocalDateTime.parse(cityJson.getString("second"), DateTimeFormatter.ISO_DATE_TIME)
+            map[cityJsonObject] = Pair(cityLatLng,cityDateTime)
+        }
+        return map
     }
 }

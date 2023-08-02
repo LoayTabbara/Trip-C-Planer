@@ -141,7 +141,7 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "This Week", style = MaterialTheme.typography.displayMedium)
+                    Text(text = "Your Trips", style = MaterialTheme.typography.displayMedium)
                     TextField(
                         value = shareCode.value,
                         onValueChange = { shareCode.value = it },
@@ -173,7 +173,7 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     )
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-                MainScreenDCard()
+                MainScreenDCard(travelInfoViewModel)
                 Spacer(modifier = Modifier.height(10.dp))
 
                 LazyColumn {

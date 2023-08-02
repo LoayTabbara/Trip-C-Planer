@@ -126,7 +126,8 @@ fun DetailsScreen(
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier.padding(start = 10.dp)
         )
-        NavigableRoutes(thisTrip, viewModel)
+        if(thisTrip!=null)
+            NavigableRoutes(thisTrip, viewModel)
         for (item in viewModel.getPackList()) {
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -145,8 +146,8 @@ fun DetailsScreen(
                 contentColor = Color.White
             ),
             onClick = {
-                navController.navigate(TripCPlanerScreens.MainScreen.name)
                 travelInfoViewModel.tripRepo.deleteById(myId)
+                navController.navigate(TripCPlanerScreens.MainScreen.name)
             },
             modifier = Modifier
                 .padding(16.dp)

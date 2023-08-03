@@ -47,13 +47,13 @@ fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: Trave
             arguments = listOf(navArgument(name = "id") { type = NavType.IntType }
             )) { backStackEntry ->
             val id = backStackEntry.arguments?.getInt("id")!!
+            detailsViewModel.clearVM()
             DetailsScreen(
                 navController,
                 id,
                 detailsViewModel,
                 travelInfoViewModel
             )
-            detailsViewModel.clearVM()
 
         }
     }

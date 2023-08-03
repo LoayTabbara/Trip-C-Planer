@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.R
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
@@ -51,10 +50,7 @@ import com.codecamp.tripcplaner.view.widgets.saveToDVM
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.Calendar
-import java.util.concurrent.Future
 
 
 @Composable
@@ -65,7 +61,7 @@ fun DetailsScreen(
     travelInfoViewModel: TravelInfoViewModel
 ) {
     val myId: Int = id
-    var thisTrip = travelInfoViewModel.tripRepo.getById(myId)
+    val thisTrip = travelInfoViewModel.tripRepo.getById(myId)
     if (thisTrip != null) {//leave this line here   it is not correct what the android studio says
         saveToDVM(myId, travelInfoViewModel, viewModel)
 

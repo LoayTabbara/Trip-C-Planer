@@ -26,7 +26,7 @@ fun GeneratedTripOverview(
     Column(
         Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.5f)
+            .fillMaxHeight(0.8f)
             .verticalScroll(enabled = true, state = rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly

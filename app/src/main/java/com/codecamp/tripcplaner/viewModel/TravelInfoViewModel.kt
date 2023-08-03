@@ -43,24 +43,22 @@ class TravelInfoViewModel @Inject constructor(
 
     tripRepository: TripRepositoryImplementation
 ) : ViewModel() {
-    var dates =  mutableStateOf<List<String>>(listOf())
-    var localDateTimeList = mutableListOf<LocalDateTime>()
-    var meansOfTransport=""
+    private var localDateTimeList = mutableListOf<LocalDateTime>()
+    private var meansOfTransport=""
     var savedTrips = mutableListOf<Trip>()
     var latLngList = mutableListOf<LatLng>()
     var tripRepo = tripRepository
     var hasResult = mutableStateOf(false)
 
     var startDate: LocalDateTime = LocalDateTime.now()
-    var messages = mutableStateListOf<Message>()
-    var packingListJson = mutableStateOf(listOf<String>())
-    var activitiesJson = mutableStateOf(mapOf<String, CityInfo>())
+    private var messages = mutableStateListOf<Message>()
+    private var packingListJson = mutableStateOf(listOf<String>())
+    private var activitiesJson = mutableStateOf(mapOf<String, CityInfo>())
     var citiesWithActivity: Map<String, List<String>> = mapOf()
-    var arrivalTimesInCities = mutableStateOf<Map<String, String>>(mapOf())
+    private var arrivalTimesInCities = mutableStateOf<Map<String, String>>(mapOf())
     var times = mutableStateOf<List<String>>(listOf()) // added this line
     var packingList: MutableList<String> = mutableListOf()
     var generatePseudo = false
-    val stateList = mutableStateListOf<Trip>()
 
 
     fun sendMessage(
@@ -123,7 +121,6 @@ class TravelInfoViewModel @Inject constructor(
 
                     citiesWithActivity = activitiesJson.value.mapValues { entry -> entry.value.activities }
                     arrivalTimesInCities.value = activitiesJson.value.mapValues { entry -> entry.value.arrivalTime }
-                    dates.value = arrivalTimesInCities.value.values.toList()
                     packingList = packingListJson.value.toMutableList()
                     times.value= arrivalTimesInCities.value.values.toList()
                 }
@@ -188,7 +185,7 @@ class TravelInfoViewModel @Inject constructor(
         transportType: String
     ) {
 
-        times.value.forEach(){
+        times.value.forEach {
             localDateTimeList.add(LocalDateTime.parse(it))
         }
         viewModelScope.launch {

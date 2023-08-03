@@ -9,14 +9,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -89,7 +91,6 @@ fun MapScreen(
 
         )
     )
-    var presentationLatLngList = mutableListOf<LatLng>()
     fun canCreate(): Boolean {
         return (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty() &&
                 tripPickerList[2].value.isNotEmpty() && tripPickerList[3].value.isNotEmpty() &&
@@ -100,16 +101,36 @@ fun MapScreen(
 
     val context = LocalContext.current
     Box {
-        Scaffold(floatingActionButtonPosition = FabPosition.Center, floatingActionButton = {
-            if (canCreate()) {
+        Scaffold(bottomBar = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.5f)
+                    .background(Color.Gray),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (!travelInfoViewModel.hasResult.value) {
+                    StopPicker(
+                        tripPickerList, true, cameraPositionState, startMarker
+                    )
+                    StopPicker(
+                        tripPickerList, false, cameraPositionState, endMarker
+                    )
+                } else {
+                    GeneratedTripOverview(transportMean, travelInfoViewModel)
+                }
                 Row(
                     horizontalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier.fillMaxWidth(0.64f)
+                    modifier = Modifier.fillMaxWidth(0.8f)
                 ) {
-                    FloatingActionButton(modifier = if (travelInfoViewModel.hasResult.value) Modifier.fillMaxWidth(
-                        0.25f
-                    ) else Modifier.fillMaxWidth(),
-                        containerColor = Color(if (travelInfoViewModel.hasResult.value) 0XFFE0BB70 else 0XFF388E3C),
+                    Button(
+                        shape = RoundedCornerShape(10),
+
+                        enabled = canCreate(),
+                        modifier = if (travelInfoViewModel.hasResult.value) Modifier.fillMaxWidth(
+                            0.25f
+                        ) else Modifier.fillMaxWidth(),
                         onClick = {
                             val startDate = LocalDate.parse(tripPickerList[2].value, formatter)
                             val endDate = LocalDate.parse(tripPickerList[3].value, formatter)
@@ -125,47 +146,43 @@ fun MapScreen(
                             )
                             travelInfoViewModel.hasResult.value = false
                             showIndicator.value = true
-                        }) {
+                        },
+                        colors = ButtonDefaults.buttonColors(disabledContainerColor = Color.Transparent, containerColor = Color(if (travelInfoViewModel.hasResult.value) 0XFFE0BB70 else 0XFF388E3C))
+
+                    ) {
                         Text(
                             text = if (travelInfoViewModel.hasResult.value) "\u21BA" else "Generate a Trip",
                             fontWeight = if (travelInfoViewModel.hasResult.value) FontWeight.Bold else FontWeight.Normal,
                             fontSize = if (travelInfoViewModel.hasResult.value) 24.sp else 16.sp,
-                            color = Color.White
+                            color = if(canCreate()) Color.White else Color.LightGray
                         )
                     }
-                    if (travelInfoViewModel.hasResult.value) FloatingActionButton(modifier = Modifier
-                        .fillMaxWidth(0.32f), containerColor = Color(0XFF388E3C), onClick = {
-                        travelInfoViewModel.hasResult.value = false
-                        val startDate = if(travelInfoViewModel.generatePseudo) LocalDateTime.parse(travelInfoViewModel.times.value.first()) else LocalDate.parse(tripPickerList[2].value).atStartOfDay()
-                        val endDate = if(travelInfoViewModel.generatePseudo) LocalDateTime.parse(travelInfoViewModel.times.value.last()) else LocalDate.parse(tripPickerList[3].value).atStartOfDay()
-                        detailsViewModel.setDates(startDate, endDate)
+                    if (travelInfoViewModel.hasResult.value)
+                        Button(shape = RoundedCornerShape(10),
+                            modifier = Modifier
+                                .fillMaxWidth(0.32f),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0XFF388E3C)),
+                            onClick = {
+                                travelInfoViewModel.hasResult.value = false
+                                val startDate =
+                                    if (travelInfoViewModel.generatePseudo) LocalDateTime.parse(
+                                        travelInfoViewModel.times.value.first()
+                                    ) else LocalDate.parse(tripPickerList[2].value).atStartOfDay()
+                                val endDate =
+                                    if (travelInfoViewModel.generatePseudo) LocalDateTime.parse(
+                                        travelInfoViewModel.times.value.last()
+                                    ) else LocalDate.parse(tripPickerList[3].value).atStartOfDay()
+                                detailsViewModel.setDates(startDate, endDate)
 
-                        navController.navigate(TripCPlanerScreens.PackScreen.name)
-                    }) {
-                        Text(text = "✔︎", fontSize = 24.sp)
-                    }
+                                navController.navigate(TripCPlanerScreens.PackScreen.name)
+                            }) {
+                            Text(text = "✔︎", fontSize = 24.sp, color = Color.White)
+                        }
                 }
+
             }
 
-        }, bottomBar = {
-            if (!travelInfoViewModel.hasResult.value) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Transparent),
-                    verticalArrangement = Arrangement.Bottom,
-                ) {
 
-                    StopPicker(
-                        tripPickerList, true, cameraPositionState, startMarker
-                    )
-                    StopPicker(
-                        tripPickerList, false, cameraPositionState, endMarker
-                    )
-                }
-            } else {
-                GeneratedTripOverview(transportMean, travelInfoViewModel)
-            }
         }) {
             PermissionSnackbar(permissionsState = permissionsState)
             val uiSettings = remember {
@@ -226,7 +243,6 @@ fun MapScreen(
                 properties = properties,
             ) {
                 if (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty()) {
-
 
                     if (travelInfoViewModel.hasResult.value) {
                         if (!travelInfoViewModel.generatePseudo) travelInfoViewModel.latLngList =

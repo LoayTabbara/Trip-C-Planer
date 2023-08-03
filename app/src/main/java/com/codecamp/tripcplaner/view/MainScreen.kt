@@ -111,8 +111,7 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                 colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.DarkGray)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add icon"
+                    imageVector = Icons.Default.Add, contentDescription = "Add icon"
                 )
                 Spacer(modifier = Modifier.width(width = 8.dp))
                 Text(text = "Choose Means of Transport to create a trip")
@@ -136,22 +135,18 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text = "Your Trips", style = MaterialTheme.typography.displayMedium)
-                    TextField(
-                        value = shareCode.value,
+                    TextField(value = shareCode.value,
                         onValueChange = { shareCode.value = it },
                         placeholder = {
                             Text(
-                                text = "Shared code",
-                                style = MaterialTheme.typography.bodyMedium
+                                text = "Shared code", style = MaterialTheme.typography.bodyMedium
                             )
                         },
                         modifier = Modifier
                             .fillMaxWidth(0.7f)
                             .padding(end = 8.dp)
                             .border(
-                                width = 2.dp,
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(10.dp)
+                                width = 2.dp, color = Color.Gray, shape = RoundedCornerShape(10.dp)
                             ),
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
@@ -166,8 +161,7 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
 
                         }),
                         keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Done,
-                            keyboardType = KeyboardType.Text
+                            imeAction = ImeAction.Done, keyboardType = KeyboardType.Text
                         )
                     )
                 }
@@ -178,28 +172,28 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     items(items = travelInfoViewModel.tripRepo.getAllItems().reversed()) { item ->
                         TripCard(
                             tripName = item.title + "\n${item.cities.keys.first()} - ${item.cities.keys.last()}",
-                            tripDescription = item.startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " -" +
-                                    " " + item.endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." +
-                                    ". ${item.cities.keys.last()}(${item.activities[item.activities.lastIndex - 1]}, ${item.activities.last()})",
+                            tripDescription = item.startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " -" + " " + item.endDate.format(
+                                DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                            ) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." + ". ${item.cities.keys.last()}(${item.activities[item.activities.lastIndex - 1]}, ${item.activities.last()})",
                             tripType = item.transportType,
                             onShareClicked = {
 
-                                var packingListJsonArray = JSONArray()
+                                val packingListJsonArray = JSONArray()
                                 item.packingList.keys.forEach { packingListObject ->
                                     packingListJsonArray.put(packingListObject)
                                 }
-                                var latLngJsonArray = JSONArray()
-                                var timesJsonArray = JSONArray()
-                                var citiesJsonArray = JSONArray()
-                                var activitiesJsonArray = JSONArray()
-                                item.cities.values.forEach() { pair ->
+                                val latLngJsonArray = JSONArray()
+                                val timesJsonArray = JSONArray()
+                                val citiesJsonArray = JSONArray()
+                                val activitiesJsonArray = JSONArray()
+                                item.cities.values.forEach { pair ->
                                     latLngJsonArray.put(pair.first.latitude.toString() + "," + pair.first.longitude.toString())
                                     timesJsonArray.put(pair.second.toString())
                                 }
-                                item.cities.keys.forEach() { city ->
+                                item.cities.keys.forEach { city ->
                                     citiesJsonArray.put(city)
                                 }
-                                item.activities.forEach() { activity ->
+                                item.activities.forEach { activity ->
                                     activitiesJsonArray.put(activity)
                                 }
                                 var bodyForPostRequestForSharing = JSONObject().apply {
@@ -214,9 +208,7 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                             onClicked = {
                                 navController.navigate(TripCPlanerScreens.DetailsScreen.name + "/${item.id}")
                             },
-
-
-                            )
+                        )
                     }
 
 

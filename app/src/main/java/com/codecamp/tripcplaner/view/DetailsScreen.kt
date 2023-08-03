@@ -22,7 +22,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,7 +45,7 @@ import com.codecamp.tripcplaner.R
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.model.reminder.scheduleNotification
 import com.codecamp.tripcplaner.view.widgets.DetailCard
-import com.codecamp.tripcplaner.view.widgets.NavigableRoutes
+import com.codecamp.tripcplaner.view.widgets.StartTargetRows
 import com.codecamp.tripcplaner.view.widgets.saveToDVM
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
@@ -124,7 +123,7 @@ fun DetailsScreen(
             modifier = Modifier.padding(start = 10.dp)
         )
         if(thisTrip!=null)
-            NavigableRoutes(thisTrip, viewModel)
+            StartTargetRows(thisTrip, viewModel)
         for (item in viewModel.getPackList()) {
             Spacer(modifier = Modifier.height(10.dp))
 

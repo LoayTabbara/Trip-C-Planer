@@ -90,7 +90,7 @@ fun PackScreen(
         Text(text = "Travel Period ", style = MaterialTheme.typography.displaySmall)
         Row {
 
-            Text(text = "from ${travelInfoViewModel.times.value.first().substring(0,10)} to ${travelInfoViewModel.times.value.last().substring(0,9)}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "from ${travelInfoViewModel.times.value.first().substring(0,10)} to ${travelInfoViewModel.times.value.last().substring(0,10)}", style = MaterialTheme.typography.bodyMedium)
         }
         Text(text = "Places to Visit", style = MaterialTheme.typography.displaySmall)
         travelInfoViewModel.citiesWithActivity.forEach{

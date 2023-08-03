@@ -146,14 +146,19 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                             )
                         },
                         modifier = Modifier
-                            .fillMaxWidth(0.7f).padding(end = 8.dp).border(
+                            .fillMaxWidth(0.7f)
+                            .padding(end = 8.dp)
+                            .border(
                                 width = 2.dp,
                                 color = Color.Gray,
-                                shape = RoundedCornerShape(10.dp)),
+                                shape = RoundedCornerShape(10.dp)
+                            ),
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
-                        colors = TextFieldDefaults.textFieldColors(Color.White, focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,),
+                        colors = TextFieldDefaults.textFieldColors(
+                            Color.White, focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                        ),
                         keyboardActions = KeyboardActions(onDone = {
                             /*TODO() use shareCode.value to do GET request to get the saved json object from the other side and navigate*/
 //                            navController.navigate(TripCPlanerScreens.PackScreen.name)
@@ -169,7 +174,6 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                 Spacer(modifier = Modifier.height(10.dp))
                 MainScreenDCard(travelInfoViewModel, navController)
                 Spacer(modifier = Modifier.height(10.dp))
-
                 LazyColumn {
                     items(items = travelInfoViewModel.tripRepo.getAllItems().reversed()) { item ->
                         TripCard(
@@ -181,30 +185,30 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                             onShareClicked = {
 
                                 var packingListJsonArray = JSONArray()
-                                item.packingList.keys.forEach{packingListObject->
+                                item.packingList.keys.forEach { packingListObject ->
                                     packingListJsonArray.put(packingListObject)
                                 }
-                                var latLngJsonArray=JSONArray()
-                                var timesJsonArray=JSONArray()
-                                var citiesJsonArray=JSONArray()
-                                var activitiesJsonArray=JSONArray()
-                                item.cities.values.forEach(){pair ->
-                                    latLngJsonArray.put(pair.first.latitude.toString()+","+pair.first.longitude.toString())
+                                var latLngJsonArray = JSONArray()
+                                var timesJsonArray = JSONArray()
+                                var citiesJsonArray = JSONArray()
+                                var activitiesJsonArray = JSONArray()
+                                item.cities.values.forEach() { pair ->
+                                    latLngJsonArray.put(pair.first.latitude.toString() + "," + pair.first.longitude.toString())
                                     timesJsonArray.put(pair.second.toString())
                                 }
-                                item.cities.keys.forEach(){city->
+                                item.cities.keys.forEach() { city ->
                                     citiesJsonArray.put(city)
                                 }
-                                item.activities.forEach(){  activity->
+                                item.activities.forEach() { activity ->
                                     activitiesJsonArray.put(activity)
                                 }
                                 var bodyForPostRequestForSharing = JSONObject().apply {
                                     put("title", item.title)
                                     put("packingList", packingListJsonArray)
-                                    put("latLng",latLngJsonArray)
-                                    put("times",timesJsonArray)
-                                    put("cities",citiesJsonArray)
-                                    put("activities",activitiesJsonArray)
+                                    put("latLng", latLngJsonArray)
+                                    put("times", timesJsonArray)
+                                    put("cities", citiesJsonArray)
+                                    put("activities", activitiesJsonArray)
                                 }
                             },
                             onClicked = {

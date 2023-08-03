@@ -9,12 +9,10 @@ fun saveToDVM(id:Int, travelInfoViewModel: TravelInfoViewModel, detailViewModel:
 
     val trip= travelInfoViewModel.tripRepo.getById(id)
 
-    if(trip!=null){
-        detailViewModel.cities = trip.cities.keys.toMutableList()
-        detailViewModel.activities = trip.activities
-        detailViewModel.setDates(trip.startDate, trip.endDate)
-        detailViewModel.setTransportMean(trip.transportType)
-        detailViewModel.setPackList(trip.packingList)
-        detailViewModel.setNewTitle(trip.title)
-    }
+    detailViewModel.cities = trip.cities.keys.toMutableList()
+    detailViewModel.activities = trip.activities
+    detailViewModel.setDates(trip.startDate, trip.endDate)
+    detailViewModel.setTransportMean(trip.transportType)
+    detailViewModel.setPackList(trip.packingList)
+    detailViewModel.setNewTitle(trip.title)
 }

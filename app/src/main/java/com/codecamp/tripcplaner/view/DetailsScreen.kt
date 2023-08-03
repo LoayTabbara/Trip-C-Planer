@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.R
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
@@ -50,183 +51,188 @@ import com.codecamp.tripcplaner.view.widgets.saveToDVM
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.concurrent.Future
 
 
 @Composable
 fun DetailsScreen(
     navController: NavController,
-    id: Int?,
+    id: Int,
     viewModel: DetailViewModel,
     travelInfoViewModel: TravelInfoViewModel
 ) {
-    val myId: Int = id ?: travelInfoViewModel.tripRepo.getAllItems().last().id
-    val thisTrip = travelInfoViewModel.tripRepo.getById(myId)
-    saveToDVM(myId, travelInfoViewModel, viewModel)
+    val myId: Int = id
+    var thisTrip = travelInfoViewModel.tripRepo.getById(myId)
+    if (thisTrip != null) {//leave this line here   it is not correct what the android studio says
+        saveToDVM(myId, travelInfoViewModel, viewModel)
 
-    val paintings = mutableMapOf<String, Int>()
-    when (viewModel.getTransportMean()) {
-        "walking" -> paintings["walking"] = R.drawable.walking
-        "driving" -> paintings["driving"] = R.drawable.driving
-        "transit" -> paintings["transit"] = R.drawable.transit
-        "bicycling" -> paintings["bicycling"] = R.drawable.bicycling
-    }
-    var selectedItem by remember { mutableStateOf("") }
-
-    // State to control the visibility of the dropdown menu
-    var isDropdownMenuVisible by remember { mutableStateOf(false) }
-    val calendar = Calendar.getInstance()
-    val date = remember { mutableStateOf("") }
-    val year = calendar[Calendar.YEAR]
-    val month = calendar[Calendar.MONTH]
-    val dayOfMonth = calendar[Calendar.DAY_OF_MONTH]
-    val datePicker = DatePickerDialog(
-        LocalContext.current,
-        { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-            val monthText =
-                if ((selectedMonth + 1) < 10) "0${selectedMonth + 1}" else "${selectedMonth + 1}"
-            val dayText =
-                if (selectedDayOfMonth < 10) "0$selectedDayOfMonth" else "$selectedDayOfMonth"
-            date.value = "$selectedYear.$monthText.$dayText"
-        },
-        year,
-        month,
-        dayOfMonth
-    )
-
-
-    val popUpOn = remember { mutableStateOf(false) }
-    val confirmed = remember { mutableStateOf(false) }
-
-    Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(if (popUpOn.value) 0.dp else 10.dp)
-            .blur(if (popUpOn.value) 20.dp else 0.dp)
-            .verticalScroll(enabled = true, state = rememberScrollState())
-    ) {
-
-
-        Image(
-            painter = painterResource(id = paintings[viewModel.getTransportMean()]!!),
-            contentDescription = "walking",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-        Text(
-            text = if (viewModel.getNewTitle() != "") viewModel.getNewTitle() else "Untitled Trip",
-            style = MaterialTheme.typography.displayMedium,
-            modifier = Modifier.padding(start = 10.dp)
-        )
-        if(thisTrip!=null)
-            StartTargetRows(thisTrip, viewModel)
-        for (item in viewModel.getPackList()) {
-            Spacer(modifier = Modifier.height(10.dp))
-
-            DetailCard(text = item.key) { checked ->
-                if (checked) {
-                    popUpOn.value = true
-                }
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-
+        val paintings = mutableMapOf<String, Int>()
+        when (viewModel.getTransportMean()) {
+            "walking" -> paintings["walking"] = R.drawable.walking
+            "driving" -> paintings["driving"] = R.drawable.driving
+            "transit" -> paintings["transit"] = R.drawable.transit
+            "bicycling" -> paintings["bicycling"] = R.drawable.bicycling
         }
-        Spacer(modifier = Modifier.height(10.dp))
-        Button(
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Red,
-                contentColor = Color.White
-            ),
-            onClick = {
-                travelInfoViewModel.tripRepo.deleteById(myId)
-                navController.navigate(TripCPlanerScreens.MainScreen.name)
+        var selectedItem by remember { mutableStateOf("") }
+
+        // State to control the visibility of the dropdown menu
+        var isDropdownMenuVisible by remember { mutableStateOf(false) }
+        val calendar = Calendar.getInstance()
+        val date = remember { mutableStateOf("") }
+        val year = calendar[Calendar.YEAR]
+        val month = calendar[Calendar.MONTH]
+        val dayOfMonth = calendar[Calendar.DAY_OF_MONTH]
+        val datePicker = DatePickerDialog(
+            LocalContext.current,
+            { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+                val monthText =
+                    if ((selectedMonth + 1) < 10) "0${selectedMonth + 1}" else "${selectedMonth + 1}"
+                val dayText =
+                    if (selectedDayOfMonth < 10) "0$selectedDayOfMonth" else "$selectedDayOfMonth"
+                date.value = "$selectedYear.$monthText.$dayText"
             },
+            year,
+            month,
+            dayOfMonth
+        )
+
+
+        val popUpOn = remember { mutableStateOf(false) }
+        val confirmed = remember { mutableStateOf(false) }
+
+        Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
+        Column(
             modifier = Modifier
-                .padding(16.dp)
                 .fillMaxWidth()
+                .padding(if (popUpOn.value) 0.dp else 10.dp)
+                .blur(if (popUpOn.value) 20.dp else 0.dp)
+                .verticalScroll(enabled = true, state = rememberScrollState())
         ) {
-            Text(text = "Delete this Trip")
-        }
-    }
 
-    if (popUpOn.value) {
-        Popup(
-            alignment = Alignment.Center, onDismissRequest = { popUpOn.value = false },
-            properties = PopupProperties(
-                focusable = true,
-                dismissOnBackPress = true,
-                dismissOnClickOutside = true
-            )
-        ) {
-            Card(
+
+            Image(
+                painter = painterResource(id = paintings[viewModel.getTransportMean()]!!),
+                contentDescription = "walking",
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .fillMaxHeight(0.5f)
+                    .fillMaxWidth()
+                    .height(200.dp)
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = if (viewModel.getNewTitle() != "") viewModel.getNewTitle() else "Untitled Trip",
+                style = MaterialTheme.typography.displayMedium,
+                modifier = Modifier.padding(start = 10.dp)
+            )
+            StartTargetRows(thisTrip, viewModel)
+            for (item in viewModel.getPackList()) {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                DetailCard(text = item.key) { checked ->
+                    if (checked) {
+                        popUpOn.value = true
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red,
+                    contentColor = Color.White
+                ),
+                onClick = {
+                    travelInfoViewModel.tripRepo.deleteById(myId)
+                    navController.navigate(TripCPlanerScreens.MainScreen.name)
+
+                },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
             ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Text(text = "Delete this Trip")
+            }
+        }
+
+        if (popUpOn.value) {
+            Popup(
+                alignment = Alignment.Center, onDismissRequest = { popUpOn.value = false },
+                properties = PopupProperties(
+                    focusable = true,
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = true
+                )
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .fillMaxHeight(0.5f)
                 ) {
-
-                    Text(
-                        text = "Add Time",
-                        style = MaterialTheme.typography.displaySmall,
-                        modifier = Modifier.padding(10.dp)
-                    )
-                    Button(
-                        onClick = { datePicker.show() },
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = if (date.value == "") "Select Date" else date.value)
-                    }
-                    Button(
-                        onClick = { isDropdownMenuVisible = true },
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(if (selectedItem == "") "Select City" else selectedItem)
-                    }
 
-                    DropdownMenu(
-                        expanded = isDropdownMenuVisible,
-                        onDismissRequest = { isDropdownMenuVisible = false }) {
-                        viewModel.cities.forEach { city ->
-                            DropdownMenuItem(text = { Text(text = city) }, onClick = {
-                                selectedItem = city
-                                isDropdownMenuVisible = false
-                            })
+                        Text(
+                            text = "Add Time",
+                            style = MaterialTheme.typography.displaySmall,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                        Button(
+                            onClick = { datePicker.show() },
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Text(text = if (date.value == "") "Select Date" else date.value)
                         }
-                    }
-                    Button(onClick = {
-                        Log.d("DetailsScreen", "DetailsScreen: $date and $selectedItem")
-                        confirmed.value = true
-                        popUpOn.value = false
-                    }) {
-                        Text(text = "Confirm")
-                    }
+                        Button(
+                            onClick = { isDropdownMenuVisible = true },
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Text(if (selectedItem == "") "Select City" else selectedItem)
+                        }
+
+                        DropdownMenu(
+                            expanded = isDropdownMenuVisible,
+                            onDismissRequest = { isDropdownMenuVisible = false }) {
+                            viewModel.cities.forEach { city ->
+                                DropdownMenuItem(text = { Text(text = city) }, onClick = {
+                                    selectedItem = city
+                                    isDropdownMenuVisible = false
+                                })
+                            }
+                        }
+                        Button(onClick = {
+                            Log.d("DetailsScreen", "DetailsScreen: $date and $selectedItem")
+                            confirmed.value = true
+                            popUpOn.value = false
+                        }) {
+                            Text(text = "Confirm")
+                        }
 
 
+                    }
                 }
             }
         }
-    }
-    var notificationScheduled by remember { mutableStateOf(false) }
-    if (confirmed.value) {
+        var notificationScheduled by remember { mutableStateOf(false) }
+        if (confirmed.value) {
 
-        scheduleNotification(
-            LocalContext.current, 2, 7000, "button1"
-        )
-        notificationScheduled = true
-        confirmed.value = false
+            scheduleNotification(
+                LocalContext.current, 2, 7000, "button1"
+            )
+            notificationScheduled = true
+            confirmed.value = false
 
+        }
     }
 
 }
@@ -253,6 +259,7 @@ fun GoogleMapsButton(
         )
     }
 }
+
 fun buildGoogleMapsUrl(start: LatLng, target: LatLng, travelMode: String): String {
     return "https://www.google.com/maps/dir/?api=1&origin=${start.latitude},${start.longitude}&destination=${target.latitude},${target.longitude}&travelmode=$travelMode"
 }

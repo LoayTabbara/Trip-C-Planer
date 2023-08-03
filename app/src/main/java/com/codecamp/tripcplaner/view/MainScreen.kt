@@ -147,14 +147,19 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                             )
                         },
                         modifier = Modifier
-                            .fillMaxWidth(0.7f).padding(end = 8.dp).border(
+                            .fillMaxWidth(0.7f)
+                            .padding(end = 8.dp)
+                            .border(
                                 width = 2.dp,
                                 color = Color.Gray,
-                                shape = RoundedCornerShape(10.dp)),
+                                shape = RoundedCornerShape(10.dp)
+                            ),
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
-                        colors = TextFieldDefaults.textFieldColors(Color.White, focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,),
+                        colors = TextFieldDefaults.textFieldColors(
+                            Color.White, focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                        ),
                         keyboardActions = KeyboardActions(onDone = {
                             /*TODO() use shareCode.value to do GET request to get the saved json object from the other side and navigate*/
 //                            navController.navigate(TripCPlanerScreens.PackScreen.name)

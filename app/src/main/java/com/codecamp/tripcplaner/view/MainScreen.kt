@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -76,6 +77,8 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
         )
     )
     val lifecycleOwner = LocalLifecycleOwner.current
+    val context= LocalContext.current
+
     DisposableEffect(key1 = lifecycleOwner, effect = {
 
         val observer = LifecycleEventObserver { _, event ->
@@ -155,10 +158,10 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                             unfocusedIndicatorColor = Color.Transparent,
                         ),
                         keyboardActions = KeyboardActions(onDone = {
-                            /*TODO() use shareCode.value to do GET request to get the saved json object from the other side and navigate*/
-//                            navController.navigate(TripCPlanerScreens.PackScreen.name)
+                            // Calling fetchTrip from viewModel using the sharedCode value
+                            travelInfoViewModel.fetchTrip(shareCode.value, context)
+                            // Clearing the sharedCode TextField after fetching
                             shareCode.value = ""
-
                         }),
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done, keyboardType = KeyboardType.Text
@@ -204,14 +207,13 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                                     put("cities", citiesJsonArray)
                                     put("activities", activitiesJsonArray)
                                 }
+                                travelInfoViewModel.shareTrip(bodyForPostRequestForSharing, context) 
                             },
                             onClicked = {
                                 navController.navigate(TripCPlanerScreens.DetailsScreen.name + "/${item.id}")
                             },
                         )
                     }
-
-
                 }
             }
         }

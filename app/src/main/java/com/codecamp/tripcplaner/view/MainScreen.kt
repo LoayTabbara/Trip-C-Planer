@@ -77,6 +77,8 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
         )
     )
     val lifecycleOwner = LocalLifecycleOwner.current
+    val context= LocalContext.current
+
     DisposableEffect(key1 = lifecycleOwner, effect = {
 
         val observer = LifecycleEventObserver { _, event ->
@@ -161,10 +163,10 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                             unfocusedIndicatorColor = Color.Transparent,
                         ),
                         keyboardActions = KeyboardActions(onDone = {
-                            /*TODO() use shareCode.value to do GET request to get the saved json object from the other side and navigate*/
-//                            navController.navigate(TripCPlanerScreens.PackScreen.name)
+                            // Calling fetchTrip from viewModel using the sharedCode value
+                            travelInfoViewModel.fetchTrip(shareCode.value, context)
+                            // Clearing the sharedCode TextField after fetching
                             shareCode.value = ""
-
                         }),
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done,
@@ -175,7 +177,6 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                 Spacer(modifier = Modifier.height(10.dp))
                 MainScreenDCard(travelInfoViewModel, navController)
                 Spacer(modifier = Modifier.height(10.dp))
-                val context= LocalContext.current
                 LazyColumn {
                     items(items = travelInfoViewModel.tripRepo.getAllItems().reversed()) { item ->
                         TripCard(

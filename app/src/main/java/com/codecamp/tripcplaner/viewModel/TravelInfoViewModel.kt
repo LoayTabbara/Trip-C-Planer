@@ -1,6 +1,9 @@
 package com.codecamp.tripcplaner.viewModel
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
@@ -24,6 +27,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -235,18 +239,86 @@ class TravelInfoViewModel @Inject constructor(
                     val id = jsonResponse.getString("id")
 
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "ID: $id", Toast.LENGTH_LONG).show()
+
+                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clip = ClipData.newPlainText("Shared Trip ID", id)
+                        clipboard.setPrimaryClip(clip)
+
+
+                        Toast.makeText(context, "copied trip id: $id to clipboard", Toast.LENGTH_LONG).show()
+
+
+                        val sendIntent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, "Here's the shared trip ID: $id")
+                            type = "text/plain"
+                        }
+
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        context.startActivity(shareIntent)
                     }
-                    Log.d("thisid", id)
                 }
             } else {
                 val errorStream = connection.errorStream
                 val errorMessage = errorStream?.reader()?.readText() ?: "Unknown error"
                 Log.e("ShareTripError", errorMessage)
-
             }
         }
     }
+
+    fun fetchTrip(sharedCode: String, context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = URL("https://extendsclass.com/api/json-storage/bin/$sharedCode")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.setRequestProperty("Accept", "application/json")
+
+            val responseCode = connection.responseCode
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                connection.inputStream.use { stream ->
+                    val reader = stream.reader()
+                    val response = reader.readText()
+                    val jsonResponse = JSONObject(response)
+
+
+                    val title = jsonResponse.getString("title")
+                    val packingListJsonArray = jsonResponse.getJSONArray("packingList")
+                    val latLngJsonArray = jsonResponse.getJSONArray("latLng")
+                    val timesJsonArray = jsonResponse.getJSONArray("times")
+                    val citiesJsonArray = jsonResponse.getJSONArray("cities")
+                    val activitiesJsonArray = jsonResponse.getJSONArray("activities")
+
+
+                    val packingList = List(packingListJsonArray.length()) { packingListJsonArray.getString(it) }
+                    val latLng = List(latLngJsonArray.length()) { latLngJsonArray.getString(it) }
+                    val times = List(timesJsonArray.length()) { timesJsonArray.getString(it) }
+                    val cities = List(citiesJsonArray.length()) { citiesJsonArray.getString(it) }
+                    val activities = List(activitiesJsonArray.length()) { activitiesJsonArray.getString(it) }
+                    citiesWithActivity = mapOf()
+                    
+
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Trip fetched successfully!", Toast.LENGTH_LONG).show()
+                        Log.i("packinglist",packingList.toString())
+                        Log.i("latLng",latLng.toString())
+                        Log.i("times",times.toString())
+                        Log.i("cities",cities.toString())
+                        Log.i("activities",activities.toString())
+                    }
+                }
+            } else {
+                val errorStream = connection.errorStream
+                val errorMessage = errorStream?.reader()?.readText() ?: "Unknown error"
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Error fetching trip: $errorMessage", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+
+
+
 
 }
 

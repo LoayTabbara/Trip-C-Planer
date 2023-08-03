@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -169,7 +170,7 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                 Spacer(modifier = Modifier.height(10.dp))
                 MainScreenDCard(travelInfoViewModel, navController)
                 Spacer(modifier = Modifier.height(10.dp))
-
+                val context= LocalContext.current
                 LazyColumn {
                     items(items = travelInfoViewModel.tripRepo.getAllItems().reversed()) { item ->
                         TripCard(
@@ -179,43 +180,39 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                                     ". ${item.cities.keys.last()}(${item.activities[item.activities.lastIndex - 1]}, ${item.activities.last()})",
                             tripType = item.transportType,
                             onShareClicked = {
-
                                 var packingListJsonArray = JSONArray()
-                                item.packingList.keys.forEach{packingListObject->
+                                item.packingList.keys.forEach { packingListObject ->
                                     packingListJsonArray.put(packingListObject)
                                 }
-                                var latLngJsonArray=JSONArray()
-                                var timesJsonArray=JSONArray()
-                                var citiesJsonArray=JSONArray()
-                                var activitiesJsonArray=JSONArray()
-                                item.cities.values.forEach(){pair ->
-                                    latLngJsonArray.put(pair.first.latitude.toString()+","+pair.first.longitude.toString())
+                                var latLngJsonArray = JSONArray()
+                                var timesJsonArray = JSONArray()
+                                var citiesJsonArray = JSONArray()
+                                var activitiesJsonArray = JSONArray()
+                                item.cities.values.forEach() { pair ->
+                                    latLngJsonArray.put(pair.first.latitude.toString() + "," + pair.first.longitude.toString())
                                     timesJsonArray.put(pair.second.toString())
                                 }
-                                item.cities.keys.forEach(){city->
+                                item.cities.keys.forEach() { city ->
                                     citiesJsonArray.put(city)
                                 }
-                                item.activities.forEach(){  activity->
+                                item.activities.forEach() { activity ->
                                     activitiesJsonArray.put(activity)
                                 }
                                 var bodyForPostRequestForSharing = JSONObject().apply {
                                     put("title", item.title)
                                     put("packingList", packingListJsonArray)
-                                    put("latLng",latLngJsonArray)
-                                    put("times",timesJsonArray)
-                                    put("cities",citiesJsonArray)
-                                    put("activities",activitiesJsonArray)
+                                    put("latLng", latLngJsonArray)
+                                    put("times", timesJsonArray)
+                                    put("cities", citiesJsonArray)
+                                    put("activities", activitiesJsonArray)
                                 }
+                                travelInfoViewModel.shareTrip(bodyForPostRequestForSharing, context) 
                             },
                             onClicked = {
                                 navController.navigate(TripCPlanerScreens.DetailsScreen.name + "/${item.id}")
                             },
-
-
-                            )
+                        )
                     }
-
-
                 }
             }
         }

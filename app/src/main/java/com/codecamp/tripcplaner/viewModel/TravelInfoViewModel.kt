@@ -21,10 +21,15 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
+import java.net.URL
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -205,6 +210,44 @@ class TravelInfoViewModel @Inject constructor(
             )
         }
     }
+    fun shareTrip(body: JSONObject, context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = URL("https://extendsclass.com/api/json-storage/bin")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "POST"
+            connection.setRequestProperty("Content-Type", "application/json; utf-8")
+            connection.setRequestProperty("Accept", "application/json")
+            connection.doOutput = true
+
+            connection.outputStream.use { os ->
+                val input = body.toString()
+                val bytes = input.toByteArray(Charsets.UTF_8)
+                os.write(bytes, 0, bytes.size)
+            }
+
+            val responseCode = connection.responseCode
+
+            if (responseCode == HttpURLConnection.HTTP_CREATED) {
+                connection.inputStream.use { stream ->
+                    val reader = stream.reader()
+                    val response = reader.readText()
+                    val jsonResponse = JSONObject(response)
+                    val id = jsonResponse.getString("id")
+
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "ID: $id", Toast.LENGTH_LONG).show()
+                    }
+                    Log.d("thisid", id)
+                }
+            } else {
+                val errorStream = connection.errorStream
+                val errorMessage = errorStream?.reader()?.readText() ?: "Unknown error"
+                Log.e("ShareTripError", errorMessage)
+
+            }
+        }
+    }
+
 }
 
 

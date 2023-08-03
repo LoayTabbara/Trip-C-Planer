@@ -29,13 +29,10 @@ import java.util.Locale
 fun MainScreenDCard(travelInfoViewModel: TravelInfoViewModel, navController: NavController) {
     val formatter = DateTimeFormatter.ofPattern("dd")
     val formatterDayName = DateTimeFormatter.ofPattern("EE")
-//    var startsList = mutableListOf<LocalDateTime>()
     var startsMap = mutableMapOf<LocalDateTime, Int>()
     travelInfoViewModel.tripRepo.getAllItems().forEach { trip ->
-//        startsList.add(trip.startDate)
         startsMap[trip.startDate]= trip.id
     }
-//    startsList.sort()
     startsMap.toSortedMap()
 
     LazyRow {

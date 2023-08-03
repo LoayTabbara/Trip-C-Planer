@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -55,7 +54,6 @@ import com.google.android.gms.maps.model.LatLng
 import java.util.Calendar
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
     navController: NavController,
@@ -100,7 +98,6 @@ fun DetailsScreen(
 
     val popUpOn = remember { mutableStateOf(false) }
     val confirmed = remember { mutableStateOf(false) }
-    val id = remember { mutableIntStateOf(0) }
 
     Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
     Column(

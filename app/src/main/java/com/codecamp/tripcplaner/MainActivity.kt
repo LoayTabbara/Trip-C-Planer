@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
 //        hideStatusBar(this)
         setContent {
             val travelInfoViewModel : TravelInfoViewModel = hiltViewModel()
-
+            travelInfoViewModel.intentSharedCodeUsed.value= false
             val viewModel : DetailViewModel = hiltViewModel()
             val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(key1 = lifecycleOwner, effect = {
@@ -58,7 +58,6 @@ class MainActivity : ComponentActivity() {
 
             TripCPlanerTheme {
 
-
                 TripCPlanerNav(viewModel,travelInfoViewModel )
             }
 
@@ -75,13 +74,4 @@ fun hideStatusBar(activity: Activity) {
         WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
         WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
     )
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TripCPlanerTheme {
-
-    }
 }

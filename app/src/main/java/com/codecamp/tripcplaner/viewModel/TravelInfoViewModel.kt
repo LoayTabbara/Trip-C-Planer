@@ -61,6 +61,7 @@ class TravelInfoViewModel @Inject constructor(
     var latLngList = mutableListOf<LatLng>()
     var tripRepo = tripRepository
     var hasResult = mutableStateOf(false)
+    var intentSharedCodeUsed = mutableStateOf(false)
 
     var startDate: LocalDateTime = LocalDateTime.now()
     var endDate: LocalDateTime = LocalDateTime.now()

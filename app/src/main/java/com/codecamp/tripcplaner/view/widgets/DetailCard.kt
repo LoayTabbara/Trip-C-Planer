@@ -32,7 +32,7 @@ import java.util.UUID
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailCard(text: String, content: @Composable (checked: Boolean) -> Unit = {}) {
-    val checked = remember { mutableStateOf(false) }
+    val reminderPressed = remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -55,7 +55,7 @@ fun DetailCard(text: String, content: @Composable (checked: Boolean) -> Unit = {
                 .fillMaxWidth()
                 .height(100.dp), elevation = CardDefaults.cardElevation(5.dp),
                 shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray),
-                onClick = { checked.value = !checked.value }
+                onClick = { reminderPressed.value = !reminderPressed.value }
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -76,8 +76,8 @@ fun DetailCard(text: String, content: @Composable (checked: Boolean) -> Unit = {
             }
 
 
-            content(checked.value)
-            if (checked.value) checked.value = false
+            content(reminderPressed.value)
+            if (reminderPressed.value) reminderPressed.value = false
 
         }
     }

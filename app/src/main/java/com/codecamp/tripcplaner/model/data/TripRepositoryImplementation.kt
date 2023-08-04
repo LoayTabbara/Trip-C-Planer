@@ -24,7 +24,11 @@ class TripRepositoryImplementation @Inject constructor(private val tripDao: Trip
             tripDao.insertTrip(trip)
         }
     }
+   override suspend fun updatePackingList(id: Int, packingList: MutableMap<String, Boolean>) {
 
+            tripDao.updatePackingList(id, packingList)
+
+    }
     override fun deleteAll() {
         tripDao.deleteAll()
     }

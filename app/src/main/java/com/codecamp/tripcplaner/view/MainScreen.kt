@@ -48,7 +48,6 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
-import com.codecamp.tripcplaner.model.data.Trip
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.MainScreenDCard
 import com.codecamp.tripcplaner.view.widgets.TripCard
@@ -56,8 +55,6 @@ import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import org.json.JSONArray
-import org.json.JSONObject
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
@@ -65,7 +62,8 @@ import java.time.format.DateTimeFormatter
 fun MainScreen(
     navController: NavController,
     travelInfoViewModel: TravelInfoViewModel,
-    detailsViewModel: DetailViewModel
+    detailsViewModel: DetailViewModel,
+    routedId: String?
 ) {
 
     Text("MainScreen")
@@ -83,7 +81,7 @@ fun MainScreen(
         )
     )
     val lifecycleOwner = LocalLifecycleOwner.current
-    val context= LocalContext.current
+    val context = LocalContext.current
 
     DisposableEffect(key1 = lifecycleOwner, effect = {
 
@@ -91,12 +89,17 @@ fun MainScreen(
             if (event == Lifecycle.Event.ON_START) {
                 permissionsState.launchMultiplePermissionRequest()
             }
+            if (routedId != null && !travelInfoViewModel.intentSharedCodeUsed.value) {
+                travelInfoViewModel.intentSharedCodeUsed.value = true
+                travelInfoViewModel.fetchTrip(routedId, detailsViewModel, context, navController)
+            }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     })
+
     Scaffold(bottomBar = {
         Column(
             modifier = Modifier
@@ -127,6 +130,7 @@ fun MainScreen(
             }
         }
     }) {
+
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -144,18 +148,22 @@ fun MainScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text = "Your Trips", style = MaterialTheme.typography.displayMedium)
-                    TextField(value = shareCode.value,
+                    TextField(
+                        value = shareCode.value,
                         onValueChange = { shareCode.value = it },
                         placeholder = {
                             Text(
-                                text = "Shared code", style = MaterialTheme.typography.bodyMedium
+                                text = "Shared code",
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         },
                         modifier = Modifier
                             .fillMaxWidth(0.7f)
                             .padding(end = 8.dp)
                             .border(
-                                width = 2.dp, color = Color.Gray, shape = RoundedCornerShape(10.dp)
+                                width = 2.dp,
+                                color = Color.Gray,
+                                shape = RoundedCornerShape(10.dp)
                             ),
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
@@ -165,7 +173,12 @@ fun MainScreen(
                         ),
                         keyboardActions = KeyboardActions(onDone = {
                             // Calling fetchTrip from viewModel using the sharedCode value
-                            travelInfoViewModel.fetchTrip(shareCode.value, detailsViewModel, context, navController)
+                            travelInfoViewModel.fetchTrip(
+                                shareCode.value,
+                                detailsViewModel,
+                                context,
+                                navController
+                            )
                             shareCode.value = ""
 
                         }),
@@ -178,10 +191,16 @@ fun MainScreen(
                 MainScreenDCard(travelInfoViewModel, navController)
                 Spacer(modifier = Modifier.height(10.dp))
                 LazyColumn {
-                    items(items = travelInfoViewModel.tripRepo.getAllItems().reversed()) { item ->
+                    items(
+                        items = travelInfoViewModel.tripRepo.getAllItems().reversed()
+                    ) { item ->
                         TripCard(
                             tripName = item.title + "\n${item.cities.keys.first()} - ${item.cities.keys.last()}",
-                            tripDescription = item.startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " -" + " " + item.endDate.format(
+                            tripDescription = item.startDate.format(
+                                DateTimeFormatter.ofPattern(
+                                    "yyyy-MM-dd"
+                                )
+                            ) + " -" + " " + item.endDate.format(
                                 DateTimeFormatter.ofPattern("yyyy-MM-dd")
                             ) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." + ". ${item.cities.keys.last()}(${item.activities[item.activities.lastIndex - 1]}, ${item.activities.last()})",
                             tripType = item.transportType,
@@ -275,5 +294,4 @@ fun MainScreen(
             }
         }
     }
-
 }

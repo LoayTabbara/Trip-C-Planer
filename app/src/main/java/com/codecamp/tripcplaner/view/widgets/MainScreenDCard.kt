@@ -17,7 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
@@ -29,22 +31,32 @@ import java.util.Locale
 fun MainScreenDCard(travelInfoViewModel: TravelInfoViewModel, navController: NavController) {
     val formatter = DateTimeFormatter.ofPattern("dd")
     val formatterDayName = DateTimeFormatter.ofPattern("EE")
-    val startsMap = mutableMapOf<LocalDateTime, Int>()
+    val formatterMonthName = DateTimeFormatter.ofPattern("MMM")
+    val startsMap = mutableMapOf<LocalDateTime, MutableList<Int>>()
     travelInfoViewModel.tripRepo.getAllItems().forEach { trip ->
-        startsMap[trip.startDate] = trip.id
+        if (startsMap.containsKey(trip.startDate))
+            startsMap[trip.startDate]!!.add(trip.id)
+        else
+            startsMap[trip.startDate] = mutableListOf(trip.id)
     }
     startsMap.toSortedMap()
 
     LazyRow {
         item {
             startsMap.toSortedMap().forEach { entry ->
-                DayCard(
-                    day = entry.key.format(formatterDayName).uppercase(Locale.ROOT),
-                    date = entry.key.format(formatter),
-                    onClick = {
-                        navController.navigate(TripCPlanerScreens.DetailsScreen.name + "/" + entry.value)
-                    }
-                )
+                entry.value.forEach { id ->
+                    val trip= travelInfoViewModel.tripRepo.getById(id)
+                    DayCard(
+                        day = entry.key.format(formatterDayName).uppercase(Locale.ROOT),
+                        date = entry.key.format(formatter),
+                        month = entry.key.format(formatterMonthName).uppercase(Locale.ROOT),
+                        title = trip.title,
+                        onClick = {
+                            navController.navigate(TripCPlanerScreens.DetailsScreen.name + "/" + id)
+                        }
+                    )
+                }
+
             }
 
         }
@@ -54,7 +66,7 @@ fun MainScreenDCard(travelInfoViewModel: TravelInfoViewModel, navController: Nav
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DayCard(date: String, day: String, onClick: () -> Unit) {
+fun DayCard(date: String, day: String, onClick: () -> Unit, month: String, title: String) {
     Card(
         modifier = Modifier
             .height(90.dp)
@@ -72,6 +84,8 @@ fun DayCard(date: String, day: String, onClick: () -> Unit) {
         ) {
             Text(text = day)
             Text(text = date)
+            Text(text = month)
+            Text(text = title, fontSize = 12.sp, overflow = TextOverflow.Ellipsis)
         }
     }
 }

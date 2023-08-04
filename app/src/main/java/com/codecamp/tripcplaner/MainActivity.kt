@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val tripsStateFlow = MutableStateFlow<List<Trip>>(emptyList())

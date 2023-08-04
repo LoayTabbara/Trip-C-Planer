@@ -346,9 +346,7 @@ class TravelInfoViewModel @Inject constructor(
                     }
                 }
             } else {
-                val errorStream = connection.errorStream
-                val errorMessage = errorStream?.reader()?.readText() ?: "Unknown error"
-                Toast.makeText(context, "We couldn't generate share link", Toast.LENGTH_LONG)
+                Toast.makeText(context, "We couldn't generate share link", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -414,10 +412,8 @@ class TravelInfoViewModel @Inject constructor(
 
                 }
             } else {
-                val errorStream = connection.errorStream
-                val errorMessage = errorStream?.reader()?.readText() ?: "Unknown error"
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "A trip with  id: $sharedCode  wasn't found ", Toast.LENGTH_LONG)
+                    Toast.makeText(context, "A trip with the id: $sharedCode  wasn't found ", Toast.LENGTH_LONG)
                         .show()
                 }
             }

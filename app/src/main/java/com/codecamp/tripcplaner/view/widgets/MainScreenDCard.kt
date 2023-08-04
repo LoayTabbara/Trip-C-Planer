@@ -29,19 +29,19 @@ import java.util.Locale
 fun MainScreenDCard(travelInfoViewModel: TravelInfoViewModel, navController: NavController) {
     val formatter = DateTimeFormatter.ofPattern("dd")
     val formatterDayName = DateTimeFormatter.ofPattern("EE")
-    var startsMap = mutableMapOf<LocalDateTime, Int>()
+    val startsMap = mutableMapOf<LocalDateTime, Int>()
     travelInfoViewModel.tripRepo.getAllItems().forEach { trip ->
-        startsMap[trip.startDate]= trip.id
+        startsMap[trip.startDate] = trip.id
     }
     startsMap.toSortedMap()
 
     LazyRow {
         item {
             startsMap.toSortedMap().forEach { entry ->
-                dayCard(
-                    day = entry.key.format(formatterDayName).toUpperCase(Locale.ROOT),
+                DayCard(
+                    day = entry.key.format(formatterDayName).uppercase(Locale.ROOT),
                     date = entry.key.format(formatter),
-                    onClick={
+                    onClick = {
                         navController.navigate(TripCPlanerScreens.DetailsScreen.name + "/" + entry.value)
                     }
                 )
@@ -54,7 +54,7 @@ fun MainScreenDCard(travelInfoViewModel: TravelInfoViewModel, navController: Nav
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun dayCard(date: String, day: String, onClick: () -> Unit,) {
+fun DayCard(date: String, day: String, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .height(90.dp)

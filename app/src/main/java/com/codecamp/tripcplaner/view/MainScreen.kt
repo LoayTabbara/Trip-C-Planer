@@ -48,6 +48,7 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
+import com.codecamp.tripcplaner.model.data.Trip
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.MainScreenDCard
 import com.codecamp.tripcplaner.view.widgets.TripCard
@@ -55,10 +56,8 @@ import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import kotlinx.coroutines.delay
 import org.json.JSONArray
 import org.json.JSONObject
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
@@ -187,36 +186,7 @@ fun MainScreen(
                             ) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." + ". ${item.cities.keys.last()}(${item.activities[item.activities.lastIndex - 1]}, ${item.activities.last()})",
                             tripType = item.transportType,
                             onShareClicked = {
-
-                                val packingListJsonArray = JSONArray()
-                                item.packingList.keys.forEach { packingListObject ->
-                                    packingListJsonArray.put(packingListObject)
-                                }
-                                val latLngJsonArray = JSONArray()
-                                val timesJsonArray = JSONArray()
-                                val citiesJsonArray = JSONArray()
-                                val activitiesJsonArray = JSONArray()
-                                item.cities.values.forEach { pair ->
-                                    latLngJsonArray.put(pair.first.latitude.toString() + "," + pair.first.longitude.toString())
-                                    timesJsonArray.put(pair.second.toString())
-                                }
-                                item.cities.keys.forEach { city ->
-                                    citiesJsonArray.put(city)
-                                }
-                                item.activities.forEach { activity ->
-                                    activitiesJsonArray.put(activity)
-                                }
-                                val bodyForPostRequestForSharing = JSONObject().apply {
-                                    put("message from developers", "You do not have our app 'TripCPlaner' installed. Please install it to make use ot the shared trip.")
-                                    put("packingList", packingListJsonArray)
-                                    put("latLng", latLngJsonArray)
-                                    put("times", timesJsonArray)
-                                    put("cities", citiesJsonArray)
-                                    put("activities", activitiesJsonArray)
-                                    put("transport", item.transportType)
-                                    put("end_date", item.endDate.toString())
-                                }
-                                travelInfoViewModel.shareTrip(bodyForPostRequestForSharing, context)
+                                travelInfoViewModel.shareTrip(item, context)
                             },
                             onClicked = {
                                 navController.navigate(TripCPlanerScreens.DetailsScreen.name + "/${item.id}")

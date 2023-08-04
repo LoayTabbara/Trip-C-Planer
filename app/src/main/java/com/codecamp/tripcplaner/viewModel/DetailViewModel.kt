@@ -12,10 +12,10 @@ class DetailViewModel @Inject constructor() : ViewModel() {
     private var transportMean= mutableStateOf("")
     private lateinit var  startDate: LocalDateTime
     private lateinit var endDate:LocalDateTime
-     var activities= mutableListOf<String>()
+    var activities= mutableListOf<String>()
     var cities= mutableListOf<String>()
 
-private var newTitle= mutableStateOf("")
+    private var newTitle= mutableStateOf("")
     fun clearVM(){
         packList = mutableMapOf<String,Boolean>()
         transportMean= mutableStateOf("")
@@ -48,7 +48,7 @@ private var newTitle= mutableStateOf("")
         return newTitle.value
     }
 
-    fun setTransportMean(value: String) {
+    fun setMeansOfTransport(value: String) {
         transportMean.value = value
     }
     fun getTransportMean(): String {

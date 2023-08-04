@@ -23,7 +23,7 @@ fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: Trave
         startDestination = TripCPlanerScreens.MainScreen.name
     ) {
         composable(TripCPlanerScreens.MainScreen.name) {
-            MainScreen(navController, travelInfoViewModel)
+            MainScreen(navController, travelInfoViewModel, detailsViewModel)
         }
         composable(TripCPlanerScreens.SplashScreen.name) {
             SplashScreen(navController)

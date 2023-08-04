@@ -39,7 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
@@ -48,7 +47,6 @@ import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.PackCard
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
-import java.time.LocalDateTime
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,7 +74,7 @@ fun PackScreen(
 
     }
     val myList =
-        mutableMapOf<String,Boolean>()
+        mutableMapOf<String, Boolean>()
 
     val deletedList = remember { mutableStateListOf<String>() }
 
@@ -90,18 +88,30 @@ fun PackScreen(
         Text(text = "Travel Period ", style = MaterialTheme.typography.displaySmall)
         Row {
 
-            Text(text = "from ${travelInfoViewModel.times.value.first().substring(0,10)} to ${travelInfoViewModel.times.value.last().substring(0,10)}", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = "from ${
+                    viewModel.getStartDate().toString().substring(0, 10)
+                } to ${viewModel.getEndDate().toString().substring(0, 10)}",
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
         Text(text = "Places to Visit", style = MaterialTheme.typography.displaySmall)
-        travelInfoViewModel.citiesWithActivity.forEach{
+        travelInfoViewModel.citiesWithActivity.forEach {
             Row(Modifier.fillMaxWidth()) {
                 Column(Modifier.fillMaxWidth(0.2f)) {
 
-                    Text(text = "${it.key}:", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = "${it.key}:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
                 Column(Modifier.fillMaxWidth()) {
 
-                    Text(text = "${it.value[0]}\n${it.value[1]}\n", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = "${it.value[0]}\n${it.value[1]}\n",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
@@ -114,13 +124,13 @@ fun PackScreen(
 
             for (item in travelInfoViewModel.packingList) {
 
-                PackCard(item = item, viewModel = viewModel, onDelete = {
+                PackCard(item = item, onDelete = {
                     counter.value++
                     deletedList.add(it)
 
                 }) {
                     if (it) {
-                        myList[item]=false
+                        myList[item] = false
                         Log.d("myList  +", myList.toString())
                     } else {
                         myList.remove(item)
@@ -172,10 +182,7 @@ fun PackScreen(
                 ) {
                     Button(
                         onClick = {
-
-//
                             popUpOnSave.value = true
-
                         },
                         shape = RoundedCornerShape(10.dp),
                         modifier = Modifier
@@ -224,7 +231,8 @@ fun PackScreen(
                             style = MaterialTheme.typography.displaySmall,
                             modifier = Modifier.padding(10.dp)
                         )
-                        TextField(value = newItem.value,
+                        TextField(
+                            value = newItem.value,
                             onValueChange = { newItem.value = it },
                             label = { Text(text = " + Enter new item") },
                             modifier = Modifier
@@ -274,7 +282,8 @@ fun PackScreen(
                             style = MaterialTheme.typography.displaySmall,
                             modifier = Modifier.padding(10.dp)
                         )
-                        TextField(value = newTitle.value,
+                        TextField(
+                            value = newTitle.value,
                             onValueChange = { newTitle.value = it },
                             label = { Text(text = " + Enter Plan Title") },
                             modifier = Modifier
@@ -291,19 +300,23 @@ fun PackScreen(
                                 if (newTitle.value != "") {
                                     viewModel.setNewTitle(newTitle.value)
                                 }
-                                Log.d("vor packlist",travelInfoViewModel.packingList.toString())
+                                Log.i("vor packlist", travelInfoViewModel.packingList.toString())
 
                                 viewModel.setPackList(myList)
-                                viewModel.cities=travelInfoViewModel.citiesWithActivity.keys.toMutableList()
-                                viewModel.setDates(LocalDateTime.parse(travelInfoViewModel.times.value.first()),LocalDateTime.parse(travelInfoViewModel.times.value.last()))
-                                travelInfoViewModel.packingList=viewModel.getPackList().keys.toMutableList()
+                                viewModel.cities =
+                                    travelInfoViewModel.citiesWithActivity.keys.toMutableList()
+                                viewModel.setDates(
+                                    travelInfoViewModel.startDate,
+                                    travelInfoViewModel.endDate
+                                )
+                                travelInfoViewModel.packingList =
+                                    viewModel.getPackList().keys.toMutableList()
 
-                                Log.d("nach packlist",travelInfoViewModel.packingList.toString()+"mylsit:"+myList.toString())
                                 travelInfoViewModel.sendDateToSave(
                                     title = viewModel.getNewTitle(),
                                     activities = viewModel.activities,
                                     transportType = viewModel.getTransportMean(),
-                                    )
+                                )
                                 newTitle.value = ""
                                 popUpOnSave.value = false
                                 navController.navigate(TripCPlanerScreens.MainScreen.name)
@@ -320,8 +333,7 @@ fun PackScreen(
             }
         }
     }
-    if(counter.value>0)
-    {
+    if (counter.value > 0) {
         for (item in deletedList) {
             travelInfoViewModel.removeFromPackingList(item)
             counter.value--
@@ -330,11 +342,5 @@ fun PackScreen(
         deletedList.clear()
     }
 
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PackScreenPreview() {
 
 }

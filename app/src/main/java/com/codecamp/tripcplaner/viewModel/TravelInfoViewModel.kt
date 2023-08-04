@@ -10,10 +10,12 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.codecamp.tripcplaner.MAPS_API_KEY
 import com.codecamp.tripcplaner.model.data.Message
 import com.codecamp.tripcplaner.model.data.Trip
 import com.codecamp.tripcplaner.model.data.TripRepositoryImplementation
+import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.model.remote.LatLngService
 import com.codecamp.tripcplaner.model.remote.OpenAIRequestBody
 import com.codecamp.tripcplaner.model.remote.RetrofitInit
@@ -41,6 +43,7 @@ data class CityInfo(
     @Json(name = "Activities") val activities: List<String>,
     @Json(name = "Arrival Time") val arrivalTime: String
 )
+
 data class ItineraryInfo(
     @Json(name = "Packing List") val packingList: List<String>,
     @Json(name = "Itinerary") val itinerary: Map<String, CityInfo>
@@ -53,13 +56,14 @@ class TravelInfoViewModel @Inject constructor(
     tripRepository: TripRepositoryImplementation
 ) : ViewModel() {
     private var localDateTimeList = mutableListOf<LocalDateTime>()
-    private var meansOfTransport=""
+    private var meansOfTransport = ""
     var savedTrips = mutableListOf<Trip>()
     var latLngList = mutableListOf<LatLng>()
     var tripRepo = tripRepository
     var hasResult = mutableStateOf(false)
 
     var startDate: LocalDateTime = LocalDateTime.now()
+    var endDate: LocalDateTime = LocalDateTime.now()
     private var messages = mutableStateListOf<Message>()
     private var packingListJson = mutableStateOf(listOf<String>())
     private var activitiesJson = mutableStateOf(mapOf<String, CityInfo>())
@@ -117,30 +121,44 @@ class TravelInfoViewModel @Inject constructor(
                 activitiesJson.value = itineraryInfo?.itinerary ?: mapOf()
 
                 // Copy the state to the publicly accessible variables
-                packingList.addAll( packingListJson.value)
+                packingList.addAll(packingListJson.value)
                 if (citiesWithActivity.keys.contains("City A") || citiesWithActivity.keys.contains("CityA") || citiesWithActivity.keys.contains(
                         "City1"
                     ) || citiesWithActivity.keys.contains("City 1") || citiesWithActivity.keys.contains(
                         "Stopover 1"
                     )
                 ) {
-                    Toast.makeText(context, "Faulty result, generating standard answer", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        "Faulty result, generating standard answer",
+                        Toast.LENGTH_LONG
+                    ).show()
                     generatePseudo = true
                 } else {
 
-                    citiesWithActivity = activitiesJson.value.mapValues { entry -> entry.value.activities }
-                    arrivalTimesInCities.value = activitiesJson.value.mapValues { entry -> entry.value.arrivalTime }
+                    citiesWithActivity =
+                        activitiesJson.value.mapValues { entry -> entry.value.activities }
+                    arrivalTimesInCities.value =
+                        activitiesJson.value.mapValues { entry -> entry.value.arrivalTime }
                     packingList = packingListJson.value.toMutableList()
-                    times.value= arrivalTimesInCities.value.values.toList()
+                    times.value = arrivalTimesInCities.value.values.toList()
                 }
             } catch (e: SocketTimeoutException) {
-                Toast.makeText(context, "Connection timeout error, generating standard answer", Toast.LENGTH_LONG)
+                Toast.makeText(
+                    context,
+                    "Connection timeout error, generating standard answer",
+                    Toast.LENGTH_LONG
+                )
                     .show()
                 Log.e("Error", e.message.toString())
                 generatePseudo = true
 
             } catch (e: Exception) {
-                Toast.makeText(context, "Unknown Error! ${e.message}, generating standard answer", Toast.LENGTH_LONG)
+                Toast.makeText(
+                    context,
+                    "Unknown Error! ${e.message}, generating standard answer",
+                    Toast.LENGTH_LONG
+                )
                     .show()
                 Log.e("Error", e.message.toString())
                 citiesWithActivity = mapOf()
@@ -148,16 +166,46 @@ class TravelInfoViewModel @Inject constructor(
                 generatePseudo = true
 
             }
-            if(generatePseudo){
-                packingList = mutableListOf("Passport","Clothes","Toiletries","Camera","Phone charger","Snacks","Water bottle","Maps","Travel guidebook","Sunglasses")
-                citiesWithActivity= mapOf(
-                    "Kassel" to listOf("Visit Bergpark Wilhelmshöhe", "Explore Museum Fridericianum"),
-                    "Paderborn" to listOf("Visit Paderborn Cathedral", "Explore Pader Springs"),
-                    "Münster" to listOf("Visit Münster Cathedral","Explore Münster Botanical Garden"),
-                    "Dortmund" to listOf("Visit Dortmund U-Tower","Explore Westfalenpark"),
+            if (generatePseudo) {
+                packingList = mutableListOf(
+                    "Passport",
+                    "Clothes",
+                    "Toiletries",
+                    "Camera",
+                    "Phone charger",
+                    "Snacks",
+                    "Water bottle",
+                    "Maps",
+                    "Travel guidebook",
+                    "Sunglasses"
                 )
-                latLngList= mutableListOf(LatLng(51.3128,9.4815), LatLng(51.71, 8.766),LatLng(51.9615,7.6282),LatLng(51.5142,7.4684))
-                times = mutableStateOf(listOf(startDate.toString(), startDate.plusDays(1).toString(), startDate.plusDays(2).toString(),startDate.plusDays(3).toString(), startDate.plusDays(5).toString() ))
+                citiesWithActivity = mapOf(
+                    "Kassel" to listOf(
+                        "Visit Bergpark Wilhelmshöhe",
+                        "Explore Museum Fridericianum"
+                    ),
+                    "Paderborn" to listOf("Visit Paderborn Cathedral", "Explore Pader Springs"),
+                    "Münster" to listOf(
+                        "Visit Münster Cathedral",
+                        "Explore Münster Botanical Garden"
+                    ),
+                    "Dortmund" to listOf("Visit Dortmund U-Tower", "Explore Westfalenpark"),
+                )
+                latLngList = mutableListOf(
+                    LatLng(51.3128, 9.4815),
+                    LatLng(51.71, 8.766),
+                    LatLng(51.9615, 7.6282),
+                    LatLng(51.5142, 7.4684)
+                )
+                times = mutableStateOf(
+                    listOf(
+                        startDate.toString(),
+                        startDate.plusDays(1).toString(),
+                        startDate.plusDays(2).toString(),
+                        startDate.plusDays(3).toString(),
+                        startDate.plusDays(5).toString()
+                    )
+                )
             }
             hasResult.value = true
         }
@@ -189,9 +237,8 @@ class TravelInfoViewModel @Inject constructor(
 
     fun sendDateToSave(
         title: String,
-
         activities: MutableList<String>,
-        transportType: String
+        transportType: String,
     ) {
 
         times.value.forEach {
@@ -200,8 +247,8 @@ class TravelInfoViewModel @Inject constructor(
         viewModelScope.launch {
             tripRepo.saveData(
                 title = title,
-                startDate = LocalDateTime.parse(times.value.first()) ,
-                endDate = LocalDateTime.parse(times.value.last()),
+                startDate = LocalDateTime.parse(times.value.first()),
+                endDate = endDate,
                 cities = citiesWithActivity.keys.toMutableList(),
                 packingList = packingList,
                 latLngList = latLngList,
@@ -211,7 +258,41 @@ class TravelInfoViewModel @Inject constructor(
             )
         }
     }
-    fun shareTrip(body: JSONObject, context: Context) {
+
+    fun generateBodyForSharing(item: Trip): JSONObject {
+        val packingListJsonArray = JSONArray()
+        item.packingList.keys.forEach { packingListObject ->
+            packingListJsonArray.put(packingListObject)
+        }
+        val latLngJsonArray = JSONArray()
+        val timesJsonArray = JSONArray()
+        val citiesJsonArray = JSONArray()
+        val activitiesJsonArray = JSONArray()
+        item.cities.values.forEach { pair ->
+            latLngJsonArray.put(pair.first.latitude.toString() + "," + pair.first.longitude.toString())
+            timesJsonArray.put(pair.second.toString())
+        }
+        item.cities.keys.forEach { city ->
+            citiesJsonArray.put(city)
+        }
+        item.activities.forEach { activity ->
+            activitiesJsonArray.put(activity)
+        }
+        val bodyForPostRequestForSharing = JSONObject().apply {
+            put("message from developers", "You do not have our app 'TripCPlaner' installed. Please install it to make use ot the shared trip.")
+            put("packingList", packingListJsonArray)
+            put("latLng", latLngJsonArray)
+            put("times", timesJsonArray)
+            put("cities", citiesJsonArray)
+            put("activities", activitiesJsonArray)
+            put("transport", item.transportType)
+            put("end_date", item.endDate.toString())
+        }
+        return bodyForPostRequestForSharing
+    }
+
+    fun shareTrip(item: Trip, context: Context) {
+        val body = generateBodyForSharing(item)
         viewModelScope.launch(Dispatchers.IO) {
             val url = URL("https://extendsclass.com/api/json-storage/bin")
             val connection = url.openConnection() as HttpURLConnection
@@ -237,17 +318,25 @@ class TravelInfoViewModel @Inject constructor(
 
                     withContext(Dispatchers.Main) {
 
-                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clipboard =
+                            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         val clip = ClipData.newPlainText("Shared Trip ID", id)
                         clipboard.setPrimaryClip(clip)
 
 
-                        Toast.makeText(context, "copied trip id: $id to clipboard", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            "copied trip id: $id to clipboard",
+                            Toast.LENGTH_LONG
+                        ).show()
 
 
                         val sendIntent = Intent().apply {
                             action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, "Here's the shared trip ID: $id")
+                            putExtra(
+                                Intent.EXTRA_TEXT,
+                                "https://extendsclass.com/api/json-storage/bin/$id"
+                            )
                             type = "text/plain"
                         }
 
@@ -263,7 +352,12 @@ class TravelInfoViewModel @Inject constructor(
         }
     }
 
-    fun fetchTrip(sharedCode: String, context: Context) {
+    fun fetchTrip(
+        sharedCode: String,
+        detailsViewModel: DetailViewModel,
+        context: Context,
+        navController: NavController
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             val url = URL("https://extendsclass.com/api/json-storage/bin/$sharedCode")
             val connection = url.openConnection() as HttpURLConnection
@@ -278,7 +372,6 @@ class TravelInfoViewModel @Inject constructor(
                     val jsonResponse = JSONObject(response)
 
 
-                    val title = jsonResponse.getString("title")
                     val packingListJsonArray = jsonResponse.getJSONArray("packingList")
                     val latLngJsonArray = jsonResponse.getJSONArray("latLng")
                     val timesJsonArray = jsonResponse.getJSONArray("times")
@@ -286,38 +379,48 @@ class TravelInfoViewModel @Inject constructor(
                     val activitiesJsonArray = jsonResponse.getJSONArray("activities")
 
 
-                    val packingList = List(packingListJsonArray.length()) { packingListJsonArray.getString(it) }
                     val latLng = List(latLngJsonArray.length()) { latLngJsonArray.getString(it) }
-                    val times = List(timesJsonArray.length()) { timesJsonArray.getString(it) }
                     val cities = List(citiesJsonArray.length()) { citiesJsonArray.getString(it) }
-                    val activities = List(activitiesJsonArray.length()) { activitiesJsonArray.getString(it) }
-                    citiesWithActivity = mapOf()
-                    
-
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Trip fetched successfully!", Toast.LENGTH_LONG).show()
-                        Log.i("packinglist",packingList.toString())
-                        Log.i("latLng",latLng.toString())
-                        Log.i("times",times.toString())
-                        Log.i("cities",cities.toString())
-                        Log.i("activities",activities.toString())
+                    val activities =
+                        List(activitiesJsonArray.length()) { activitiesJsonArray.getString(it) }
+                    val timesArray = List(timesJsonArray.length()) { timesJsonArray.getString(it) }
+                    val tempCitiesWithActivityMap = mutableMapOf<String, List<String>>()
+                    for (i in cities.indices) {
+                        tempCitiesWithActivityMap[cities[i]] =
+                            listOf(activities[2 * i], activities[2 * i + 1])
                     }
+                    meansOfTransport = jsonResponse.getString("transport")
+                    val endDateString = jsonResponse.getString("end_date")
+                    citiesWithActivity = tempCitiesWithActivityMap.toMap()
+                    packingList = MutableList(packingListJsonArray.length()) {
+                        packingListJsonArray.getString(it)
+                    }
+                    latLngList = mutableListOf()
+                    latLng.forEach {
+                        val latLngSplit = it.split(",")
+                        latLngList.add(LatLng(latLngSplit[0].toDouble(), latLngSplit[1].toDouble()))
+                    }
+                    times = mutableStateOf(timesArray)
+                    startDate = LocalDateTime.parse(times.value.first())
+                    endDate = LocalDateTime.parse(endDateString)
+                    detailsViewModel.setDates(startDate, endDate)
+                    detailsViewModel.setMeansOfTransport(meansOfTransport)
+                    withContext(Dispatchers.Main) {
+
+                        navController.navigate(TripCPlanerScreens.PackScreen.name)
+                    }
+
+
                 }
             } else {
                 val errorStream = connection.errorStream
                 val errorMessage = errorStream?.reader()?.readText() ?: "Unknown error"
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Error fetching trip: $errorMessage", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Error fetching trip: $errorMessage", Toast.LENGTH_LONG)
+                        .show()
                 }
             }
         }
     }
 
-
-
-
-
 }
-
-
-

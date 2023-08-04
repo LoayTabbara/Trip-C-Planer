@@ -55,7 +55,6 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
@@ -137,7 +136,7 @@ fun MapScreen(
                             val duration = ChronoUnit.DAYS.between(
                                 startDate, endDate
                             )
-                            travelInfoViewModel.startDate = startDate.atStartOfDay()
+                            travelInfoViewModel.startDate = startDate.atTime(6,0)
                             travelInfoViewModel.sendMessage(
                                 listOf(tripPickerList[0].value, tripPickerList[1].value),
                                 duration.toInt(),
@@ -164,15 +163,11 @@ fun MapScreen(
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0XFF388E3C)),
                             onClick = {
                                 travelInfoViewModel.hasResult.value = false
-                                val startDate =
-                                    if (travelInfoViewModel.generatePseudo) LocalDateTime.parse(
-                                        travelInfoViewModel.times.value.first()
-                                    ) else LocalDate.parse(tripPickerList[2].value).atStartOfDay()
-                                val endDate =
-                                    if (travelInfoViewModel.generatePseudo) LocalDateTime.parse(
-                                        travelInfoViewModel.times.value.last()
-                                    ) else LocalDate.parse(tripPickerList[3].value).atStartOfDay()
+                                val startDate = LocalDate.parse(tripPickerList[2].value).atTime(6,0)
+                                val endDate = LocalDate.parse(tripPickerList[3].value).atTime(6,0)
+
                                 detailsViewModel.setDates(startDate, endDate)
+                                travelInfoViewModel.endDate = endDate
 
                                 navController.navigate(TripCPlanerScreens.PackScreen.name)
                             }) {
@@ -231,7 +226,7 @@ fun MapScreen(
                 } else {
                     cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
                 }
-                detailsViewModel.setTransportMean(transportMean!!)
+                detailsViewModel.setMeansOfTransport(transportMean!!)
                 initialized.value = true
             }
             GoogleMap(

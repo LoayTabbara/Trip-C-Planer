@@ -41,8 +41,9 @@ fun GeneratedTripOverview(
 
         for (i in 1 until travelInfoViewModel.citiesWithActivity.keys.size) {
             TravelSegmentRow(
-                travelInfoViewModel.citiesWithActivity.keys.elementAt(i-1),
-                travelInfoViewModel, i)
+                travelInfoViewModel.citiesWithActivity.keys.elementAt(i - 1),
+                travelInfoViewModel, i
+            )
         }
         Text(
             fontSize = 20.sp,

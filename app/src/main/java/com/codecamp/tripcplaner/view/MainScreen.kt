@@ -48,9 +48,11 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
+import com.codecamp.tripcplaner.model.data.Trip
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.MainScreenDCard
 import com.codecamp.tripcplaner.view.widgets.TripCard
+import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -60,10 +62,14 @@ import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoViewModel) {
+fun MainScreen(
+    navController: NavController,
+    travelInfoViewModel: TravelInfoViewModel,
+    detailsViewModel: DetailViewModel
+) {
 
     Text("MainScreen")
-    val transportMean = remember { mutableStateOf("") }
+    val meansOfTransport = remember { mutableStateOf("") }
     val shareCode = remember { mutableStateOf("") }
     val popUpOn = remember {
         mutableStateOf(false)
@@ -99,8 +105,8 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
         ) {
             Button(
                 onClick = {
-                    if (transportMean.value != "" && !popUpOn.value) {
-                        navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
+                    if (meansOfTransport.value != "" && !popUpOn.value) {
+                        navController.navigate(TripCPlanerScreens.MapScreen.name + "/${meansOfTransport.value}")
                     } else {
                         popUpOn.value = true
                     }
@@ -159,9 +165,9 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                         ),
                         keyboardActions = KeyboardActions(onDone = {
                             // Calling fetchTrip from viewModel using the sharedCode value
-                            travelInfoViewModel.fetchTrip(shareCode.value, context)
-                            // Clearing the sharedCode TextField after fetching
+                            travelInfoViewModel.fetchTrip(shareCode.value, detailsViewModel, context, navController)
                             shareCode.value = ""
+
                         }),
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done, keyboardType = KeyboardType.Text
@@ -180,34 +186,7 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                             ) + "\n" + item.cities.keys.first() + "(${item.activities[0]}, ${item.activities[1]}) .." + ". ${item.cities.keys.last()}(${item.activities[item.activities.lastIndex - 1]}, ${item.activities.last()})",
                             tripType = item.transportType,
                             onShareClicked = {
-
-                                val packingListJsonArray = JSONArray()
-                                item.packingList.keys.forEach { packingListObject ->
-                                    packingListJsonArray.put(packingListObject)
-                                }
-                                val latLngJsonArray = JSONArray()
-                                val timesJsonArray = JSONArray()
-                                val citiesJsonArray = JSONArray()
-                                val activitiesJsonArray = JSONArray()
-                                item.cities.values.forEach { pair ->
-                                    latLngJsonArray.put(pair.first.latitude.toString() + "," + pair.first.longitude.toString())
-                                    timesJsonArray.put(pair.second.toString())
-                                }
-                                item.cities.keys.forEach { city ->
-                                    citiesJsonArray.put(city)
-                                }
-                                item.activities.forEach { activity ->
-                                    activitiesJsonArray.put(activity)
-                                }
-                                var bodyForPostRequestForSharing = JSONObject().apply {
-                                    put("title", item.title)
-                                    put("packingList", packingListJsonArray)
-                                    put("latLng", latLngJsonArray)
-                                    put("times", timesJsonArray)
-                                    put("cities", citiesJsonArray)
-                                    put("activities", activitiesJsonArray)
-                                }
-                                travelInfoViewModel.shareTrip(bodyForPostRequestForSharing, context) 
+                                travelInfoViewModel.shareTrip(item, context)
                             },
                             onClicked = {
                                 navController.navigate(TripCPlanerScreens.DetailsScreen.name + "/${item.id}")
@@ -247,9 +226,9 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     )
                     Button(
                         onClick = {
-                            transportMean.value = "walking"
+                            meansOfTransport.value = "walking"
                             popUpOn.value = false
-                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
+                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${meansOfTransport.value}")
 
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -259,9 +238,9 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     }
                     Button(
                         onClick = {
-                            transportMean.value = "driving"
+                            meansOfTransport.value = "driving"
                             popUpOn.value = false
-                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
+                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${meansOfTransport.value}")
 
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -271,9 +250,9 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     }
                     Button(
                         onClick = {
-                            transportMean.value = "transit"
+                            meansOfTransport.value = "transit"
                             popUpOn.value = false
-                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
+                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${meansOfTransport.value}")
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(Color.Gray)
@@ -282,9 +261,9 @@ fun MainScreen(navController: NavController, travelInfoViewModel: TravelInfoView
                     }
                     Button(
                         onClick = {
-                            transportMean.value = "bicycling"
+                            meansOfTransport.value = "bicycling"
                             popUpOn.value = false
-                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${transportMean.value}")
+                            navController.navigate(TripCPlanerScreens.MapScreen.name + "/${meansOfTransport.value}")
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(Color.Gray)

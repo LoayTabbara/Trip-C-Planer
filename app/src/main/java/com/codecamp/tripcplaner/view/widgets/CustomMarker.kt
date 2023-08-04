@@ -29,25 +29,41 @@ fun CustomMarker(
     ) {
         Box(modifier = Modifier.background(MaterialTheme.colorScheme.onPrimary)) {
             val standardMessage =
-                travelInfoViewModel.citiesWithActivity.isEmpty() || travelInfoViewModel.citiesWithActivity[travelInfoViewModel.citiesWithActivity.keys.elementAt(i)] == null
+                travelInfoViewModel.citiesWithActivity.isEmpty() || travelInfoViewModel.citiesWithActivity[travelInfoViewModel.citiesWithActivity.keys.elementAt(
+                    i
+                )] == null
             val firstPart =
                 if (standardMessage)
                     "You can see suggested activities"
-                else travelInfoViewModel.citiesWithActivity[travelInfoViewModel.citiesWithActivity.keys.elementAt(i)]!![0]
+                else travelInfoViewModel.citiesWithActivity[travelInfoViewModel.citiesWithActivity.keys.elementAt(
+                    i
+                )]!![0]
 
             val secondPart = if (standardMessage)
                 "after you have generated a trip"
-            else travelInfoViewModel.citiesWithActivity[travelInfoViewModel.citiesWithActivity.keys.elementAt(i)]!![1]
+            else travelInfoViewModel.citiesWithActivity[travelInfoViewModel.citiesWithActivity.keys.elementAt(
+                i
+            )]!![1]
             Column(
                 Modifier.fillMaxWidth(0.7f),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "City: ${if(standardMessage) "" else travelInfoViewModel.citiesWithActivity.keys.elementAt(i) }")
+                Text(
+                    text = "City: ${
+                        if (standardMessage) "" else travelInfoViewModel.citiesWithActivity.keys.elementAt(
+                            i
+                        )
+                    }"
+                )
                 Text(
                     text = firstPart,
                     modifier = Modifier.padding(8.dp), textAlign = TextAlign.Center
                 )
-                Text(text = secondPart, modifier = Modifier.padding(8.dp), textAlign = TextAlign.Center)
+                Text(
+                    text = secondPart,
+                    modifier = Modifier.padding(8.dp),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }

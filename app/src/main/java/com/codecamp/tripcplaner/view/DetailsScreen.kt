@@ -1,6 +1,7 @@
 package com.codecamp.tripcplaner.view
 
 import android.app.DatePickerDialog
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -27,6 +28,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -72,7 +75,7 @@ fun DetailsScreen(
             "transit" -> paintings["transit"] = R.drawable.transit
             "bicycling" -> paintings["bicycling"] = R.drawable.bicycling
         }
-        var selectedItem by remember { mutableStateOf("") }
+        var selectedCity by remember { mutableStateOf("") }
 
         // State to control the visibility of the dropdown menu
         var isDropdownMenuVisible by remember { mutableStateOf(false) }
@@ -96,15 +99,17 @@ fun DetailsScreen(
         )
 
 
-        val popUpOn = remember { mutableStateOf(false) }
-        val confirmed = remember { mutableStateOf(false) }
+        val popUpOn = remember { mutableStateListOf<String>("false") }
+
+
+        val confirmed = remember { mutableStateListOf<String>("false")  }
 
         Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(if (popUpOn.value) 0.dp else 10.dp)
-                .blur(if (popUpOn.value) 20.dp else 0.dp)
+                .padding(if (popUpOn[0].toBooleanStrict()) 0.dp else 10.dp)
+                .blur(if (popUpOn[0].toBooleanStrict()) 20.dp else 0.dp)
                 .verticalScroll(enabled = true, state = rememberScrollState())
         ) {
 
@@ -124,16 +129,20 @@ fun DetailsScreen(
                 modifier = Modifier.padding(start = 10.dp)
             )
             StartTargetRows(thisTrip, viewModel)
+            var i=0
             for (item in viewModel.getPackList()) {
+                val itemId=myId+i
                 Spacer(modifier = Modifier.height(10.dp))
 
-                DetailCard(text = item.key) { checked ->
-                    if (checked) {
-                        popUpOn.value = true
+                DetailCard(text = item.key) { reminderPressed ->
+                    if (reminderPressed) {
+                        popUpOn[0] = "true"
+                        popUpOn.add(1, itemId.toString())
+                        popUpOn.add(2, item.key)
                     }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-
+                i++
             }
             Spacer(modifier = Modifier.height(10.dp))
             Button(
@@ -154,9 +163,11 @@ fun DetailsScreen(
             }
         }
 
-        if (popUpOn.value) {
+        if (popUpOn[0].toBooleanStrict()) {
             Popup(
-                alignment = Alignment.Center, onDismissRequest = { popUpOn.value = false },
+                alignment = Alignment.Center, onDismissRequest = { popUpOn[0] = "false"
+                    date.value=""
+                    selectedCity="" },
                 properties = PopupProperties(
                     focusable = true,
                     dismissOnBackPress = true,
@@ -175,7 +186,7 @@ fun DetailsScreen(
                     ) {
 
                         Text(
-                            text = "Add Time",
+                            text = "Add Time+",
                             style = MaterialTheme.typography.displaySmall,
                             modifier = Modifier.padding(10.dp)
                         )
@@ -193,7 +204,7 @@ fun DetailsScreen(
                                 .padding(16.dp)
                                 .fillMaxWidth()
                         ) {
-                            Text(if (selectedItem == "") "Select City" else selectedItem)
+                            Text(if (selectedCity == "") "Select City" else selectedCity)
                         }
 
                         DropdownMenu(
@@ -201,15 +212,21 @@ fun DetailsScreen(
                             onDismissRequest = { isDropdownMenuVisible = false }) {
                             viewModel.cities.forEach { city ->
                                 DropdownMenuItem(text = { Text(text = city) }, onClick = {
-                                    selectedItem = city
+                                    selectedCity = city
                                     isDropdownMenuVisible = false
                                 })
                             }
                         }
-                        Button(onClick = {
-                            Log.d("DetailsScreen", "DetailsScreen: $date and $selectedItem")
-                            confirmed.value = true
-                            popUpOn.value = false
+                        Button(enabled = !(date.value=="" || selectedCity==""),onClick = {
+                            Log.d("DetailsScreen", "DetailsScreen: ${date.value} and $selectedCity")
+                            confirmed[0] = "true"
+                            confirmed.add(1, date.value)
+                            confirmed.add(2, selectedCity)
+                            confirmed.add(3, popUpOn[1])//id
+                            confirmed.add(4, popUpOn[2])//item name
+                            date.value=""
+                            selectedCity=""
+                            popUpOn[0] = "false"
                         }) {
                             Text(text = "Confirm")
                         }
@@ -219,20 +236,23 @@ fun DetailsScreen(
                 }
             }
         }
-        var notificationScheduled by remember { mutableStateOf(false) }
-        if (confirmed.value) {
+//        var notificationScheduled by remember { mutableStateOf(false) }
+        if (confirmed[0].toBooleanStrict()) {
 
             scheduleNotification(
-                LocalContext.current, 2, 7000, "button1"
+                LocalContext.current, confirmed[3].toInt(), confirmed[1], "PackAlert", city = confirmed[2], itemName = confirmed[4]
             )
-            notificationScheduled = true
-            confirmed.value = false
+
+            confirmed[0] = "false"
 
         }
     }
 
 }
-
+private fun cancelNotification(context: Context, notificationId: Int) {
+    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    notificationManager.cancel(notificationId)
+}
 @Composable
 fun GoogleMapsButton(
     start: LatLng,

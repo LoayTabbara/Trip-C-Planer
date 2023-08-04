@@ -41,4 +41,8 @@ interface TripDao {
     @Query("SELECT COUNT(*) FROM trips")
     fun getCount(): Int
 
+    @Query("UPDATE trips SET packing_list = :packingList WHERE id = :id")
+    fun updatePackingList(id: Int, packingList: MutableMap<String, Boolean>)
+
+
 }

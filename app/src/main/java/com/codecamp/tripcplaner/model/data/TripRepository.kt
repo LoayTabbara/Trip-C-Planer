@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 interface TripRepository {
     fun getAllItems(): MutableList<Trip>
+    suspend fun updatePackingList(id: Int, packingList: MutableMap<String, Boolean>)
     suspend fun insertAll(trips: MutableList<Trip>)
     suspend fun insertTrip(trip: Trip)
     fun deleteAll()

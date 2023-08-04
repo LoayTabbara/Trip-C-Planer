@@ -335,7 +335,7 @@ class TravelInfoViewModel @Inject constructor(
                             action = Intent.ACTION_SEND
                             putExtra(
                                 Intent.EXTRA_TEXT,
-                                "https://extendsclass.com/api/json-storage/bin/$id"
+                                "Use the code \n\n$id\n\ninside the TripCPlaner App to see my awesome trip or simply click the link: https://pink-trudy-95.tiiny.site/?id=$id"
                             )
                             type = "text/plain"
                         }
@@ -347,7 +347,7 @@ class TravelInfoViewModel @Inject constructor(
             } else {
                 val errorStream = connection.errorStream
                 val errorMessage = errorStream?.reader()?.readText() ?: "Unknown error"
-                Log.e("ShareTripError", errorMessage)
+                Toast.makeText(context, "We couldn't generate share link", Toast.LENGTH_LONG)
             }
         }
     }
@@ -416,7 +416,7 @@ class TravelInfoViewModel @Inject constructor(
                 val errorStream = connection.errorStream
                 val errorMessage = errorStream?.reader()?.readText() ?: "Unknown error"
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Error fetching trip: $errorMessage", Toast.LENGTH_LONG)
+                    Toast.makeText(context, "A trip with  id: $sharedCode  wasn't found ", Toast.LENGTH_LONG)
                         .show()
                 }
             }

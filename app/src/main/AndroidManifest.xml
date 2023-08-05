@@ -35,6 +35,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <data android:host="pink-trudy-95.tiiny.site"
+                    android:scheme="https" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.APP_BROWSER" />
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
         </activity>
         <receiver android:name=".model.reminder.NotificationReceiver" />
     </application>

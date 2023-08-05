@@ -1,11 +1,14 @@
 package com.codecamp.tripcplaner.model.navigation
 
+import android.content.Intent
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.codecamp.tripcplaner.view.DetailsScreen
 import com.codecamp.tripcplaner.view.MainScreen
 import com.codecamp.tripcplaner.view.MapScreen
@@ -22,8 +25,16 @@ fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: Trave
         navController = navController,
         startDestination = TripCPlanerScreens.MainScreen.name
     ) {
-        composable(TripCPlanerScreens.MainScreen.name) {
-            MainScreen(navController, travelInfoViewModel, detailsViewModel)
+
+        composable(TripCPlanerScreens.MainScreen.name,deepLinks = listOf(
+                    navDeepLink {
+                        uriPattern = "https://pink-trudy-95.tiiny.site/?id={id}"
+                        action = Intent.ACTION_VIEW
+                    }
+                ),) {backStackEntry ->
+
+
+            MainScreen(navController, travelInfoViewModel, detailsViewModel,backStackEntry.arguments?.getString("id"))
         }
         composable(TripCPlanerScreens.SplashScreen.name) {
             SplashScreen(navController)
@@ -36,6 +47,7 @@ fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: Trave
             MapScreen(
                 navController,
                 backStackEntry.arguments?.getString("transportMean"),
+
                 travelInfoViewModel,
                 detailsViewModel
             )

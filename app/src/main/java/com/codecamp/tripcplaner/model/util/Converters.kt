@@ -31,20 +31,18 @@ class Converters {
         val type = object : TypeToken<MutableList<String>>() {}.type
         return gson.fromJson(mutableList, type)
     }
-
     @TypeConverter
-    fun fromMap(map: MutableMap<String,Boolean>): String {
+    fun fromMap(map: MutableMap<String, MutableList<Boolean>>): String {
         val gson = Gson()
         return gson.toJson(map)
     }
 
     @TypeConverter
-    fun toMap(map: String): MutableMap<String,Boolean> {
+    fun toMap(map: String): MutableMap<String,MutableList<Boolean>> {
         val gson = Gson()
-        val type = object : TypeToken<MutableMap<String,Boolean>>() {}.type
+        val type = object : TypeToken<MutableMap<String, MutableList<Boolean>>>() {}.type
         return gson.fromJson(map, type)
     }
-
     @TypeConverter
     fun fromLatLng(latLng: LatLng): String {
         val gson = Gson()

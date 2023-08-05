@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor() : ViewModel() {
-    private var packList = mutableMapOf<String,Boolean>()
+    private var packList = mutableMapOf<String,MutableList<Boolean>>()
     private var transportMean= mutableStateOf("")
     private lateinit var  startDate: LocalDateTime
     private lateinit var endDate:LocalDateTime
@@ -17,14 +17,14 @@ class DetailViewModel @Inject constructor() : ViewModel() {
 
     private var newTitle= mutableStateOf("")
     fun clearVM(){
-        packList = mutableMapOf<String,Boolean>()
+        packList = mutableMapOf<String,MutableList<Boolean>>()
         transportMean= mutableStateOf("")
         startDate= LocalDateTime.now()
         endDate= LocalDateTime.now()
         activities= mutableListOf<String>()
         cities= mutableListOf<String>()
     }
-    fun setPackList(value: MutableMap<String, Boolean>) {
+    fun setPackList(value: MutableMap<String, MutableList<Boolean>>) {
         packList = value
     }
     fun setDates(start: LocalDateTime, end: LocalDateTime) {
@@ -37,7 +37,7 @@ class DetailViewModel @Inject constructor() : ViewModel() {
     fun getStartDate(): LocalDateTime {
         return startDate
     }
-    fun getPackList(): MutableMap<String,Boolean> {
+    fun getPackList(): MutableMap<String,MutableList<Boolean>> {
         return packList
     }
     fun setNewTitle(value: String) {

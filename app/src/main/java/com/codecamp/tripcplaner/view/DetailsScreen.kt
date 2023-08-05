@@ -1,10 +1,12 @@
 package com.codecamp.tripcplaner.view
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.text.TextUtils.substring
 import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.Image
@@ -43,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.R
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
@@ -53,9 +56,11 @@ import com.codecamp.tripcplaner.view.widgets.saveToDVM
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun DetailsScreen(
     navController: NavController,
@@ -102,7 +107,7 @@ fun DetailsScreen(
         val popUpOn = remember { mutableStateListOf<String>("false") }
 
 
-        val confirmed = remember { mutableStateListOf<String>("false")  }
+        val confirmed = remember { mutableStateListOf("false", "", "", "", "") }
 
         Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
         Column(
@@ -242,13 +247,27 @@ fun DetailsScreen(
             scheduleNotification(
                 LocalContext.current, confirmed[3].toInt(), confirmed[1], "PackAlert", city = confirmed[2], itemName = confirmed[4]
             )
-
-            confirmed[0] = "false"
+           viewModel.viewModelScope.launch { updatedList(travelInfoViewModel, viewModel.getPackList(), confirmed[3]) }
+            confirmed.clear()
+            confirmed.addAll(listOf("false", "", "", "", ""))
+            Log.d("DetailsScreen2", "DetailsScreen: ${viewModel.getPackList()}")
 
         }
     }
 
 }
+
+
+suspend fun updatedList(travelInfoViewModel: TravelInfoViewModel, myList:MutableMap<String,MutableList<Boolean>>, itemId:String){
+    val id= itemId.substring(2).toInt()
+    myList.values.elementAt(id)[1]=true
+    travelInfoViewModel.tripRepo.updatePackingList(itemId.toInt()-itemId.last().toString().toInt(),myList)
+}
+
+
+
+
+
 private fun cancelNotification(context: Context, notificationId: Int) {
     val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.cancel(notificationId)

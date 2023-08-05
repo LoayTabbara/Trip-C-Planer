@@ -74,7 +74,7 @@ fun PackScreen(
 
     }
     val myList =
-        mutableMapOf<String, Boolean>()
+        mutableMapOf<String, MutableList<Boolean>>()
 
     val deletedList = remember { mutableStateListOf<String>() }
 
@@ -130,7 +130,7 @@ fun PackScreen(
 
                 }) {
                     if (it) {
-                        myList[item] = false
+                        myList[item] = mutableListOf(false,false)
                         Log.d("myList  +", myList.toString())
                     } else {
                         myList.remove(item)

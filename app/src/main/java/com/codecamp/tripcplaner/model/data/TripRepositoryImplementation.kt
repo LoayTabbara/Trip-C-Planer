@@ -24,7 +24,7 @@ class TripRepositoryImplementation @Inject constructor(private val tripDao: Trip
             tripDao.insertTrip(trip)
         }
     }
-   override suspend fun updatePackingList(id: Int, packingList: MutableMap<String, Boolean>) {
+   override suspend fun updatePackingList(id: Int, packingList: MutableMap<String, MutableList<Boolean>>) {
 
             tripDao.updatePackingList(id, packingList)
 
@@ -79,9 +79,9 @@ class TripRepositoryImplementation @Inject constructor(private val tripDao: Trip
         transportType: String
     ) {
         val citiesMap: MutableMap<String, Pair<LatLng, LocalDateTime>> = mutableMapOf()
-        val checkedPackingList: MutableMap<String, Boolean> = mutableMapOf()
+        val checkedPackingList: MutableMap<String, MutableList<Boolean>> = mutableMapOf()
         packingList.forEach {
-            checkedPackingList[it] = false
+            checkedPackingList[it] = mutableListOf(false,false)//first one for checked, second one for reminder
         }
         for (i in cities.indices) {
             citiesMap[cities[i]] = Pair(latLngList[i], dates[i])

@@ -16,5 +16,5 @@ data class Trip(
     @ColumnInfo(name = "end_date") val endDate: LocalDateTime,
     @ColumnInfo(name = "cities") val cities: MutableMap<String, Pair<LatLng, LocalDateTime>>,
     @ColumnInfo(name = "activities") val activities: MutableList<String>,
-    @ColumnInfo(name = "packing_list") val packingList: MutableMap<String, Boolean>,
+    @ColumnInfo(name = "packing_list") val packingList: MutableMap<String, MutableList<Boolean>>,//first one for checked, second one for reminder
 )

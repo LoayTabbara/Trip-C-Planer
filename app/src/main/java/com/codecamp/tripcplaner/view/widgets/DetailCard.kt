@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailCard(text: String, content: @Composable (checked: Boolean) -> Unit = {}) {
+fun DetailCard(text: String,hasReminder:Boolean, content: @Composable (checked: Boolean) -> Unit = {}) {
     val reminderPressed = remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
@@ -64,7 +64,7 @@ fun DetailCard(text: String, content: @Composable (checked: Boolean) -> Unit = {
                         modifier = Modifier.padding(bottom = 10.dp)
                     )
                     Text(
-                        text = "Press to set reminder",
+                        text = if(!hasReminder){"Press to set reminder"}else{"Cancel reminder"},
                         modifier = Modifier.padding(horizontal = 10.dp),
                         style = MaterialTheme.typography.bodySmall
                     )

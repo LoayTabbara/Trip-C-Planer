@@ -6,10 +6,11 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
 import android.util.Log
+import androidx.compose.ui.graphics.Color
 import androidx.core.app.NotificationCompat
-import com.codecamp.tripcplaner.model.util.Converters
-import java.time.LocalDateTime
+
 
 fun scheduleNotification(context: Context,id:Int,dateTime:String,channelId:String,city:String,itemName:String) {
     val stepTime=10000
@@ -30,7 +31,7 @@ fun scheduleNotification(context: Context,id:Int,dateTime:String,channelId:Strin
     val notification = NotificationCompat.Builder(context, channelId)
         .setSmallIcon(androidx.core.R.drawable.notification_bg)
         .setContentTitle(itemName)
-        .setContentText("You want to pick it up today from $city. Don't forget!")
+        .setContentText("You want to pick it up today from $city. Don't forget! $id")
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .build()
 

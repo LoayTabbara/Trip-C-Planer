@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
+import com.codecamp.tripcplaner.view.updatedList
 import java.time.LocalDateTime
 
 
@@ -38,8 +39,9 @@ class NotificationReceiver: BroadcastReceiver()  {
                 ) {
 
                     // here to request the missing permissions, and then overriding
-                    Log.d("notif", "onReceive: " + notificationId.toString() +" "+LocalDateTime.of(dateTimeSplit!![0].toInt(),dateTimeSplit!![1].toInt(),dateTimeSplit!![2].toInt(),0,0,0,0).toString())
+                    Log.d("notif", "onReceive: " + notificationId.toString() +" "+LocalDateTime.of(dateTimeSplit!![0].toInt(),dateTimeSplit!![1].toInt(),dateTimeSplit!![2].toInt(),0,0,0,0).toString()+" "+notificationManager.activeNotifications.size)
                     notificationManager.notify(notificationId, notification)
+
                 }
 //                if(LocalDateTime.of(2023,7,28,5,3,0)> LocalDateTime.now()){
 //                    scheduleNotification(context,2,4000,"button2")

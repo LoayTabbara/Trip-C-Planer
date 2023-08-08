@@ -1,12 +1,13 @@
 package com.codecamp.tripcplaner.view
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.DatePickerDialog
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.text.TextUtils.substring
 import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.Image
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -30,8 +32,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,11 +46,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.R
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
+import com.codecamp.tripcplaner.model.reminder.NotificationReceiver
 import com.codecamp.tripcplaner.model.reminder.scheduleNotification
 import com.codecamp.tripcplaner.view.widgets.DetailCard
 import com.codecamp.tripcplaner.view.widgets.StartTargetRows
@@ -102,12 +106,30 @@ fun DetailsScreen(
             month,
             dayOfMonth
         )
+        val reminderCancelAlert = remember { mutableStateOf(false)  }
+        val initialContext: Context = LocalContext.current
+        var itemIdforA by remember { mutableIntStateOf(0) }
 
-
-        val popUpOn = remember { mutableStateListOf<String>("false") }
+        val popUpOn = remember { mutableStateListOf("false") }
 
 
         val confirmed = remember { mutableStateListOf("false", "", "", "", "") }
+
+        val notificationManager = NotificationManagerCompat.from(initialContext)
+        val activeNotifications = notificationManager.activeNotifications
+
+        for (notification in activeNotifications) {
+            Log.d("notif","${notification.id}")
+            if(notification.id!=null){
+                viewModel.viewModelScope.launch { updatedList(travelInfoViewModel, viewModel.getPackList(), notification.id.toString(),cancelReminder = true) }
+                cancelNotification(
+                    initialContext,
+                    notification.id
+                )
+            }
+
+        }
+
 
         Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
         Column(
@@ -135,15 +157,22 @@ fun DetailsScreen(
             )
             StartTargetRows(thisTrip, viewModel)
             var i=0
+
             for (item in viewModel.getPackList()) {
                 val itemId=myId+i
                 Spacer(modifier = Modifier.height(10.dp))
 
-                DetailCard(text = item.key) { reminderPressed ->
-                    if (reminderPressed) {
+                DetailCard(text = item.key,item.value[1]) {reminderPressed->
+
+                    if (reminderPressed&&!item.value[1]) {
                         popUpOn[0] = "true"
                         popUpOn.add(1, itemId.toString())
                         popUpOn.add(2, item.key)
+                    }
+                    if (reminderPressed&&item.value[1]) {
+                        itemIdforA=itemId
+                        reminderCancelAlert.value = true
+
                     }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
@@ -166,6 +195,22 @@ fun DetailsScreen(
             ) {
                 Text(text = "Delete this Trip")
             }
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red,
+                    contentColor = Color.White
+                ),
+                onClick = {
+
+
+                },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(text = "see active notifications")
+            }
+
         }
 
         if (popUpOn[0].toBooleanStrict()) {
@@ -241,16 +286,63 @@ fun DetailsScreen(
                 }
             }
         }
+
+        if (reminderCancelAlert.value) {
+
+            AlertDialog(
+                onDismissRequest = {
+                    // Dismiss the dialog when the user clicks outside the dialog or on the back
+                    // button. If you want to disable that functionality, simply use an empty
+                    // onCloseRequest.
+                    reminderCancelAlert.value = false
+                },
+                title = {
+                    Text(text = "Alert")
+                },
+                text = {
+                    Text("Do you want to cancel the reminder?")
+                },
+                confirmButton = {
+                    Button(
+
+                        onClick = {
+                            if (itemIdforA!=0) {
+                                cancelNotification(
+                                    initialContext,
+                                    itemIdforA
+                                )
+                                viewModel.viewModelScope.launch { updatedList(travelInfoViewModel, viewModel.getPackList(), itemIdforA.toString(),cancelReminder = true) }
+                                itemIdforA=0
+                                reminderCancelAlert.value = false
+                            }
+                            else{
+                                Log.e("errorDetailsScreen", "cancelNotification: itemIdforA is 0")
+                            }
+                        }) {
+                        Text("Yes")
+                    }
+                },
+                dismissButton = {
+                    Button(
+
+                        onClick = {
+                            reminderCancelAlert.value = false
+                        }) {
+                        Text("No")
+                    }
+                }
+            )
+        }
 //        var notificationScheduled by remember { mutableStateOf(false) }
         if (confirmed[0].toBooleanStrict()) {
 
             scheduleNotification(
                 LocalContext.current, confirmed[3].toInt(), confirmed[1], "PackAlert", city = confirmed[2], itemName = confirmed[4]
             )
-           viewModel.viewModelScope.launch { updatedList(travelInfoViewModel, viewModel.getPackList(), confirmed[3]) }
+           viewModel.viewModelScope.launch { updatedList(travelInfoViewModel, viewModel.getPackList(), confirmed[3],cancelReminder = false) }
             confirmed.clear()
             confirmed.addAll(listOf("false", "", "", "", ""))
-            Log.d("DetailsScreen2", "DetailsScreen: ${viewModel.getPackList()}")
+
 
         }
     }
@@ -258,9 +350,9 @@ fun DetailsScreen(
 }
 
 
-suspend fun updatedList(travelInfoViewModel: TravelInfoViewModel, myList:MutableMap<String,MutableList<Boolean>>, itemId:String){
+suspend fun updatedList(travelInfoViewModel: TravelInfoViewModel, myList:MutableMap<String,MutableList<Boolean>>, itemId:String, cancelReminder:Boolean=false){
     val id= itemId.substring(2).toInt()
-    myList.values.elementAt(id)[1]=true
+    myList.values.elementAt(id)[1]=!cancelReminder
     travelInfoViewModel.tripRepo.updatePackingList(itemId.toInt()-itemId.last().toString().toInt(),myList)
 }
 
@@ -270,8 +362,21 @@ suspend fun updatedList(travelInfoViewModel: TravelInfoViewModel, myList:Mutable
 
 private fun cancelNotification(context: Context, notificationId: Int) {
     val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val alarmIntent = Intent(context, NotificationReceiver::class.java)
+    val pendingIntent = PendingIntent.getBroadcast(
+        context,
+        notificationId,
+        alarmIntent,
+        PendingIntent.FLAG_IMMUTABLE
+    )
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    alarmManager.cancel(pendingIntent)
+
     notificationManager.cancel(notificationId)
+    Log.d("notif", "cancelNotification: $notificationId")
+
 }
+
 @Composable
 fun GoogleMapsButton(
     start: LatLng,

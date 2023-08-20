@@ -195,21 +195,49 @@ fun DetailsScreen(
             ) {
                 Text(text = "Delete this Trip")
             }
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red,
-                    contentColor = Color.White
-                ),
-                onClick = {
+            //if notification enabled of not
+            val lifecycleOwner = LocalLifecycleOwner.current
+            DisposableEffect(
+                key1 = lifecycleOwner,
+                effect = {
+                    val observer = LifecycleEventObserver { _, event ->
+                        if (event == Lifecycle.Event.ON_START) {
 
+                                areNotificationEnabled = notificationManager.areNotificationsEnabled()
 
-                },
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(text = "see active notifications")
-            }
+                        }
+                    }
+                    lifecycleOwner.lifecycle.addObserver(observer)
+
+                    onDispose {
+                        lifecycleOwner.lifecycle.removeObserver(observer)
+                    }
+                }
+            )
+         if (!areNotificationEnabled){
+             Button(
+                 colors = ButtonDefaults.buttonColors(
+                     containerColor = Color.Red,
+                     contentColor = Color.White
+                 ),
+                 onClick = {
+                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                     val uri: Uri = Uri.fromParts("package", initialContext.packageName, null)
+                     intent.data = uri
+                     initialContext.startActivity(intent)
+
+                 },
+                 shape = RoundedCornerShape(10.dp),
+                 modifier = Modifier
+                     .padding(20.dp)
+                     .fillMaxWidth()
+
+             ) {
+                 Text(text = "Please Allow the Notifications from the Settings before adding a reminder")
+             }
+         }
+            //
 
         }
 

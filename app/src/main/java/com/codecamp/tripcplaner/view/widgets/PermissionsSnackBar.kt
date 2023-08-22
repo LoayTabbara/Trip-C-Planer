@@ -1,14 +1,13 @@
 package com.codecamp.tripcplaner.view.widgets
 
-import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -18,8 +17,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -27,6 +28,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
+import java.util.Locale
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -60,12 +62,14 @@ fun PermissionSnackbar(permissionsState: MultiplePermissionsState) {
     }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom
+        verticalArrangement = Arrangement.Bottom,
     ) {
-        var (snackbarVisibleState, setSnackBarState) = remember { mutableStateOf(!permissionsState.allPermissionsGranted) }
+        val (snackbarVisibleState, setSnackBarState) = remember { mutableStateOf(!permissionsState.allPermissionsGranted) }
         if (snackbarVisibleState)
             Snackbar(
-
+                modifier = Modifier
+                    .padding(8.dp),
+                containerColor = Color.Gray,
                 action = {
                     Row {
                         TextButton(onClick = {
@@ -79,18 +83,17 @@ fun PermissionSnackbar(permissionsState: MultiplePermissionsState) {
                                 permissionsState.launchMultiplePermissionRequest()
                             }
                         }) {
-                            Text("grant")
+                            Text("grant", color = Color.Green)
                         }
-                        TextButton(onClick = { setSnackBarState(!snackbarVisibleState) }) {
-                            Text("close")
+                        TextButton(onClick = { setSnackBarState(false) }) {
+                            Text("close", color= Color(0xFF9B392B))
                         }
                     }
-
-
                 },
-                modifier = Modifier
-                    .padding(8.dp)
-            ) { Text(text = "${if (permanentlyDenied) "permanently " else " "}denied location") }
+
+            ) { Text(text = "${if (permanentlyDenied) "permanently " else " "}denied location".uppercase(
+                Locale.ROOT
+            ), color= Color.White) }
         if (permissionsState.allPermissionsGranted) {
             setSnackBarState(false)
         }

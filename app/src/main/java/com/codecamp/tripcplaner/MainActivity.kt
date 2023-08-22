@@ -35,9 +35,9 @@ class MainActivity : ComponentActivity() {
 
 //        hideStatusBar(this)
         setContent {
-            val travelInfoViewModel : TravelInfoViewModel = hiltViewModel()
-            travelInfoViewModel.intentSharedCodeUsed.value= false
-            val viewModel : DetailViewModel = hiltViewModel()
+            val travelInfoViewModel: TravelInfoViewModel = hiltViewModel()
+            travelInfoViewModel.intentSharedCodeUsed.value = false
+            val viewModel: DetailViewModel = hiltViewModel()
             val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(key1 = lifecycleOwner, effect = {
 
@@ -45,7 +45,8 @@ class MainActivity : ComponentActivity() {
                     if (event == Lifecycle.Event.ON_START) {
                         travelInfoViewModel.viewModelScope.launch {
                             tripsStateFlow.emit(travelInfoViewModel.tripRepo.getAllItems())
-                            travelInfoViewModel.savedTrips = travelInfoViewModel.tripRepo.populateTrips(tripsStateFlow)
+                            travelInfoViewModel.savedTrips =
+                                travelInfoViewModel.tripRepo.populateTrips(tripsStateFlow)
                         }
                     }
                 }
@@ -57,7 +58,7 @@ class MainActivity : ComponentActivity() {
 
             TripCPlanerTheme {
 
-                TripCPlanerNav(viewModel,travelInfoViewModel )
+                TripCPlanerNav(viewModel, travelInfoViewModel)
             }
 
         }

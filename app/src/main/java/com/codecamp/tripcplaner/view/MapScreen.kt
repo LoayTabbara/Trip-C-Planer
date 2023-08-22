@@ -179,7 +179,6 @@ fun MapScreen(
 
 
         }) {
-            PermissionSnackbar(permissionsState = permissionsState)
             val uiSettings = remember {
                 MapUiSettings(
                     myLocationButtonEnabled = permissionsState.allPermissionsGranted,
@@ -280,6 +279,8 @@ fun MapScreen(
                     )
                 }
             }
+            PermissionSnackbar(permissionsState = permissionsState)
+
         }
         if (showIndicator.value && !travelInfoViewModel.hasResult.value) {
             Box(

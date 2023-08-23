@@ -303,7 +303,7 @@ fun DetailsScreen(
                                 })
                             }
                         }
-                        Button(enabled = !(date.value=="" || selectedCity==""),onClick = {
+                        Button(enabled = !(date.value=="" && selectedCity==""),onClick = {
                             Log.d("DetailsScreen", "DetailsScreen: ${date.value} and $selectedCity")
                             confirmed[0] = "true"
                             confirmed.add(1, date.value)
@@ -373,7 +373,7 @@ fun DetailsScreen(
         if (confirmed[0].toBooleanStrict()) {
 
             scheduleNotification(
-                LocalContext.current, confirmed[3].toInt(), confirmed[1], "PackAlert", city = confirmed[2], itemName = confirmed[4]
+                LocalContext.current, confirmed[3].toInt(), confirmed[1], "PackAlert", city = confirmed[2], itemName = confirmed[4], thisTrip
             )
            viewModel.viewModelScope.launch { updatedList(travelInfoViewModel, viewModel.getPackList(), confirmed[3],cancelReminder = false) }
             confirmed.clear()

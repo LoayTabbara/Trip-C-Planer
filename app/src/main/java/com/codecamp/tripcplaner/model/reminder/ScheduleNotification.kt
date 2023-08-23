@@ -10,10 +10,28 @@ import android.media.RingtoneManager
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.core.app.NotificationCompat
+import com.codecamp.tripcplaner.model.data.Trip
+import java.time.LocalDateTime
 
 
-fun scheduleNotification(context: Context,id:Int,dateTime:String,channelId:String,city:String,itemName:String) {
+fun scheduleNotification(context: Context,id:Int,dateTime:String,channelId:String,city:String,itemName:String,trip: Trip) {
     val stepTime=10000
+    var cityMessage=""
+    var contentMessage=""
+    //Reminder will be automatically set for 20 days if the date was not selected.
+    val currentDate= LocalDateTime.now().plusDays(20)
+    val currentDateMessage=if (dateTime=="")"${currentDate.year}.${currentDate.monthValue}.${currentDate.dayOfMonth}" else dateTime
+    if (city!=""){
+        cityMessage=trip.cities[city]!!.first.toString()+"-"+city
+
+        contentMessage = "you wanted to pick $itemName up from $city or on $currentDateMessage. Don't forget! "
+
+    }
+    else {
+        cityMessage="No place specified"
+
+        contentMessage="you want to pick it up on $currentDateMessage. Don't forget! "
+    }
 
     Log.d("notif", "scheduleNotification: ")
     val notificationManager =context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -31,7 +49,7 @@ fun scheduleNotification(context: Context,id:Int,dateTime:String,channelId:Strin
     val notification = NotificationCompat.Builder(context, channelId)
         .setSmallIcon(androidx.core.R.drawable.notification_bg)
         .setContentTitle(itemName)
-        .setContentText("You want to pick it up today from $city. Don't forget! $id")
+        .setContentText("$contentMessage $id")
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .build()
 
@@ -42,7 +60,8 @@ fun scheduleNotification(context: Context,id:Int,dateTime:String,channelId:Strin
     val notificationIntent = Intent(context, NotificationReceiver::class.java)
     notificationIntent.putExtra("notificationId", id)
     notificationIntent.putExtra("notification", notification)
-    notificationIntent.putExtra("dateTime",dateTime)
+    notificationIntent.putExtra("dateTime", currentDateMessage)
+    notificationIntent.putExtra("city",cityMessage)
     val pendingIntent = PendingIntent.getBroadcast(context, id, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
 
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager

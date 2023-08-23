@@ -116,6 +116,9 @@ fun DetailsScreen(
             dayOfMonth
         )
         val reminderCancelAlert = remember { mutableStateOf(false)  }
+        val checkCancelAlert=remember{mutableStateOf(false)}
+        val isChecked=remember{mutableStateOf("")}
+
         val initialContext: Context = LocalContext.current
         var itemIdforA by remember { mutableIntStateOf(0) }
 
@@ -172,8 +175,13 @@ fun DetailsScreen(
                 val itemId=(myId*100)+i
                 Spacer(modifier = Modifier.height(10.dp))
 
-                DetailCard(text = item.key,item.value[1]) {reminderPressed->
-
+                DetailCard(text = item.key,item.value[1],isChecked=item.value[0]) { reminderPressed, checkedPressed->
+                    if (checkedPressed) {
+                        checkCancelAlert.value = true
+                        itemIdforA=itemId
+                        if(item.value[0])isChecked.value="false"
+                        else isChecked.value="true"
+                    }
                     if (reminderPressed&&!item.value[1]) {
                         popUpOn[0] = "true"
                         popUpOn.add(1, itemId.toString())
@@ -371,6 +379,41 @@ fun DetailsScreen(
                 }
             )
         }
+
+        if (checkCancelAlert.value) {
+
+            AlertDialog(
+                onDismissRequest = {// can only be dissmissed by confirm
+                },
+                title = {
+                    Text(text = "Alert")
+                },
+                text = {
+                    Text("Haven't you taken the item yet?")
+                },
+                confirmButton = {
+                    Button(
+
+                        onClick = {
+                            if (itemIdforA!=0) {
+
+                                viewModel.viewModelScope.launch { updatedList(travelInfoViewModel, viewModel.getPackList(), itemIdforA.toString(),cancelReminder = false,updateCheck = true,isChecked=isChecked.value.toBooleanStrict()) }
+                                itemIdforA=0
+                                isChecked.value=""
+                                checkCancelAlert.value = false
+                            }
+                            else{
+                                Log.e("errorDetailsScreen", "CheckboxError")
+                            }
+                        }) {
+                        Text("Sure!")
+                    }
+                }
+            )
+        }
+
+
+
 //        var notificationScheduled by remember { mutableStateOf(false) }
         if (confirmed[0].toBooleanStrict()) {
             val (cityMessage, currentDateMessage) = getMessageContents(
@@ -392,9 +435,12 @@ fun DetailsScreen(
 }
 
 
-suspend fun updatedList(travelInfoViewModel: TravelInfoViewModel, myList:MutableMap<String,MutableList<Boolean>>, itemId:String, cancelReminder:Boolean=false){
+suspend fun updatedList(travelInfoViewModel: TravelInfoViewModel, myList:MutableMap<String,MutableList<Boolean>>, itemId:String, cancelReminder:Boolean=false,updateCheck:Boolean=false,isChecked:Boolean=false){
     val id= itemId.substring(4).toInt()
-    myList.values.elementAt(id)[1]=!cancelReminder
+    if(updateCheck)
+    { myList.values.elementAt(id)[0]=isChecked}
+    else
+    {myList.values.elementAt(id)[1]=!cancelReminder}
     travelInfoViewModel.tripRepo.updatePackingList((itemId.toInt()-itemId.last().toString().toInt())/100,myList)
 }
 

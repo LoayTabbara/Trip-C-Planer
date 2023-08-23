@@ -141,7 +141,7 @@ fun DetailsScreen(
         }
 
 
-        Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}")
+        Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}  $myId")
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -169,7 +169,7 @@ fun DetailsScreen(
             var i=0
 
             for (item in viewModel.getPackList()) {
-                val itemId=myId+i
+                val itemId=(myId*100)+i
                 Spacer(modifier = Modifier.height(10.dp))
 
                 DetailCard(text = item.key,item.value[1]) {reminderPressed->
@@ -393,9 +393,9 @@ fun DetailsScreen(
 
 
 suspend fun updatedList(travelInfoViewModel: TravelInfoViewModel, myList:MutableMap<String,MutableList<Boolean>>, itemId:String, cancelReminder:Boolean=false){
-    val id= itemId.substring(2).toInt()
+    val id= itemId.substring(4).toInt()
     myList.values.elementAt(id)[1]=!cancelReminder
-    travelInfoViewModel.tripRepo.updatePackingList(itemId.toInt()-itemId.last().toString().toInt(),myList)
+    travelInfoViewModel.tripRepo.updatePackingList((itemId.toInt()-itemId.last().toString().toInt())/100,myList)
 }
 
 

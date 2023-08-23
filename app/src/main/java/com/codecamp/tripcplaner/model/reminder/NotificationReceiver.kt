@@ -24,7 +24,10 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import okhttp3.internal.notify
 import java.time.LocalDateTime
+import kotlin.math.acos
+import kotlin.math.cos
 import kotlin.math.roundToInt
+import kotlin.math.sin
 
 
 class NotificationReceiver: BroadcastReceiver()  {
@@ -85,15 +88,16 @@ class NotificationReceiver: BroadcastReceiver()  {
                                 val lng = ((location?.longitude ?: 0.0)*100000).roundToInt()/100000.0
                                 Log.d("notif", "onReceive5: $lat $lng")
                                 Log.d("notif", "onReceive6: $givenLat $givenLng")
-                                if(stringToLoc< LocalDateTime.now()||(lat==givenLat&&lng==givenLng)){
+                                //if less than 30 km then send notification
+                                if(stringToLoc< LocalDateTime.now()||calculateDistance(givenLat,givenLng,lat,lng)<30f){
 
-                                    //notificationManager.notify(notificationId, notification)
-                                    Log.d("notif", "onReceive7: Notif in stringToLoc< LocalDateTime.now()")
+                                    notificationManager.notify(notificationId, notification)
+                                    Log.d("notif", "onReceive7: Notif in stringToLoc< LocalDateTime.now() ${calculateDistance(givenLat,givenLng,lat,lng)}")
                                 }
                                 else{
-                                    //scheduleNotification(context,notificationId,dateTime,"PackAlert",cityMessage,itemName!!)
+                                    scheduleNotification(context,notificationId,dateTime,"PackAlert",cityMessage,itemName!!)
 
-                                    Log.d("notif", "onReceive8: nothing matches")
+                                    Log.d("notif", "onReceive8: nothing matches for  ${calculateDistance(givenLat,givenLng,lat,lng)} and rescheduled $notificationId")
                                 }
 
                             } catch (e: Exception) {
@@ -127,5 +131,26 @@ class NotificationReceiver: BroadcastReceiver()  {
 //
 
             }
-        }
+
+
+    private fun calculateDistance(givenLat: Double, givenLng:Double, currentLat:Double, currentLng:Double): Double {
+        val theta = currentLng - givenLng
+        var dist = sin(deg2rad(currentLat)) * sin(deg2rad(givenLat)) +
+                cos(deg2rad(currentLat)) * cos(deg2rad(givenLat)) *
+                cos(deg2rad(theta))
+        dist = acos(dist)
+        dist = rad2deg(dist)
+        dist *= 60 * 1.1515
+        dist *= 1.609344 // Convert to kilometers
+        return dist
+    }
+
+    fun deg2rad(deg: Double): Double {
+        return deg * Math.PI / 180.0
+    }
+
+    fun rad2deg(rad: Double): Double {
+        return rad * 180.0 / Math.PI
+    }
+}
 

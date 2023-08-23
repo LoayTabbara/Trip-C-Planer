@@ -57,6 +57,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.R
+import com.codecamp.tripcplaner.model.data.Trip
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.model.reminder.NotificationReceiver
 import com.codecamp.tripcplaner.model.reminder.scheduleNotification
@@ -68,6 +69,7 @@ import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.RoundCap
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import java.util.Calendar
 
 
@@ -371,9 +373,13 @@ fun DetailsScreen(
         }
 //        var notificationScheduled by remember { mutableStateOf(false) }
         if (confirmed[0].toBooleanStrict()) {
-
+            val (cityMessage, currentDateMessage) = getMessageContents(
+                confirmed[1],
+                confirmed[2],
+                thisTrip
+            )
             scheduleNotification(
-                LocalContext.current, confirmed[3].toInt(), confirmed[1], "PackAlert", city = confirmed[2], itemName = confirmed[4], thisTrip
+                LocalContext.current, confirmed[3].toInt(), currentDateMessage, "PackAlert", city = cityMessage, itemName = confirmed[4]
             )
            viewModel.viewModelScope.launch { updatedList(travelInfoViewModel, viewModel.getPackList(), confirmed[3],cancelReminder = false) }
             confirmed.clear()
@@ -411,6 +417,23 @@ private fun cancelNotification(context: Context, notificationId: Int) {
     notificationManager.cancel(notificationId)
     Log.d("notif", "cancelNotification: $notificationId")
 
+}
+private fun getMessageContents(dateTime:String,city:String,trip:Trip):Pair<String, String> {
+    var cityMessage=""
+    val currentDate=trip.cities[city]?.second
+
+
+    var currentDateMessage= dateTime
+    if (city!=""){
+        cityMessage=trip.cities[city]!!.first.toString()+"-"+city
+        currentDateMessage=if (dateTime=="")"${currentDate?.year}.${currentDate?.monthValue}.${currentDate?.dayOfMonth}" else dateTime
+
+    }
+    else {
+        cityMessage="No place specified"
+
+    }
+    return Pair(cityMessage,currentDateMessage)
 }
 
 @Composable

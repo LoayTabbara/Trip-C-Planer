@@ -11,29 +11,31 @@ import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.core.app.NotificationCompat
 import com.codecamp.tripcplaner.model.data.Trip
+import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import java.time.LocalDateTime
 
 
-fun scheduleNotification(context: Context,id:Int,dateTime:String,channelId:String,city:String,itemName:String,trip: Trip) {
-    val stepTime=10000
-    var cityMessage=""
-    var contentMessage=""
-    //Reminder will be automatically set for 20 days if the date was not selected.
-    val currentDate= LocalDateTime.now().plusDays(20)
-    val currentDateMessage=if (dateTime=="")"${currentDate.year}.${currentDate.monthValue}.${currentDate.dayOfMonth}" else dateTime
-    if (city!=""){
-        cityMessage=trip.cities[city]!!.first.toString()+"-"+city
+fun scheduleNotification (context: Context,id:Int,dateTime:String,channelId:String,city:String,itemName:String) {
 
-        contentMessage = "you wanted to pick $itemName up from $city or on $currentDateMessage. Don't forget! "
+
+    val stepTime=10000
+
+    var contentMessage=""
+
+
+    contentMessage = if (city!="No place specified"){
+
+
+        "you wanted to pick $itemName up from $city or on $dateTime. Don't forget! "
 
     }
     else {
-        cityMessage="No place specified"
 
-        contentMessage="you want to pick it up on $currentDateMessage. Don't forget! "
+
+        "you want to pick it up on $dateTime. Don't forget! "
     }
 
-    Log.d("notif", "scheduleNotification: ")
+    Log.d("notif", "scheduleNotification: $dateTime")
     val notificationManager =context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     // Create a notification channel if not already created (Android 8.0 and above)
@@ -60,9 +62,10 @@ fun scheduleNotification(context: Context,id:Int,dateTime:String,channelId:Strin
     val notificationIntent = Intent(context, NotificationReceiver::class.java)
     notificationIntent.putExtra("notificationId", id)
     notificationIntent.putExtra("notification", notification)
-    notificationIntent.putExtra("dateTime", currentDateMessage)
-    notificationIntent.putExtra("city",cityMessage)
-    val pendingIntent = PendingIntent.getBroadcast(context, id, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
+    notificationIntent.putExtra("dateTime", dateTime)
+    notificationIntent.putExtra("city",city)
+    notificationIntent.putExtra("itemName", itemName)
+    val pendingIntent = PendingIntent.getBroadcast(context, id, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, futureTimeInMillis, pendingIntent)

@@ -15,10 +15,11 @@ import com.codecamp.tripcplaner.view.MapScreen
 import com.codecamp.tripcplaner.view.PackScreen
 import com.codecamp.tripcplaner.view.SplashScreen
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
+import com.codecamp.tripcplaner.viewModel.ThemeViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 
 @Composable
-fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: TravelInfoViewModel) {
+fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: TravelInfoViewModel,themeViewModel: ThemeViewModel) {
     val navController = rememberNavController()
 
     NavHost(
@@ -34,7 +35,7 @@ fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: Trave
                 ),) {backStackEntry ->
 
 
-            MainScreen(navController, travelInfoViewModel, detailsViewModel,backStackEntry.arguments?.getString("id"))
+            MainScreen(navController, travelInfoViewModel, detailsViewModel,themeViewModel,backStackEntry.arguments?.getString("id"))
         }
         composable(TripCPlanerScreens.SplashScreen.name) {
             SplashScreen(navController)

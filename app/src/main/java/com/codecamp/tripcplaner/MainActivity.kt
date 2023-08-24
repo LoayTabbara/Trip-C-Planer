@@ -21,6 +21,7 @@ import com.codecamp.tripcplaner.model.data.Trip
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerNav
 import com.codecamp.tripcplaner.ui.theme.TripCPlanerTheme
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
+import com.codecamp.tripcplaner.viewModel.ThemeViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,6 +39,7 @@ class MainActivity : ComponentActivity() {
             val travelInfoViewModel: TravelInfoViewModel = hiltViewModel()
             travelInfoViewModel.intentSharedCodeUsed.value = false
             val viewModel: DetailViewModel = hiltViewModel()
+            val themeViewModel:ThemeViewModel= hiltViewModel()
             val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(key1 = lifecycleOwner, effect = {
 
@@ -56,9 +58,9 @@ class MainActivity : ComponentActivity() {
                 }
             })
 
-            TripCPlanerTheme {
+            TripCPlanerTheme(darkTheme = themeViewModel.getIsDark()) {
 
-                TripCPlanerNav(viewModel, travelInfoViewModel)
+                TripCPlanerNav(viewModel, travelInfoViewModel,themeViewModel)
             }
 
         }

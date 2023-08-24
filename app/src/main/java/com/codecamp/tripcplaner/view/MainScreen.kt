@@ -3,6 +3,7 @@ package com.codecamp.tripcplaner.view
 import android.Manifest
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -50,8 +51,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import com.codecamp.tripcplaner.view.widgets.MainScreenDCard
+import com.codecamp.tripcplaner.view.widgets.ThemeSwitch
 import com.codecamp.tripcplaner.view.widgets.TripCard
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
+import com.codecamp.tripcplaner.viewModel.ThemeViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -63,6 +66,7 @@ fun MainScreen(
     navController: NavController,
     travelInfoViewModel: TravelInfoViewModel,
     detailsViewModel: DetailViewModel,
+    themeViewModel: ThemeViewModel,
     routedId: String?
 ) {
 
@@ -147,7 +151,16 @@ fun MainScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Your Trips", style = MaterialTheme.typography.displayMedium)
+                    Column(modifier = Modifier.fillMaxWidth(0.7f)) {
+                        Text(text = "Your Trips", style = MaterialTheme.typography.displayMedium)
+                        Box(modifier = Modifier.padding(start = 8.dp).fillMaxWidth()){
+                            ThemeSwitch(scale = 1.2f){switchOn->
+                                themeViewModel.setIsDark(switchOn)
+                            }
+                        }
+
+                    }
+
                     TextField(
                         value = shareCode.value,
                         onValueChange = { shareCode.value = it },
@@ -158,7 +171,7 @@ fun MainScreen(
                             )
                         },
                         modifier = Modifier
-                            .fillMaxWidth(0.7f)
+                            .fillMaxWidth()
                             .padding(end = 8.dp)
                             .border(
                                 width = 2.dp,

@@ -23,7 +23,7 @@ fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: Trave
 
     NavHost(
         navController = navController,
-        startDestination = TripCPlanerScreens.MainScreen.name
+        startDestination = TripCPlanerScreens.SplashScreen.name
     ) {
 
         composable(TripCPlanerScreens.MainScreen.name,deepLinks = listOf(

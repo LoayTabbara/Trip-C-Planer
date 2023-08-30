@@ -144,7 +144,6 @@ fun DetailsScreen(
         val activeNotifications = notificationManager.activeNotifications
         //cancel all the active notifications for this trip if the user was already notified. Its checked every time the details screen is opened
         for (notification in activeNotifications) {
-            Log.d("notif","${notification.id}")
             if(notification.id!=null){
                 viewModel.viewModelScope.launch { updatedList(travelInfoViewModel, viewModel.getPackList(), notification.id.toString(),cancelReminder = true) }
                 cancelNotification(
@@ -156,7 +155,6 @@ fun DetailsScreen(
         }
 
 
-        Log.d("DetailsScreen", "DetailsScreen: ${viewModel.getPackList()}  $myId")
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -334,7 +332,6 @@ fun DetailsScreen(
                             }
                         }
                         Button(enabled = !(date.value=="" && selectedCity==""),onClick = {
-                            Log.d("DetailsScreen", "DetailsScreen: ${date.value} and $selectedCity")
                             confirmed[0] = "true"
                             confirmed.add(1, date.value)
                             confirmed.add(2, selectedCity)
@@ -477,7 +474,6 @@ private fun cancelNotification(context: Context, notificationId: Int) {
     alarmManager.cancel(pendingIntent)
 
     notificationManager.cancel(notificationId)
-    Log.d("notif", "cancelNotification: $notificationId")
 
 }
 //gives modified message for the notification

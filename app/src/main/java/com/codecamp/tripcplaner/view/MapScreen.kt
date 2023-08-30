@@ -34,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -75,19 +74,29 @@ fun MapScreen(
     detailsViewModel: DetailViewModel
 ) {
 
+    //This is used to check if the map is initialized
     val initialized = remember { mutableStateOf(false) }
+
+    // This is used to store the camera position
     val cameraPositionState = rememberCameraPositionState {}
+
+    // This is used to show a loading indicator when the user presses the generate button
     val showIndicator = remember { mutableStateOf(false) }
 
+    // This is used to format the date
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+    // This is used to store the start and end markers
     val startMarker = rememberMarkerState()
     val endMarker = rememberMarkerState()
+
     //start place, end place, start date, end date
     val tripPickerList = mutableListOf(remember { mutableStateOf("") },
         remember { mutableStateOf("") },
         remember { mutableStateOf("") },
         remember { mutableStateOf("") })
 
+    // Multiple permissions can be requested at the same time, by providing a list of permissions
     val permissionsState = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -97,6 +106,7 @@ fun MapScreen(
         )
     )
 
+    // This is used to check if the user can generate a trip
     fun canCreate(): Boolean {
         return (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty() &&
                 tripPickerList[2].value.isNotEmpty() && tripPickerList[3].value.isNotEmpty() &&
@@ -140,9 +150,13 @@ fun MapScreen(
                         onClick = {
 
                             if (!checkInternet(context)) {
-                                Toast.makeText(context, "No internet connection!", Toast.LENGTH_LONG).show()
-                                  // Exit the function early if there's no internet
-                            }else{
+                                Toast.makeText(
+                                    context,
+                                    "No internet connection!",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                // Exit the function early if there's no internet
+                            } else {
                                 val startDate = LocalDate.parse(tripPickerList[2].value, formatter)
                                 val endDate = LocalDate.parse(tripPickerList[3].value, formatter)
                                 val duration = ChronoUnit.DAYS.between(

@@ -34,7 +34,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val tripsStateFlow = MutableStateFlow<List<Trip>>(emptyList())
 
-//        hideStatusBar(this)
         setContent {
             val travelInfoViewModel: TravelInfoViewModel = hiltViewModel()
             travelInfoViewModel.intentSharedCodeUsed.value = false
@@ -66,14 +65,4 @@ class MainActivity : ComponentActivity() {
         }
 
     }
-}
-
-fun hideStatusBar(activity: Activity) {
-    WindowCompat.setDecorFitsSystemWindows(activity.window, false)
-    activity.window.statusBarColor = Color.Transparent.toArgb()
-    WindowCompat.setDecorFitsSystemWindows((activity).window, false)
-    activity.window.setFlags(
-        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-    )
 }

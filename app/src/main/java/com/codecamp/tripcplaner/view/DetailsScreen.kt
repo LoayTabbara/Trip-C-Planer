@@ -48,7 +48,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.core.app.NotificationManagerCompat
@@ -101,6 +104,11 @@ fun DetailsScreen(
 
         // State to control the visibility of the dropdown menu for the cities in item alert popup
         var isDropdownMenuVisible by remember { mutableStateOf(false) }
+
+
+        // State to control the visibility of the notification permissions dialog
+        var showNotificationPermissionsDialog by remember { mutableStateOf(false) }
+
 
         //date picker save date as string in the format of "yyyy.mm.dd" under the item alert popup
         val calendar = Calendar.getInstance()
@@ -234,16 +242,20 @@ fun DetailsScreen(
 
                         checkCancelAlert.value = true
                     }
-                    if (reminderPressed && !item.value[1]) {
-                        popUpOn[0] = "true"
-                        popUpOn.add(1, itemId.toString())
-                        popUpOn.add(2, item.key)
-                    }
-                    if (reminderPressed && item.value[1]) {
-                        itemIdforA = itemId
-                        reminderCancelAlert.value = true
 
+                    if (reminderPressed) {
+                        if (!areNotificationEnabled) {
+                            showNotificationPermissionsDialog = true
+                        } else if (!item.value[1]) {
+                            popUpOn[0] = "true"
+                            popUpOn.add(1, itemId.toString())
+                            popUpOn.add(2, item.key)
+                        } else {
+                            itemIdforA = itemId
+                            reminderCancelAlert.value = true
+                        }
                     }
+
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 i++
@@ -277,7 +289,8 @@ fun DetailsScreen(
                 effect = {
                     val observer = LifecycleEventObserver { _, event ->
                         if (event == Lifecycle.Event.ON_START) {
-
+                            showNotificationPermissionsDialog =
+                                !notificationManager.areNotificationsEnabled()
                             areNotificationEnabled = notificationManager.areNotificationsEnabled()
 
                         }
@@ -289,32 +302,6 @@ fun DetailsScreen(
                     }
                 }
             )
-            //check if notification enabled or not and takes user to settings if not enabled when its clicked
-            if (!areNotificationEnabled) {
-                Button(
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red,
-                        contentColor = Color.White
-                    ),
-                    onClick = {
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        val uri: Uri = Uri.fromParts("package", initialContext.packageName, null)
-                        intent.data = uri
-                        initialContext.startActivity(intent)
-
-                    },
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .fillMaxWidth()
-
-                ) {
-                    Text(text = "Please Allow the Notifications from the Settings before adding a reminder")
-                }
-            }
-
-
         }
         //item alert popup for reminder and select date and location for the reminder
         if (popUpOn[0].toBooleanStrict()) {
@@ -441,6 +428,56 @@ fun DetailsScreen(
                 }
             )
         }
+
+        if (showNotificationPermissionsDialog) {
+            AlertDialog(
+
+                onDismissRequest = {
+                    showNotificationPermissionsDialog = false
+                },
+                {
+                    Column {
+                        Text(
+                            text = "Notifications are disabled",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Please enable the notifications in order to use the reminder functions",
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            textAlign = TextAlign.Left
+                        )
+                        Button(
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Red,
+                                contentColor = Color.White
+                            ),
+                            onClick = {
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                val uri: Uri =
+                                    Uri.fromParts("package", initialContext.packageName, null)
+                                intent.data = uri
+                                initialContext.startActivity(intent)
+
+                            },
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier
+                                .padding(20.dp)
+                                .fillMaxWidth()
+
+                        ) {
+                            Text(text = "Go to Settings")
+                        }
+                    }
+
+                }
+
+            )
+        }
+
         //checkbox alert
         if (checkCancelAlert.value) {
 
@@ -546,7 +583,6 @@ suspend fun updatedList(
         (itemId.toInt() - itemId.last().toString().toInt()) / 100, myList
     )
 }
-
 
 
 /**

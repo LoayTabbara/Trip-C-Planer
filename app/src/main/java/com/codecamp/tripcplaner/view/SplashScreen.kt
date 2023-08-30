@@ -7,11 +7,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,8 +27,11 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -55,8 +60,7 @@ fun SplashScreen(navController: NavController) {
                         .getInterpolation(it)
                 })
         )
-        // Navigate to Main Screen after animation is completed after 3 seconds
-        navigate(navController)
+
     })
 
 
@@ -93,14 +97,27 @@ fun SplashScreen(navController: NavController) {
                     " LIVE YOUR LIFE BY A COMPASS,",
                     "NOT A CLOCK......",
                     "– ERICA JONG"
-                ),
+                ), navController = navController
             )
-            Column(modifier=Modifier.fillMaxSize().padding(60.dp), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(modifier= Modifier
+                .fillMaxSize()
+                .padding(60.dp), verticalArrangement = Arrangement.SpaceBetween, horizontalAlignment = Alignment.CenterHorizontally) {
                 Image(painter = painterResource(id = R.drawable.tripc_icon_black),
                     contentDescription ="logo",
                     contentScale = ContentScale.Fit,
-                    modifier = Modifier.size(95.dp).scale(scale.value), alignment = Alignment.Center
+                    modifier = Modifier
+                        .size(95.dp)
+                        .scale(scale.value), alignment = Alignment.Center
                 )
+                TextButton(modifier = Modifier.fillMaxWidth(), onClick = {
+                    navController.navigate(TripCPlanerScreens.MainScreen.name){
+                        popUpTo(0)
+                    }
+
+                }) {
+
+                    Text("Skip ->", color = Color.Cyan, fontSize = 32.sp, fontWeight = FontWeight.Bold)
+                }
             }
 
 
@@ -110,14 +127,11 @@ fun SplashScreen(navController: NavController) {
 
 }
 
-suspend fun navigate(navController: NavController) {
-    delay(3000L)
-    navController.navigate(TripCPlanerScreens.MainScreen.name)
-}
 
 @Composable
 fun TypewriterText(
     texts: List<String>,
+    navController: NavController,
 ) {
     var textIndex by remember {
         mutableIntStateOf(0)
@@ -129,19 +143,20 @@ fun TypewriterText(
     LaunchedEffect(
         key1 = texts,
     ) {
-        while (textIndex < texts.size) {
-            texts[textIndex].forEachIndexed { charIndex, _ ->
-                textToDisplay = texts[textIndex]
-                    .substring(
-                        startIndex = 0,
-                        endIndex = charIndex + 1,
-                    )
+        for (text in texts) {
+            text.forEachIndexed { charIndex, _ ->
+                textToDisplay = text.substring(
+                    startIndex = 0,
+                    endIndex = charIndex + 1,
+                )
                 // delay for each character
                 delay(45)
             }
-            textIndex = (textIndex + 1) % texts.size
             // delay for each text
             delay(150)
+        }
+        navController.navigate(TripCPlanerScreens.MainScreen.name){
+            popUpTo(0)
         }
     }
 // Text composable is used to display the text and the style can be changed here

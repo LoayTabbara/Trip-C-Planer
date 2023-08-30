@@ -1,7 +1,6 @@
 package com.codecamp.tripcplaner.model.navigation
 
 import android.content.Intent
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -32,9 +31,8 @@ fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: Trave
                         uriPattern = "https://pink-trudy-95.tiiny.site/?id={id}"
                         action = Intent.ACTION_VIEW
                     }
-                ),) {backStackEntry ->
-
-
+                ),
+            ) {backStackEntry ->
             MainScreen(navController, travelInfoViewModel, detailsViewModel,themeViewModel,backStackEntry.arguments?.getString("id"))
         }
         composable(TripCPlanerScreens.SplashScreen.name) {

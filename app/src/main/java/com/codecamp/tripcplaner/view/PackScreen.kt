@@ -335,7 +335,9 @@ fun PackScreen(
                                 )
                                 newTitle.value = ""
                                 popUpOnSave.value = false
-                                navController.navigate(TripCPlanerScreens.MainScreen.name)
+                                navController.navigate(TripCPlanerScreens.MainScreen.name){
+                                    popUpTo(0)
+                                }
 
                             }),
                             keyboardOptions = KeyboardOptions(

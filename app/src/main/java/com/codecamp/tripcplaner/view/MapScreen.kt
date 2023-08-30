@@ -5,6 +5,8 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -91,6 +94,7 @@ fun MapScreen(
 
         )
     )
+
     fun canCreate(): Boolean {
         return (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty() &&
                 tripPickerList[2].value.isNotEmpty() && tripPickerList[3].value.isNotEmpty() &&
@@ -137,7 +141,7 @@ fun MapScreen(
                             val duration = ChronoUnit.DAYS.between(
                                 startDate, endDate
                             )
-                            travelInfoViewModel.startDate = startDate.atTime(6,0)
+                            travelInfoViewModel.startDate = startDate.atTime(6, 0)
                             travelInfoViewModel.sendMessage(
                                 listOf(tripPickerList[0].value, tripPickerList[1].value),
                                 duration.toInt(),
@@ -147,14 +151,17 @@ fun MapScreen(
                             travelInfoViewModel.hasResult.value = false
                             showIndicator.value = true
                         },
-                        colors = ButtonDefaults.buttonColors(disabledContainerColor = Color.Transparent, containerColor = Color(if (travelInfoViewModel.hasResult.value) 0XFFE0BB70 else 0XFF388E3C))
+                        colors = ButtonDefaults.buttonColors(
+                            disabledContainerColor = Color.Transparent,
+                            containerColor = Color(if (travelInfoViewModel.hasResult.value) 0XFFE0BB70 else 0XFF388E3C)
+                        )
 
                     ) {
                         Text(
                             text = if (travelInfoViewModel.hasResult.value) "\u21BA" else "Generate a Trip",
                             fontWeight = if (travelInfoViewModel.hasResult.value) FontWeight.Bold else FontWeight.Normal,
                             fontSize = if (travelInfoViewModel.hasResult.value) 24.sp else 16.sp,
-                            color = if(canCreate()) Color.White else Color.LightGray
+                            color = if (canCreate()) Color.White else Color.LightGray
                         )
                     }
                     if (travelInfoViewModel.hasResult.value)
@@ -164,8 +171,9 @@ fun MapScreen(
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0XFF388E3C)),
                             onClick = {
                                 travelInfoViewModel.hasResult.value = false
-                                val startDate = LocalDate.parse(tripPickerList[2].value).atTime(6,0)
-                                val endDate = LocalDate.parse(tripPickerList[3].value).atTime(6,0)
+                                val startDate =
+                                    LocalDate.parse(tripPickerList[2].value).atTime(6, 0)
+                                val endDate = LocalDate.parse(tripPickerList[3].value).atTime(6, 0)
 
                                 detailsViewModel.setDates(startDate, endDate)
                                 travelInfoViewModel.endDate = endDate
@@ -287,8 +295,11 @@ fun MapScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() } // This is mandatory
+                    ) {}
                     .background(Color(0xaaffffff)),
-
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(

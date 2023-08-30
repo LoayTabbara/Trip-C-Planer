@@ -1,6 +1,5 @@
 package com.codecamp.tripcplaner.view
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -57,26 +56,32 @@ fun PackScreen(
     viewModel: DetailViewModel,
     travelInfoViewModel: TravelInfoViewModel
 ) {
+
+    // Counter for deleted items when delete button is pressed (according to the deleted list)
     val counter = remember {
         mutableIntStateOf(0)
     }
-
+    // Popup for adding new item
     val popUpOnAdd = remember {
         mutableStateOf(false)
     }
+    // Popup to Add Title and Save user Choices
     val popUpOnSave = remember {
         mutableStateOf(false)
     }
+    // variable to hold the new item from text-field
     val newItem = remember {
         mutableStateOf("")
     }
+    // variable to hold the new title from text-field
     val newTitle = remember {
         mutableStateOf("")
 
     }
+    // variable to hold the checked items
     val myList =
         mutableMapOf<String, MutableList<Boolean>>()
-
+    //list to hold the deleted items
     val deletedList = remember { mutableStateListOf<String>() }
 
     Column(
@@ -87,6 +92,7 @@ fun PackScreen(
             .verticalScroll(enabled = true, state = rememberScrollState())
             .background(MaterialTheme.colorScheme.onTertiary)
     ) {
+        //Tour plan
         Text(text = "Travel Period ", style = MaterialTheme.typography.displaySmall)
         Row {
 
@@ -122,11 +128,11 @@ fun PackScreen(
         }
 
         travelInfoViewModel.citiesWithActivity.keys.forEach {
-            Log.d("citiesWithActivity", it)
         }
+        // Packing List
         Text(text = "Your Packlist", style = MaterialTheme.typography.displayMedium,color = MaterialTheme.colorScheme.onSecondary)
         Column(modifier = Modifier.padding(top = 10.dp)) {
-
+            // Loop through the packing list and display each item
             for (item in travelInfoViewModel.packingList) {
 
                 PackCard(item = item, onDelete = {
@@ -136,16 +142,16 @@ fun PackScreen(
                 }) {
                     if (it) {
                         myList[item] = mutableListOf(false,false)
-                        Log.d("myList  +", myList.toString())
+
                     } else {
                         myList.remove(item)
-                        Log.d("myList   -", myList.toString())
+
                     }
                 }
                 Spacer(modifier = Modifier.padding(5.dp))
 
             }
-
+            // Add new item and save buttons
             Row {
                 Column(
                     modifier = Modifier
@@ -216,7 +222,7 @@ fun PackScreen(
 
 
         }
-
+        //Popup to take item name
         if (popUpOnAdd.value) {
             Popup(
                 alignment = Alignment.Center, onDismissRequest = { popUpOnAdd.value = false },
@@ -268,6 +274,7 @@ fun PackScreen(
                 }
             }
         }
+        //Popup to take title input and save user choices to database through viewModel
         if (popUpOnSave.value) {
             Popup(
                 alignment = Alignment.Center, onDismissRequest = { popUpOnSave.value = false },
@@ -309,7 +316,7 @@ fun PackScreen(
                                 if (newTitle.value != "") {
                                     viewModel.setNewTitle(newTitle.value)
                                 }
-                                Log.i("vor packlist", travelInfoViewModel.packingList.toString())
+
 
                                 viewModel.setPackList(myList)
                                 viewModel.cities =
@@ -347,7 +354,6 @@ fun PackScreen(
             travelInfoViewModel.removeFromPackingList(item)
             counter.value--
         }
-        Log.d("ditem", deletedList.toString())
         deletedList.clear()
     }
 

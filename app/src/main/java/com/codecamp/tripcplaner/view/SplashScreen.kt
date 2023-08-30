@@ -3,15 +3,12 @@ package com.codecamp.tripcplaner.view
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,22 +34,28 @@ import com.codecamp.tripcplaner.R
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
 import kotlinx.coroutines.delay
 
-
+// Splash Screen
 @Composable
 fun SplashScreen(navController: NavController) {
     val scale = remember {
+        // Animatable is a composable function that can be used to animate a value
         Animatable(0f)
     }
+    // Scale animation for logo image in splash screen using Animatable composable function and animateTo function of Animatable
     LaunchedEffect(key1 = true, block = {
 
         scale.animateTo(targetValue = 0.9f,
+            //tween is used to define the animation behavior
             animationSpec = tween(
+                // durationMillis is the duration of the animation in milliseconds
                 durationMillis = 800,
                 easing = {
+                    // OvershootInterpolator is used to animate the value in a way that it overshoots the target value and then comes back to it
                     OvershootInterpolator(8f)
                         .getInterpolation(it)
                 })
         )
+        // Navigate to Main Screen after animation is completed after 3 seconds
         navigate(navController)
     })
 
@@ -63,6 +66,7 @@ fun SplashScreen(navController: NavController) {
             .fillMaxSize()
 
     ) {
+        // Image composable is used to load the image from drawable folder
         Image(
             painter = painterResource(id = R.drawable.splash_back),
             contentDescription = null,
@@ -83,6 +87,7 @@ fun SplashScreen(navController: NavController) {
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(vertical = 30.dp)
             )
+            // TypewriterText composable is used to display the text in typewriter animation
             TypewriterText(
                 texts = listOf(
                     " LIVE YOUR LIFE BY A COMPASS,",
@@ -131,13 +136,15 @@ fun TypewriterText(
                         startIndex = 0,
                         endIndex = charIndex + 1,
                     )
+                // delay for each character
                 delay(45)
             }
             textIndex = (textIndex + 1) % texts.size
+            // delay for each text
             delay(150)
         }
     }
-
+// Text composable is used to display the text and the style can be changed here
     Text(
         text = textToDisplay,
         fontSize = 24.sp,

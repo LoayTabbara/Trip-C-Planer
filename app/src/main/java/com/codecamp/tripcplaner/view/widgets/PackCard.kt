@@ -38,6 +38,7 @@ fun PackCard(
     onDelete: @Composable (item: String) -> Unit = {},
     content: @Composable (checked: Boolean) -> Unit
 ) {
+    //hold checked and deleted state
     val checked = remember { mutableStateOf(false) }
     val deleted = remember { mutableStateOf(false) }
     Card(modifier = Modifier
@@ -88,9 +89,11 @@ fun PackCard(
         }
     }
     if (deleted.value) {
+        //send delete state to the content
         onDelete(item)
         deleted.value = false
     }
+    //send checked state to the content
     content(checked.value)
 
 }

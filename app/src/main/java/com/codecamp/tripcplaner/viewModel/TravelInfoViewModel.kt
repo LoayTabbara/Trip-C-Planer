@@ -39,6 +39,9 @@ import java.net.URL
 import java.time.LocalDateTime
 import javax.inject.Inject
 
+
+
+
 data class CityInfo(
     @Json(name = "Activities") val activities: List<String>,
     @Json(name = "Arrival Time") val arrivalTime: String
@@ -78,6 +81,7 @@ class TravelInfoViewModel @Inject constructor(
     fun sendMessage(
         startEndCities: List<String>, duration: Int, context: Context, season: String
     ) {
+
         generatePseudo = false
         val startCity = startEndCities.first()
         val endCity = startEndCities.last()

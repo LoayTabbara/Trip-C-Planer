@@ -66,7 +66,6 @@ class NotificationReceiver: BroadcastReceiver()  {
         val itemName=intent?.getStringExtra("itemName")
 
         val notificationManager = NotificationManagerCompat.from(context!!)
-        //val activeNotificationSize=notificationManager.activeNotifications.size
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         Log.d("notif", "onReceive3: notif" )
         if (notification != null&&notificationId != null&&ActivityCompat.checkSelfPermission(
@@ -95,6 +94,7 @@ class NotificationReceiver: BroadcastReceiver()  {
                                     Log.d("notif", "onReceive7: Notif in stringToLoc< LocalDateTime.now() ${calculateDistance(givenLat,givenLng,lat,lng)}")
                                 }
                                 else{
+                                    //or schedule it again
                                     scheduleNotification(context,notificationId,dateTime,"PackAlert",cityMessage,itemName!!)
 
                                     Log.d("notif", "onReceive8: nothing matches for  ${calculateDistance(givenLat,givenLng,lat,lng)} and rescheduled $notificationId")
@@ -112,11 +112,12 @@ class NotificationReceiver: BroadcastReceiver()  {
             }
             else{
                 if(stringToLoc> LocalDateTime.now()){
-
+                    //if target time is not passed yet then schedule it again
                     scheduleNotification(context,notificationId,dateTime,"PackAlert",cityMessage,itemName!!)
                     Log.d("notif", "onReceive10: Notif rescheduled $stringToLoc")
                 }
                 else{
+                    //if target time is passed then send notification
                    notificationManager.notify(notificationId, notification)
                     Log.d("notif", "onReceive11: Notif sent $stringToLoc")
                 }
@@ -128,11 +129,11 @@ class NotificationReceiver: BroadcastReceiver()  {
         else{
             Log.d("notif", "onReceive: no notif")
         }
-//
+
 
             }
 
-
+   //calculating distance between two points
     private fun calculateDistance(givenLat: Double, givenLng:Double, currentLat:Double, currentLng:Double): Double {
         val theta = currentLng - givenLng
         var dist = sin(deg2rad(currentLat)) * sin(deg2rad(givenLat)) +

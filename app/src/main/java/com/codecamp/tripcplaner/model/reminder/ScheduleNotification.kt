@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 
 fun scheduleNotification (context: Context,id:Int,dateTime:String,channelId:String,city:String,itemName:String) {
 
-
+// time step for notification is 10 seconds and each time it tests if the time is passed or not and also location in notification receiver
     val stepTime=10000
 
     var contentMessage=""

@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.location.Location
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.MainActivity
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
+import com.codecamp.tripcplaner.model.util.checkInternet
 import com.codecamp.tripcplaner.view.widgets.CustomMarker
 import com.codecamp.tripcplaner.view.widgets.GeneratedTripOverview
 import com.codecamp.tripcplaner.view.widgets.PermissionSnackbar
@@ -136,20 +138,27 @@ fun MapScreen(
                             0.25f
                         ) else Modifier.fillMaxWidth(),
                         onClick = {
-                            val startDate = LocalDate.parse(tripPickerList[2].value, formatter)
-                            val endDate = LocalDate.parse(tripPickerList[3].value, formatter)
-                            val duration = ChronoUnit.DAYS.between(
-                                startDate, endDate
-                            )
-                            travelInfoViewModel.startDate = startDate.atTime(6, 0)
-                            travelInfoViewModel.sendMessage(
-                                listOf(tripPickerList[0].value, tripPickerList[1].value),
-                                duration.toInt(),
-                                context,
-                                if (startDate.monthValue < 4 || startDate.monthValue > 10) "Winter" else "Summer"
-                            )
-                            travelInfoViewModel.hasResult.value = false
-                            showIndicator.value = true
+
+                            if (!checkInternet(context)) {
+                                Toast.makeText(context, "No internet connection!", Toast.LENGTH_LONG).show()
+                                  // Exit the function early if there's no internet
+                            }else{
+                                val startDate = LocalDate.parse(tripPickerList[2].value, formatter)
+                                val endDate = LocalDate.parse(tripPickerList[3].value, formatter)
+                                val duration = ChronoUnit.DAYS.between(
+                                    startDate, endDate
+                                )
+                                travelInfoViewModel.startDate = startDate.atTime(6, 0)
+                                travelInfoViewModel.sendMessage(
+                                    listOf(tripPickerList[0].value, tripPickerList[1].value),
+                                    duration.toInt(),
+                                    context,
+                                    if (startDate.monthValue < 4 || startDate.monthValue > 10) "Winter" else "Summer"
+                                )
+                                travelInfoViewModel.hasResult.value = false
+                                showIndicator.value = true
+                            }
+
                         },
                         colors = ButtonDefaults.buttonColors(
                             disabledContainerColor = Color.Transparent,

@@ -38,6 +38,8 @@ import java.net.SocketTimeoutException
 import java.net.URL
 import java.time.LocalDateTime
 import javax.inject.Inject
+import com.codecamp.tripcplaner.model.util.checkInternet
+
 
 
 
@@ -81,6 +83,7 @@ class TravelInfoViewModel @Inject constructor(
     fun sendMessage(
         startEndCities: List<String>, duration: Int, context: Context, season: String
     ) {
+
 
         generatePseudo = false
         val startCity = startEndCities.first()

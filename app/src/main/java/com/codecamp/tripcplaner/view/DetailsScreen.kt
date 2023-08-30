@@ -67,9 +67,7 @@ import com.codecamp.tripcplaner.view.widgets.saveToDVM
 import com.codecamp.tripcplaner.viewModel.DetailViewModel
 import com.codecamp.tripcplaner.viewModel.TravelInfoViewModel
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.RoundCap
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 import java.util.Calendar
 
 
@@ -82,10 +80,13 @@ fun DetailsScreen(
     travelInfoViewModel: TravelInfoViewModel
 ) {
     val myId: Int = id
+    // get the trip from the database by id
     val thisTrip = travelInfoViewModel.tripRepo.getById(myId)
     if (thisTrip != null) {//leave this line here   it is not correct what the android studio says
+        // save the trip to the detail view model, so that we can use it form detail view model
         saveToDVM(myId, travelInfoViewModel, viewModel)
 
+        // get the painting depending on the transport mean
         val paintings = mutableMapOf<String, Int>()
         when (viewModel.getTransportMean()) {
             "walking" -> paintings["walking"] = R.drawable.walking
@@ -93,10 +94,14 @@ fun DetailsScreen(
             "transit" -> paintings["transit"] = R.drawable.transit
             "bicycling" -> paintings["bicycling"] = R.drawable.bicycling
         }
+
+        // to save the selected city from the item alert popup
         var selectedCity by remember { mutableStateOf("") }
 
-        // State to control the visibility of the dropdown menu
+        // State to control the visibility of the dropdown menu for the cities in item alert popup
         var isDropdownMenuVisible by remember { mutableStateOf(false) }
+
+        //date picker save date as string in the format of "yyyy.mm.dd" under the item alert popup
         val calendar = Calendar.getInstance()
         val date = remember { mutableStateOf("") }
         val year = calendar[Calendar.YEAR]
@@ -115,22 +120,29 @@ fun DetailsScreen(
             month,
             dayOfMonth
         )
+        //pop up alert after pressing cancel reminder
         val reminderCancelAlert = remember { mutableStateOf(false)  }
+        //pop up alert after pressing checkbox
         val checkCancelAlert=remember{mutableStateOf(false)}
+        //checkbox state
         val isChecked=remember{mutableStateOf("")}
 
         val initialContext: Context = LocalContext.current
+        //item id for the item whose reminder or checkbox is pressed
         var itemIdforA by remember { mutableIntStateOf(0) }
-
+        //it will pop up a modal asking for time and location for the alert, it also contains other information
+        // from the loop of the exact item for which the alert is pressed and passes value to the confirmed variable on confirm button pressed
         val popUpOn = remember { mutableStateListOf("false") }
 
-
+        // when its true, it passes the extra values to the scheduleNotification function
         val confirmed = remember { mutableStateListOf("false", "", "", "", "") }
-
+        //get the notification manager
         val notificationManager = NotificationManagerCompat.from(initialContext)
+        //check if notification enabled or not
         var areNotificationEnabled by remember { mutableStateOf(notificationManager.areNotificationsEnabled()) }
+        //get the active notifications
         val activeNotifications = notificationManager.activeNotifications
-
+        //cancel all the active notifications for this trip if the user was already notified. Its checked every time the details screen is opened
         for (notification in activeNotifications) {
             Log.d("notif","${notification.id}")
             if(notification.id!=null){
@@ -174,7 +186,13 @@ fun DetailsScreen(
             for (item in viewModel.getPackList()) {
                 val itemId=(myId*100)+i
                 Spacer(modifier = Modifier.height(10.dp))
-
+                //passing the values to the DetailCard composable and getting the values back
+                //reminderPressed is true when the reminder button is pressed
+                //checkedPressed is true when the checkbox is pressed
+                //isChecked is the state of the checkbox
+                //reminderCancelAlert is true when the cancel reminder alert is pressed
+                //checkCancelAlert is true when the checkbox alert is pressed
+                //it also shows the items in the packing list
                 DetailCard(text = item.key,item.value[1],isChecked=item.value[0]) { reminderPressed, checkedPressed->
                     if (checkedPressed) {
                         checkCancelAlert.value = true
@@ -197,6 +215,7 @@ fun DetailsScreen(
                 i++
             }
             Spacer(modifier = Modifier.height(10.dp))
+            //delete the trip from database and navigate to main screen
             Button(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Red,
@@ -213,7 +232,7 @@ fun DetailsScreen(
             ) {
                 Text(text = "Delete this Trip")
             }
-            //if notification enabled of not
+            //on resume checks if notification enabled of not and updates the state of areNotificationEnabled
             val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(
                 key1 = lifecycleOwner,
@@ -232,6 +251,7 @@ fun DetailsScreen(
                     }
                 }
             )
+            //check if notification enabled or not and takes user to settings if not enabled when its clicked
          if (!areNotificationEnabled){
              Button(
                  colors = ButtonDefaults.buttonColors(
@@ -255,10 +275,10 @@ fun DetailsScreen(
                  Text(text = "Please Allow the Notifications from the Settings before adding a reminder")
              }
          }
-            //
+
 
         }
-
+        //item alert popup for reminder and select date and location for the reminder
         if (popUpOn[0].toBooleanStrict()) {
             Popup(
                 alignment = Alignment.Center, onDismissRequest = { popUpOn[0] = "false"
@@ -332,14 +352,11 @@ fun DetailsScreen(
                 }
             }
         }
-
+        //cancel reminder alert
         if (reminderCancelAlert.value) {
 
             AlertDialog(
                 onDismissRequest = {
-                    // Dismiss the dialog when the user clicks outside the dialog or on the back
-                    // button. If you want to disable that functionality, simply use an empty
-                    // onCloseRequest.
                     reminderCancelAlert.value = false
                 },
                 title = {
@@ -379,17 +396,17 @@ fun DetailsScreen(
                 }
             )
         }
-
+        //checkbox alert
         if (checkCancelAlert.value) {
 
             AlertDialog(
-                onDismissRequest = {// can only be dissmissed by confirm
+                onDismissRequest = {// can only be dismissed by confirm
                 },
                 title = {
                     Text(text = "Alert")
                 },
                 text = {
-                    Text("Haven't you taken the item yet?")
+                    Text("Check state changed!")
                 },
                 confirmButton = {
                     Button(
@@ -406,15 +423,14 @@ fun DetailsScreen(
                                 Log.e("errorDetailsScreen", "CheckboxError")
                             }
                         }) {
-                        Text("Sure!")
+                        Text("Ok!")
                     }
                 }
             )
         }
 
 
-
-//        var notificationScheduled by remember { mutableStateOf(false) }
+    //when the confirm button is pressed, it schedules the notification and updates the packing list in the database
         if (confirmed[0].toBooleanStrict()) {
             val (cityMessage, currentDateMessage) = getMessageContents(
                 confirmed[1],
@@ -434,7 +450,7 @@ fun DetailsScreen(
 
 }
 
-
+//updates the parameters inside packing list in the database
 suspend fun updatedList(travelInfoViewModel: TravelInfoViewModel, myList:MutableMap<String,MutableList<Boolean>>, itemId:String, cancelReminder:Boolean=false,updateCheck:Boolean=false,isChecked:Boolean=false){
     val id= itemId.substring(4).toInt()
     if(updateCheck)
@@ -447,7 +463,7 @@ suspend fun updatedList(travelInfoViewModel: TravelInfoViewModel, myList:Mutable
 
 
 
-
+//cancelling the notification by id
 private fun cancelNotification(context: Context, notificationId: Int) {
     val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     val alarmIntent = Intent(context, NotificationReceiver::class.java)
@@ -464,6 +480,7 @@ private fun cancelNotification(context: Context, notificationId: Int) {
     Log.d("notif", "cancelNotification: $notificationId")
 
 }
+//gives modified message for the notification
 private fun getMessageContents(dateTime:String,city:String,trip:Trip):Pair<String, String> {
     var cityMessage=""
     val currentDate=trip.cities[city]?.second

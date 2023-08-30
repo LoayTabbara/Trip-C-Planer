@@ -3,6 +3,7 @@ package com.codecamp.tripcplaner.view.widgets
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,18 +24,21 @@ fun TravelSegmentRow(
         Text(
             fontSize = 16.sp, text = it,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.fillMaxWidth(0.3f)
+            modifier = Modifier.fillMaxWidth(0.3f),
+            color = MaterialTheme.colorScheme.inversePrimary
         )
         Text(
             text = " ➱",
             fontSize = 20.sp,
-            modifier = Modifier.fillMaxWidth(0.16f)
+            modifier = Modifier.fillMaxWidth(0.16f),
+            color = MaterialTheme.colorScheme.inversePrimary
         )
         Text(
             fontSize = 16.sp,
             text = travelInfoViewModel.citiesWithActivity.keys.elementAt(i),
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.fillMaxWidth(0.45f)
+            modifier = Modifier.fillMaxWidth(0.45f),
+            color = MaterialTheme.colorScheme.inversePrimary
         )
     }
 }

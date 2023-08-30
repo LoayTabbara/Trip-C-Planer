@@ -82,7 +82,7 @@ Row {
 
     Spacer(modifier = Modifier.height(18.dp))
 
-    Text(modifier = Modifier.padding(start = 8.dp), text = if (switchON.value) "Dark mode ON" else "Dark mode OFF")
+    Text(modifier = Modifier.padding(start = 8.dp), text = if (switchON.value) "Dark Mode ON" else "Dark Mode OFF")
 }
 
 

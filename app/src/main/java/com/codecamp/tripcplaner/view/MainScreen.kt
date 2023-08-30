@@ -124,13 +124,13 @@ fun MainScreen(
                     .fillMaxWidth()
                     .padding(bottom = 10.dp),
                 elevation = ButtonDefaults.buttonElevation(5.dp),
-                colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.DarkGray)
+                colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.secondary)
             ) {
                 Icon(
                     imageVector = Icons.Default.Add, contentDescription = "Add icon"
                 )
                 Spacer(modifier = Modifier.width(width = 8.dp))
-                Text(text = "Choose Means of Transport to create a trip")
+                Text(text = "Choose Transportation Options")
             }
         }
     }) {
@@ -166,7 +166,7 @@ fun MainScreen(
                         onValueChange = { shareCode.value = it },
                         placeholder = {
                             Text(
-                                text = "Shared code",
+                                text = "Shared Code",
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         },
@@ -175,14 +175,14 @@ fun MainScreen(
                             .padding(end = 8.dp)
                             .border(
                                 width = 2.dp,
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.tertiary,
                                 shape = RoundedCornerShape(10.dp)
                             ),
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
                         colors = TextFieldDefaults.textFieldColors(
-                            Color.White, focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
+                            Color.White, focusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
                         ),
                         keyboardActions = KeyboardActions(onDone = {
                             // Calling fetchTrip from viewModel using the sharedCode value
@@ -264,9 +264,10 @@ fun MainScreen(
 
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(Color.Gray)
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
                     ) {
-                        Text(text = "Walking")
+                        Text(text = "Walking",
+                          color = MaterialTheme.colorScheme.tertiary)
                     }
                     Button(
                         onClick = {
@@ -276,9 +277,10 @@ fun MainScreen(
 
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(Color.Gray)
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
                     ) {
-                        Text(text = "Car")
+                        Text(text = "Car",
+                            color = MaterialTheme.colorScheme.tertiary)
                     }
                     Button(
                         onClick = {
@@ -287,9 +289,10 @@ fun MainScreen(
                             navController.navigate(TripCPlanerScreens.MapScreen.name + "/${meansOfTransport.value}")
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(Color.Gray)
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
                     ) {
-                        Text(text = "Bus")
+                        Text(text = "Bus",
+                            color = MaterialTheme.colorScheme.tertiary)
                     }
                     Button(
                         onClick = {
@@ -298,9 +301,10 @@ fun MainScreen(
                             navController.navigate(TripCPlanerScreens.MapScreen.name + "/${meansOfTransport.value}")
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(Color.Gray)
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
                     ) {
-                        Text(text = "Bicycling")
+                        Text(text = "Bicycling",
+                            color = MaterialTheme.colorScheme.tertiary)
                     }
 
                 }

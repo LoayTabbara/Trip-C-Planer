@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -151,6 +152,9 @@ fun DetailsScreen(
                 .padding(if (popUpOn[0].toBooleanStrict()) 0.dp else 10.dp)
                 .blur(if (popUpOn[0].toBooleanStrict()) 20.dp else 0.dp)
                 .verticalScroll(enabled = true, state = rememberScrollState())
+                .background(MaterialTheme.colorScheme.onTertiary)
+
+
         ) {
 
 
@@ -166,7 +170,8 @@ fun DetailsScreen(
             Text(
                 text = if (viewModel.getNewTitle() != "") viewModel.getNewTitle() else "Untitled Trip",
                 style = MaterialTheme.typography.displayMedium,
-                modifier = Modifier.padding(start = 10.dp)
+                modifier = Modifier.padding(start = 10.dp),
+                color = MaterialTheme.colorScheme.onSecondary
             )
             StartTargetRows(thisTrip, viewModel)
             var i=0
@@ -175,7 +180,8 @@ fun DetailsScreen(
                 val itemId=(myId*100)+i
                 Spacer(modifier = Modifier.height(10.dp))
 
-                DetailCard(text = item.key,item.value[1],isChecked=item.value[0]) { reminderPressed, checkedPressed->
+                DetailCard(text = item.key,item.value[1],isChecked=item.value[0],
+                    ) { reminderPressed, checkedPressed->
                     if (checkedPressed) {
                         checkCancelAlert.value = true
                         itemIdforA=itemId
@@ -211,7 +217,8 @@ fun DetailsScreen(
                     .padding(16.dp)
                     .fillMaxWidth()
             ) {
-                Text(text = "Delete this Trip")
+                Text(text = "Delete this Trip",
+                    color = MaterialTheme.colorScheme.onSecondary)
             }
             //if notification enabled of not
             val lifecycleOwner = LocalLifecycleOwner.current

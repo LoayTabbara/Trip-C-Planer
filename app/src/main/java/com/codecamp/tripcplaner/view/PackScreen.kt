@@ -1,6 +1,7 @@
 package com.codecamp.tripcplaner.view
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -84,6 +85,7 @@ fun PackScreen(
             .padding(if (popUpOnAdd.value || popUpOnSave.value) 0.dp else 10.dp)
             .blur(if (popUpOnAdd.value || popUpOnSave.value) 20.dp else 0.dp)
             .verticalScroll(enabled = true, state = rememberScrollState())
+            .background(MaterialTheme.colorScheme.onTertiary)
     ) {
         Text(text = "Travel Period ", style = MaterialTheme.typography.displaySmall)
         Row {
@@ -92,10 +94,11 @@ fun PackScreen(
                 text = "from ${
                     viewModel.getStartDate().toString().substring(0, 10)
                 } to ${viewModel.getEndDate().toString().substring(0, 10)}",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSecondary
             )
         }
-        Text(text = "Places to Visit", style = MaterialTheme.typography.displaySmall)
+        Text(text = "Places to Visit", style = MaterialTheme.typography.displaySmall,color = MaterialTheme.colorScheme.onSecondary)
         travelInfoViewModel.citiesWithActivity.forEach {
             Row(Modifier.fillMaxWidth()) {
                 Column(Modifier.fillMaxWidth(0.2f)) {
@@ -103,14 +106,16 @@ fun PackScreen(
                     Text(
                         text = "${it.key}:",
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
                 }
                 Column(Modifier.fillMaxWidth()) {
 
                     Text(
                         text = "${it.value[0]}\n${it.value[1]}\n",
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
                 }
             }
@@ -119,7 +124,7 @@ fun PackScreen(
         travelInfoViewModel.citiesWithActivity.keys.forEach {
             Log.d("citiesWithActivity", it)
         }
-        Text(text = "Your Packlist", style = MaterialTheme.typography.displayMedium)
+        Text(text = "Your Packlist", style = MaterialTheme.typography.displayMedium,color = MaterialTheme.colorScheme.onSecondary)
         Column(modifier = Modifier.padding(top = 10.dp)) {
 
             for (item in travelInfoViewModel.packingList) {
@@ -163,13 +168,15 @@ fun PackScreen(
 
                         Icon(
                             imageVector = Icons.Default.Add,
+                            tint = MaterialTheme.colorScheme.inversePrimary,
                             contentDescription = "Add icon",
                             modifier = Modifier
                                 .scale(1.2f)
                                 .padding(end = 5.dp)
                         )
 
-                        Text(text = "Add New Item", style = MaterialTheme.typography.bodyMedium)
+                        Text(text = "Add New Item", style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.inversePrimary)
                     }
                 }
 
@@ -194,13 +201,15 @@ fun PackScreen(
 
                         Icon(
                             imageVector = Icons.Default.Add,
+                            tint = MaterialTheme.colorScheme.inversePrimary,
                             contentDescription = "Add icon",
                             modifier = Modifier
                                 .scale(1.2f)
                                 .padding(end = 5.dp)
                         )
 
-                        Text(text = "Save ", style = MaterialTheme.typography.bodyMedium)
+                        Text(text = "Save ", style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.inversePrimary)
                     }
                 }
             }
@@ -227,7 +236,7 @@ fun PackScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Add new item",
+                            text = "Add New Item",
                             style = MaterialTheme.typography.displaySmall,
                             modifier = Modifier.padding(10.dp)
                         )
@@ -291,7 +300,7 @@ fun PackScreen(
                                 .padding(10.dp),
                             singleLine = true,
                             shape = RoundedCornerShape(10.dp),
-                            colors = TextFieldDefaults.textFieldColors(Color.LightGray),
+                            colors = TextFieldDefaults.textFieldColors(MaterialTheme.colorScheme.onSecondary),
                             keyboardActions = KeyboardActions(onDone = {
 
                                 travelInfoViewModel.citiesWithActivity.values.forEach {

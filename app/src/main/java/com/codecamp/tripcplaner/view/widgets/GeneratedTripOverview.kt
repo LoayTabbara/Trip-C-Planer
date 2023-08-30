@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,7 +37,8 @@ fun GeneratedTripOverview(
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(8.dp),
-            fontSize = 24.sp
+            fontSize = 24.sp,
+            color = MaterialTheme.colorScheme.inversePrimary
         )
 
         for (i in 1 until travelInfoViewModel.citiesWithActivity.keys.size) {
@@ -50,6 +52,7 @@ fun GeneratedTripOverview(
             text = "\nSuggested Packing List(editable later)",
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.inversePrimary
         )
         Text(
             text = travelInfoViewModel.packingList.toString()
@@ -58,6 +61,7 @@ fun GeneratedTripOverview(
             fontSize = 14.sp,
             modifier = Modifier.padding(8.dp),
             fontWeight = FontWeight.Thin,
+            color = MaterialTheme.colorScheme.inversePrimary
         )
     }
 }

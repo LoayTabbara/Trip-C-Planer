@@ -33,6 +33,8 @@ fun MainScreenDCard(travelInfoViewModel: TravelInfoViewModel, navController: Nav
     val formatterDayName = DateTimeFormatter.ofPattern("EE")
     val formatterMonthName = DateTimeFormatter.ofPattern("MMM")
     val startsMap = mutableMapOf<LocalDateTime, MutableList<Int>>()
+
+    // Grouping trips by start date
     travelInfoViewModel.tripRepo.getAllItems().forEach { trip ->
         if (startsMap.containsKey(trip.startDate))
             startsMap[trip.startDate]!!.add(trip.id)
@@ -41,11 +43,13 @@ fun MainScreenDCard(travelInfoViewModel: TravelInfoViewModel, navController: Nav
     }
     startsMap.toSortedMap()
 
+    // Displaying trips date in a lazy row
     LazyRow {
         item {
             startsMap.toSortedMap().forEach { entry ->
                 entry.value.forEach { id ->
                     val trip= travelInfoViewModel.tripRepo.getById(id)
+                    // Displaying trips date in a lazy row
                     DayCard(
                         day = entry.key.format(formatterDayName).uppercase(Locale.ROOT),
                         date = entry.key.format(formatter),
@@ -63,7 +67,7 @@ fun MainScreenDCard(travelInfoViewModel: TravelInfoViewModel, navController: Nav
     }
 
 }
-
+// Displaying trips date in a card
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DayCard(date: String, day: String, onClick: () -> Unit, month: String, title: String) {
@@ -90,6 +94,7 @@ fun DayCard(date: String, day: String, onClick: () -> Unit, month: String, title
     }
 }
 
+// Changing the color of the card if the date is today
 fun currentColor(date: String): Color {
     return if (date == LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd"))) {
         Color.Red

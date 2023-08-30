@@ -71,12 +71,14 @@ fun MainScreen(
 ) {
 
     Text("MainScreen")
+    //variables to store the means of transport and the shared code
     val meansOfTransport = remember { mutableStateOf("") }
     val shareCode = remember { mutableStateOf("") }
+    //variable to store the state of the popup
     val popUpOn = remember {
         mutableStateOf(false)
     }
-
+    //variable to store the state of the permissions
     val permissionsState = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -84,15 +86,18 @@ fun MainScreen(
             Manifest.permission.INTERNET
         )
     )
+    //variable to store the lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-
+    //effect to launch the permissions request and fetch the trip
     DisposableEffect(key1 = lifecycleOwner, effect = {
 
         val observer = LifecycleEventObserver { _, event ->
+            // Launch the permissions request when the screen is resumed
             if (event == Lifecycle.Event.ON_START) {
                 permissionsState.launchMultiplePermissionRequest()
             }
+            //fetch the trip if the shared code is not null and to check the intentSharedCodeUsed variable from the viewModel
             if (routedId != null && !travelInfoViewModel.intentSharedCodeUsed.value) {
                 travelInfoViewModel.intentSharedCodeUsed.value = true
                 travelInfoViewModel.fetchTrip(routedId, detailsViewModel, context, navController)
@@ -110,6 +115,7 @@ fun MainScreen(
                 .fillMaxWidth()
                 .padding(start = 5.dp, end = 5.dp, bottom = 10.dp, top = 10.dp)
         ) {
+            //Button to add a new trip by choosing the means of transport
             Button(
                 onClick = {
                     if (meansOfTransport.value != "" && !popUpOn.value) {
@@ -147,6 +153,7 @@ fun MainScreen(
                     .fillMaxSize()
                     .padding(top = 30.dp, start = 5.dp, end = 5.dp)
             ) {
+                //Row to display the title, the switch to change the theme and also to display the shared code
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
@@ -201,8 +208,10 @@ fun MainScreen(
                     )
                 }
                 Spacer(modifier = Modifier.height(10.dp))
+                //Card to display the trip dates
                 MainScreenDCard(travelInfoViewModel, navController)
                 Spacer(modifier = Modifier.height(10.dp))
+                //LazyColumn to display the trips with short descriptions , TripCard is used to display each trip
                 LazyColumn {
                     items(
                         items = travelInfoViewModel.tripRepo.getAllItems().reversed()
@@ -231,7 +240,7 @@ fun MainScreen(
 
 
     }
-
+    //Select mean of transport Walking , car , bus , bicycling
     if (popUpOn.value) {
         Popup(
             alignment = Alignment.Center,

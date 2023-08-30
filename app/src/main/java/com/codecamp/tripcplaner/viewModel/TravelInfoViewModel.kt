@@ -300,6 +300,10 @@ class TravelInfoViewModel @Inject constructor(
     }
 
     fun shareTrip(item: Trip, context: Context) {
+        if (!checkInternet(context)) {
+            Toast.makeText(context, "No internet connection!", Toast.LENGTH_LONG).show()
+            return
+        }
         val body = generateBodyForSharing(item)
         viewModelScope.launch(Dispatchers.IO) {
             val url = URL("https://extendsclass.com/api/json-storage/bin")
@@ -364,6 +368,10 @@ class TravelInfoViewModel @Inject constructor(
         context: Context,
         navController: NavController
     ) {
+        if (!checkInternet(context)) {
+            Toast.makeText(context, "No internet connection!", Toast.LENGTH_LONG).show()
+            return
+        }
         viewModelScope.launch(Dispatchers.IO) {
             val url = URL("https://extendsclass.com/api/json-storage/bin/$sharedCode")
             val connection = url.openConnection() as HttpURLConnection

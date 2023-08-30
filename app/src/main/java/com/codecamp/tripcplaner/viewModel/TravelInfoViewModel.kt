@@ -38,6 +38,11 @@ import java.net.SocketTimeoutException
 import java.net.URL
 import java.time.LocalDateTime
 import javax.inject.Inject
+import com.codecamp.tripcplaner.model.util.checkInternet
+
+
+
+
 
 data class CityInfo(
     @Json(name = "Activities") val activities: List<String>,
@@ -78,6 +83,8 @@ class TravelInfoViewModel @Inject constructor(
     fun sendMessage(
         startEndCities: List<String>, duration: Int, context: Context, season: String
     ) {
+
+
         generatePseudo = false
         val startCity = startEndCities.first()
         val endCity = startEndCities.last()
@@ -293,6 +300,10 @@ class TravelInfoViewModel @Inject constructor(
     }
 
     fun shareTrip(item: Trip, context: Context) {
+        if (!checkInternet(context)) {
+            Toast.makeText(context, "No internet connection!", Toast.LENGTH_LONG).show()
+            return
+        }
         val body = generateBodyForSharing(item)
         viewModelScope.launch(Dispatchers.IO) {
             val url = URL("https://extendsclass.com/api/json-storage/bin")
@@ -357,6 +368,10 @@ class TravelInfoViewModel @Inject constructor(
         context: Context,
         navController: NavController
     ) {
+        if (!checkInternet(context)) {
+            Toast.makeText(context, "No internet connection!", Toast.LENGTH_LONG).show()
+            return
+        }
         viewModelScope.launch(Dispatchers.IO) {
             val url = URL("https://extendsclass.com/api/json-storage/bin/$sharedCode")
             val connection = url.openConnection() as HttpURLConnection

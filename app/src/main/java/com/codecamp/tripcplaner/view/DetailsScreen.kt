@@ -122,15 +122,22 @@ fun DetailsScreen(
             dayOfMonth
         )
         //pop up alert after pressing cancel reminder
-        val reminderCancelAlert = remember { mutableStateOf(false)  }
+        val reminderCancelAlert = remember { mutableStateOf(false) }
         //pop up alert after pressing checkbox
-        val checkCancelAlert=remember{mutableStateOf(false)}
+        val checkCancelAlert = remember { mutableStateOf(false) }
         //checkbox state
-        val isChecked=remember{mutableStateOf("")}
-
+        val isChecked = remember { mutableStateOf("") }
+        //clicked item title for the checkbox alert
+        val clickedItemTitle = remember { mutableStateOf("") }
+        //clicked item message for the checkbox alert
+        val clickedItemMessage = remember { mutableStateOf("") }
         val initialContext: Context = LocalContext.current
         //item id for the item whose reminder or checkbox is pressed
         var itemIdforA by remember { mutableIntStateOf(0) }
+
+        //number of unchecked items
+        var remainingChecks by remember { mutableIntStateOf(getUncheckedItems(viewModel.getPackList())) }
+
         //it will pop up a modal asking for time and location for the alert, it also contains other information
         // from the loop of the exact item for which the alert is pressed and passes value to the confirmed variable on confirm button pressed
         val popUpOn = remember { mutableStateListOf("false") }
@@ -145,8 +152,15 @@ fun DetailsScreen(
         val activeNotifications = notificationManager.activeNotifications
         //cancel all the active notifications for this trip if the user was already notified. Its checked every time the details screen is opened
         for (notification in activeNotifications) {
-            if(notification.id!=null){
-                viewModel.viewModelScope.launch { updatedList(travelInfoViewModel, viewModel.getPackList(), notification.id.toString(),cancelReminder = true) }
+            if (notification.id != null) {
+                viewModel.viewModelScope.launch {
+                    updatedList(
+                        travelInfoViewModel,
+                        viewModel.getPackList(),
+                        notification.id.toString(),
+                        cancelReminder = true
+                    )
+                }
                 cancelNotification(
                     initialContext,
                     notification.id
@@ -154,7 +168,6 @@ fun DetailsScreen(
             }
 
         }
-
 
         Column(
             modifier = Modifier
@@ -184,10 +197,15 @@ fun DetailsScreen(
                 color = MaterialTheme.colorScheme.onSecondary
             )
             StartTargetRows(thisTrip, viewModel)
-            var i=0
-
+            var i = 0
+            Text(
+                text = remainingChecks.toString() + " of " + viewModel.getPackList().size + " items remaining",
+                style = MaterialTheme.typography.displaySmall,
+                modifier = Modifier.padding(10.dp)
+            )
             for (item in viewModel.getPackList()) {
-                val itemId=(myId*100)+i
+
+                val itemId = (myId * 100) + i
                 Spacer(modifier = Modifier.height(10.dp))
                 //passing the values to the DetailCard composable and getting the values back
                 //reminderPressed is true when the reminder button is pressed
@@ -196,20 +214,33 @@ fun DetailsScreen(
                 //reminderCancelAlert is true when the cancel reminder alert is pressed
                 //checkCancelAlert is true when the checkbox alert is pressed
                 //it also shows the items in the packing list
-                DetailCard(text = item.key,item.value[1],isChecked=item.value[0]) { reminderPressed, checkedPressed->
+                DetailCard(
+                    text = item.key,
+                    item.value[1],
+                    isChecked = item.value[0]
+                ) { reminderPressed, checkedPressed ->
                     if (checkedPressed) {
+                        itemIdforA = itemId
+                        if (item.value[0]) {
+                            isChecked.value = "false"
+                            clickedItemTitle.value = "Unchecked " + item.key
+                            clickedItemMessage.value =
+                                "Do not forget to pack your " + item.key + "!"
+                        } else {
+                            isChecked.value = "true"
+                            clickedItemTitle.value = "Checked " + item.key
+                            clickedItemMessage.value = "You have packed your" + item.key + "!"
+                        }
+
                         checkCancelAlert.value = true
-                        itemIdforA=itemId
-                        if(item.value[0])isChecked.value="false"
-                        else isChecked.value="true"
                     }
-                    if (reminderPressed&&!item.value[1]) {
+                    if (reminderPressed && !item.value[1]) {
                         popUpOn[0] = "true"
                         popUpOn.add(1, itemId.toString())
                         popUpOn.add(2, item.key)
                     }
-                    if (reminderPressed&&item.value[1]) {
-                        itemIdforA=itemId
+                    if (reminderPressed && item.value[1]) {
+                        itemIdforA = itemId
                         reminderCancelAlert.value = true
 
                     }
@@ -217,6 +248,7 @@ fun DetailsScreen(
                 Spacer(modifier = Modifier.height(10.dp))
                 i++
             }
+
             Spacer(modifier = Modifier.height(10.dp))
             //delete the trip from database and navigate to main screen
             Button(
@@ -233,8 +265,10 @@ fun DetailsScreen(
                     .padding(16.dp)
                     .fillMaxWidth()
             ) {
-                Text(text = "Delete this Trip",
-                    color = MaterialTheme.colorScheme.onSecondary)
+                Text(
+                    text = "Delete this Trip",
+                    color = MaterialTheme.colorScheme.onSecondary
+                )
             }
             //on resume checks if notification enabled of not and updates the state of areNotificationEnabled
             val lifecycleOwner = LocalLifecycleOwner.current
@@ -244,7 +278,7 @@ fun DetailsScreen(
                     val observer = LifecycleEventObserver { _, event ->
                         if (event == Lifecycle.Event.ON_START) {
 
-                                areNotificationEnabled = notificationManager.areNotificationsEnabled()
+                            areNotificationEnabled = notificationManager.areNotificationsEnabled()
 
                         }
                     }
@@ -256,38 +290,40 @@ fun DetailsScreen(
                 }
             )
             //check if notification enabled or not and takes user to settings if not enabled when its clicked
-         if (!areNotificationEnabled){
-             Button(
-                 colors = ButtonDefaults.buttonColors(
-                     containerColor = Color.Red,
-                     contentColor = Color.White
-                 ),
-                 onClick = {
-                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                     val uri: Uri = Uri.fromParts("package", initialContext.packageName, null)
-                     intent.data = uri
-                     initialContext.startActivity(intent)
+            if (!areNotificationEnabled) {
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red,
+                        contentColor = Color.White
+                    ),
+                    onClick = {
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        val uri: Uri = Uri.fromParts("package", initialContext.packageName, null)
+                        intent.data = uri
+                        initialContext.startActivity(intent)
 
-                 },
-                 shape = RoundedCornerShape(10.dp),
-                 modifier = Modifier
-                     .padding(20.dp)
-                     .fillMaxWidth()
+                    },
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .fillMaxWidth()
 
-             ) {
-                 Text(text = "Please Allow the Notifications from the Settings before adding a reminder")
-             }
-         }
+                ) {
+                    Text(text = "Please Allow the Notifications from the Settings before adding a reminder")
+                }
+            }
 
 
         }
         //item alert popup for reminder and select date and location for the reminder
         if (popUpOn[0].toBooleanStrict()) {
             Popup(
-                alignment = Alignment.Center, onDismissRequest = { popUpOn[0] = "false"
-                    date.value=""
-                    selectedCity="" },
+                alignment = Alignment.Center, onDismissRequest = {
+                    popUpOn[0] = "false"
+                    date.value = ""
+                    selectedCity = ""
+                },
                 properties = PopupProperties(
                     focusable = true,
                     dismissOnBackPress = true,
@@ -337,14 +373,14 @@ fun DetailsScreen(
                                 })
                             }
                         }
-                        Button(enabled = !(date.value=="" && selectedCity==""),onClick = {
+                        Button(enabled = !(date.value == "" && selectedCity == ""), onClick = {
                             confirmed[0] = "true"
                             confirmed.add(1, date.value)
                             confirmed.add(2, selectedCity)
                             confirmed.add(3, popUpOn[1])//id
                             confirmed.add(4, popUpOn[2])//item name
-                            date.value=""
-                            selectedCity=""
+                            date.value = ""
+                            selectedCity = ""
                             popUpOn[0] = "false"
                         }) {
                             Text(text = "Confirm")
@@ -372,16 +408,22 @@ fun DetailsScreen(
                     Button(
 
                         onClick = {
-                            if (itemIdforA!=0) {
+                            if (itemIdforA != 0) {
                                 cancelNotification(
                                     initialContext,
                                     itemIdforA
                                 )
-                                viewModel.viewModelScope.launch { updatedList(travelInfoViewModel, viewModel.getPackList(), itemIdforA.toString(),cancelReminder = true) }
-                                itemIdforA=0
+                                viewModel.viewModelScope.launch {
+                                    updatedList(
+                                        travelInfoViewModel,
+                                        viewModel.getPackList(),
+                                        itemIdforA.toString(),
+                                        cancelReminder = true
+                                    )
+                                }
+                                itemIdforA = 0
                                 reminderCancelAlert.value = false
-                            }
-                            else{
+                            } else {
                                 Log.e("errorDetailsScreen", "cancelNotification: itemIdforA is 0")
                             }
                         }) {
@@ -406,23 +448,32 @@ fun DetailsScreen(
                 onDismissRequest = {// can only be dismissed by confirm
                 },
                 title = {
-                    Text(text = "Alert")
+                    Text(text = clickedItemTitle.value)
                 },
                 text = {
-                    Text("Check state changed!")
+                    Text(clickedItemMessage.value)
                 },
                 confirmButton = {
                     Button(
 
                         onClick = {
-                            if (itemIdforA!=0) {
+                            if (itemIdforA != 0) {
 
-                                viewModel.viewModelScope.launch { updatedList(travelInfoViewModel, viewModel.getPackList(), itemIdforA.toString(),cancelReminder = false,updateCheck = true,isChecked=isChecked.value.toBooleanStrict()) }
-                                itemIdforA=0
-                                isChecked.value=""
+                                viewModel.viewModelScope.launch {
+                                    updatedList(
+                                        travelInfoViewModel,
+                                        viewModel.getPackList(),
+                                        itemIdforA.toString(),
+                                        cancelReminder = false,
+                                        updateCheck = true,
+                                        isChecked = isChecked.value.toBooleanStrict()
+                                    )
+                                }
+                                itemIdforA = 0
+                                isChecked.value = ""
                                 checkCancelAlert.value = false
-                            }
-                            else{
+                                remainingChecks = getUncheckedItems(viewModel.getPackList())
+                            } else {
                                 Log.e("errorDetailsScreen", "CheckboxError")
                             }
                         }) {
@@ -433,7 +484,7 @@ fun DetailsScreen(
         }
 
 
-    //when the confirm button is pressed, it schedules the notification and updates the packing list in the database
+        //when the confirm button is pressed, it schedules the notification and updates the packing list in the database
         if (confirmed[0].toBooleanStrict()) {
             val (cityMessage, currentDateMessage) = getMessageContents(
                 confirmed[1],
@@ -441,9 +492,21 @@ fun DetailsScreen(
                 thisTrip
             )
             scheduleNotification(
-                LocalContext.current, confirmed[3].toInt(), currentDateMessage, "PackAlert", city = cityMessage, itemName = confirmed[4]
+                LocalContext.current,
+                confirmed[3].toInt(),
+                currentDateMessage,
+                "PackAlert",
+                city = cityMessage,
+                itemName = confirmed[4]
             )
-           viewModel.viewModelScope.launch { updatedList(travelInfoViewModel, viewModel.getPackList(), confirmed[3],cancelReminder = false) }
+            viewModel.viewModelScope.launch {
+                updatedList(
+                    travelInfoViewModel,
+                    viewModel.getPackList(),
+                    confirmed[3],
+                    cancelReminder = false
+                )
+            }
             confirmed.clear()
             confirmed.addAll(listOf("false", "", "", "", ""))
 
@@ -453,22 +516,50 @@ fun DetailsScreen(
 
 }
 
-//updates the parameters inside packing list in the database
-suspend fun updatedList(travelInfoViewModel: TravelInfoViewModel, myList:MutableMap<String,MutableList<Boolean>>, itemId:String, cancelReminder:Boolean=false,updateCheck:Boolean=false,isChecked:Boolean=false){
-    val id= itemId.substring(4).toInt()
-    if(updateCheck)
-    { myList.values.elementAt(id)[0]=isChecked}
-    else
-    {myList.values.elementAt(id)[1]=!cancelReminder}
-    travelInfoViewModel.tripRepo.updatePackingList((itemId.toInt()-itemId.last().toString().toInt())/100,myList)
+
+/**
+ * Updates the packing list in the database
+ * @param travelInfoViewModel the travel info view model
+ * @param myList the packing list
+ * @param itemId the item ID
+ * @param cancelReminder `true` if the reminder should be cancelled, `false` otherwise
+ * @param updateCheck `true` if the checkbox should be updated, `false` otherwise
+ * @param isChecked `true` if the checkbox is checked, `false` otherwise
+ * @see TravelInfoViewModel
+ * @see TravelInfoViewModel.tripRepo
+ */
+suspend fun updatedList(
+    travelInfoViewModel: TravelInfoViewModel,
+    myList: MutableMap<String, MutableList<Boolean>>,
+    itemId: String,
+    cancelReminder: Boolean = false,
+    updateCheck: Boolean = false,
+    isChecked: Boolean = false
+) {
+    val id = itemId.substring(4).toInt()
+    if (updateCheck) {
+        myList.values.elementAt(id)[0] = isChecked
+    } else {
+        myList.values.elementAt(id)[1] = !cancelReminder
+    }
+    travelInfoViewModel.tripRepo.updatePackingList(
+        (itemId.toInt() - itemId.last().toString().toInt()) / 100, myList
+    )
 }
 
 
 
-
-//cancelling the notification by id
+/**
+ * Cancels the notification with the given notification ID.
+ * @param context the context
+ * @param notificationId the notification ID
+ * @see NotificationManager.cancel
+ * @see AlarmManager.cancel
+ * @see NotificationReceiver
+ */
 private fun cancelNotification(context: Context, notificationId: Int) {
-    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val notificationManager =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     val alarmIntent = Intent(context, NotificationReceiver::class.java)
     val pendingIntent = PendingIntent.getBroadcast(
         context,
@@ -482,25 +573,41 @@ private fun cancelNotification(context: Context, notificationId: Int) {
     notificationManager.cancel(notificationId)
 
 }
-//gives modified message for the notification
-private fun getMessageContents(dateTime:String,city:String,trip:Trip):Pair<String, String> {
-    var cityMessage=""
-    val currentDate=trip.cities[city]?.second
+
+/**
+ * Returns the message for the notification.
+ * @param dateTime the date and time
+ * @param city the city
+ * @param trip the trip
+ * @return the message for the notification
+ */
+private fun getMessageContents(dateTime: String, city: String, trip: Trip): Pair<String, String> {
+    val cityMessage: String
+    val currentDate = trip.cities[city]?.second
 
 
-    var currentDateMessage= dateTime
-    if (city!=""){
-        cityMessage=trip.cities[city]!!.first.toString()+"-"+city
-        currentDateMessage=if (dateTime=="")"${currentDate?.year}.${currentDate?.monthValue}.${currentDate?.dayOfMonth}" else dateTime
+    var currentDateMessage = dateTime
+    if (city != "") {
+        cityMessage = trip.cities[city]!!.first.toString() + "-" + city
+        currentDateMessage =
+            if (dateTime == "") "${currentDate?.year}.${currentDate?.monthValue}.${currentDate?.dayOfMonth}" else dateTime
+
+    } else {
+        cityMessage = "No place specified"
 
     }
-    else {
-        cityMessage="No place specified"
-
-    }
-    return Pair(cityMessage,currentDateMessage)
+    return Pair(cityMessage, currentDateMessage)
 }
 
+
+/**
+ * button for google maps routing
+ * @param start the start location
+ * @param target the target location
+ * @param travelMode the travel mode
+ * @param context the context
+ * @see buildGoogleMapsUrl
+ */
 @Composable
 fun GoogleMapsButton(
     start: LatLng,
@@ -524,6 +631,31 @@ fun GoogleMapsButton(
     }
 }
 
+/**
+ * Returns the number of unchecked items in the packing list
+ * @param packList the packing list
+ * @return the number of unchecked items
+ */
+fun getUncheckedItems(packList: MutableMap<String, MutableList<Boolean>>): Int {
+    var uncheckedCounter = 0
+    for (item in packList) {
+
+        if (!item.value[0]) {
+            uncheckedCounter++
+        }
+    }
+    return uncheckedCounter
+
+}
+
+
+/**
+ * Builds the Google Maps URL.
+ * @param start the start location
+ * @param target the target location
+ * @param travelMode the travel mode
+ * @return the Google Maps URL
+ */
 fun buildGoogleMapsUrl(start: LatLng, target: LatLng, travelMode: String): String {
     return "https://www.google.com/maps/dir/?api=1&origin=${start.latitude},${start.longitude}&destination=${target.latitude},${target.longitude}&travelmode=$travelMode"
 }

@@ -4,7 +4,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.location.Location
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.MainActivity
 import com.codecamp.tripcplaner.model.navigation.TripCPlanerScreens
+import com.codecamp.tripcplaner.model.util.checkInternet
 import com.codecamp.tripcplaner.view.widgets.CustomMarker
 import com.codecamp.tripcplaner.view.widgets.GeneratedTripOverview
 import com.codecamp.tripcplaner.view.widgets.PermissionSnackbar
@@ -70,19 +74,29 @@ fun MapScreen(
     detailsViewModel: DetailViewModel
 ) {
 
+    //This is used to check if the map is initialized
     val initialized = remember { mutableStateOf(false) }
+
+    // This is used to store the camera position
     val cameraPositionState = rememberCameraPositionState {}
+
+    // This is used to show a loading indicator when the user presses the generate button
     val showIndicator = remember { mutableStateOf(false) }
 
+    // This is used to format the date
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+    // This is used to store the start and end markers
     val startMarker = rememberMarkerState()
     val endMarker = rememberMarkerState()
+
     //start place, end place, start date, end date
     val tripPickerList = mutableListOf(remember { mutableStateOf("") },
         remember { mutableStateOf("") },
         remember { mutableStateOf("") },
         remember { mutableStateOf("") })
 
+    // Multiple permissions can be requested at the same time, by providing a list of permissions
     val permissionsState = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -91,6 +105,8 @@ fun MapScreen(
 
         )
     )
+
+    // This is used to check if the user can generate a trip
     fun canCreate(): Boolean {
         return (tripPickerList[0].value.isNotEmpty() && tripPickerList[1].value.isNotEmpty() &&
                 tripPickerList[2].value.isNotEmpty() && tripPickerList[3].value.isNotEmpty() &&
@@ -132,29 +148,43 @@ fun MapScreen(
                             0.25f
                         ) else Modifier.fillMaxWidth(),
                         onClick = {
-                            val startDate = LocalDate.parse(tripPickerList[2].value, formatter)
-                            val endDate = LocalDate.parse(tripPickerList[3].value, formatter)
-                            val duration = ChronoUnit.DAYS.between(
-                                startDate, endDate
-                            )
-                            travelInfoViewModel.startDate = startDate.atTime(6,0)
-                            travelInfoViewModel.sendMessage(
-                                listOf(tripPickerList[0].value, tripPickerList[1].value),
-                                duration.toInt(),
-                                context,
-                                if (startDate.monthValue < 4 || startDate.monthValue > 10) "Winter" else "Summer"
-                            )
-                            travelInfoViewModel.hasResult.value = false
-                            showIndicator.value = true
+
+                            if (!checkInternet(context)) {
+                                Toast.makeText(
+                                    context,
+                                    "No internet connection!",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                // Exit the function early if there's no internet
+                            } else {
+                                val startDate = LocalDate.parse(tripPickerList[2].value, formatter)
+                                val endDate = LocalDate.parse(tripPickerList[3].value, formatter)
+                                val duration = ChronoUnit.DAYS.between(
+                                    startDate, endDate
+                                )
+                                travelInfoViewModel.startDate = startDate.atTime(6, 0)
+                                travelInfoViewModel.sendMessage(
+                                    listOf(tripPickerList[0].value, tripPickerList[1].value),
+                                    duration.toInt(),
+                                    context,
+                                    if (startDate.monthValue < 4 || startDate.monthValue > 10) "Winter" else "Summer"
+                                )
+                                travelInfoViewModel.hasResult.value = false
+                                showIndicator.value = true
+                            }
+
                         },
-                        colors = ButtonDefaults.buttonColors(disabledContainerColor = Color.Transparent, containerColor = Color(if (travelInfoViewModel.hasResult.value) 0XFFE0BB70 else 0XFF388E3C))
+                        colors = ButtonDefaults.buttonColors(
+                            disabledContainerColor = Color.Transparent,
+                            containerColor = Color(if (travelInfoViewModel.hasResult.value) 0XFFE0BB70 else 0XFF388E3C)
+                        )
 
                     ) {
                         Text(
                             text = if (travelInfoViewModel.hasResult.value) "\u21BA" else "Generate a Trip",
                             fontWeight = if (travelInfoViewModel.hasResult.value) FontWeight.Bold else FontWeight.Normal,
                             fontSize = if (travelInfoViewModel.hasResult.value) 24.sp else 16.sp,
-                            color = if(canCreate()) Color.White else Color.LightGray
+                            color = if (canCreate()) Color.White else Color.LightGray
                         )
                     }
                     if (travelInfoViewModel.hasResult.value)
@@ -164,8 +194,9 @@ fun MapScreen(
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0XFF388E3C)),
                             onClick = {
                                 travelInfoViewModel.hasResult.value = false
-                                val startDate = LocalDate.parse(tripPickerList[2].value).atTime(6,0)
-                                val endDate = LocalDate.parse(tripPickerList[3].value).atTime(6,0)
+                                val startDate =
+                                    LocalDate.parse(tripPickerList[2].value).atTime(6, 0)
+                                val endDate = LocalDate.parse(tripPickerList[3].value).atTime(6, 0)
 
                                 detailsViewModel.setDates(startDate, endDate)
                                 travelInfoViewModel.endDate = endDate
@@ -287,8 +318,11 @@ fun MapScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() } // This is mandatory
+                    ) {}
                     .background(Color(0xaaffffff)),
-
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(

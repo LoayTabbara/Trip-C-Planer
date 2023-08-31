@@ -132,8 +132,18 @@ fun StartTargetRows(
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(text ="🅐 "+ firstActivity.value, fontSize = 16.sp, color = Color.White, textAlign= TextAlign.Left)//for inverted value of the bullet use: Ⓐ
-                    Text(text = "\uD83C\uDD51 "+secondActivity.value, fontSize = 16.sp, color = Color.White, textAlign= TextAlign.Left)//for inverted value of the bullet use: Ⓑ
+                    Text(
+                        text = "🅐 " + firstActivity.value,
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        textAlign = TextAlign.Left
+                    )//for inverted value of the bullet use: Ⓐ
+                    Text(
+                        text = "\uD83C\uDD51 " + secondActivity.value,
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        textAlign = TextAlign.Left
+                    )//for inverted value of the bullet use: Ⓑ
                 }
 
             }

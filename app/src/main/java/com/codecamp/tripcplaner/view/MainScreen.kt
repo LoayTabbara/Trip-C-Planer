@@ -164,8 +164,8 @@ fun MainScreen(
                 ) {
                     Column(modifier = Modifier.fillMaxWidth(0.7f)) {
                         Text(text = "Your Trips", style = MaterialTheme.typography.displayMedium)
-                        Box(modifier = Modifier.padding(start = 8.dp).fillMaxWidth()){
                             ThemeSwitch(scale = 1.2f,themeViewModel=themeViewModel)
+                        Box(modifier = Modifier.padding(start = 8.dp).fillMaxWidth()){
                         }
 
                     }
@@ -309,8 +309,8 @@ fun MainScreen(
                         colors = ButtonDefaults.
                         buttonColors(MaterialTheme.colorScheme.secondary)
                     ) {
-                        Text(text = "Bus",
                             color = MaterialTheme.colorScheme.secondaryContainer)
+                        Text(text = "Bus",
                     }
                     Button(
                         onClick = {
@@ -321,8 +321,8 @@ fun MainScreen(
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
                     ) {
-                        Text(text = "Bicycling",
                             color = MaterialTheme.colorScheme.secondaryContainer)
+                        Text(text = "Bicycling",
                     }
 
                 }

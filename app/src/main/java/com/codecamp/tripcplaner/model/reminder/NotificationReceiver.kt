@@ -37,7 +37,7 @@ class NotificationReceiver : BroadcastReceiver() {
             intent?.getParcelableExtra<Notification>("notification") // Retrieve the Notification object
 //processing datetime message
         val dateTime = intent?.getStringExtra("dateTime")
-        Log.d("notif", "onReceive0: $dateTime")
+        Log.v("notif", "onReceive0: $dateTime")
         val dateTimeSplit = dateTime?.split(".")
         val stringToLoc = LocalDateTime.of(
             dateTimeSplit!![0].toInt(),
@@ -55,23 +55,23 @@ class NotificationReceiver : BroadcastReceiver() {
                 givenLat = (matchResult.groupValues[1].toDouble() * 100000).roundToInt() / 100000.0
                 givenLng = (matchResult.groupValues[2].toDouble() * 100000).roundToInt() / 100000.0
             } else {
-                Log.d("notif", "onReceive1: no match")
+                Log.w("notif", "onReceive1: no match")
             }
         }
-        Log.d("notif", "onReceive2: $givenLat $givenLng")
+        Log.i("notif", "onReceive2: $givenLat $givenLng")
 
 
         val itemName = intent.getStringExtra("itemName")
 
         val notificationManager = NotificationManagerCompat.from(context!!)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-        Log.d("notif", "onReceive3: notif")
+        Log.i("notif", "onReceive3: notif")
         if (notification != null && notificationId != null && ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            Log.d("notif", "onReceive4: notif")
+            Log.v("notif", "onReceive4: notif")
 
             if (cityMessage != "No place specified") {
                 if (ContextCompat.checkSelfPermission(
@@ -85,14 +85,14 @@ class NotificationReceiver : BroadcastReceiver() {
                         try {
 
                             // Obtain location data asynchronously
-                            var location = fusedLocationClient.lastLocation.await()
+                            val location = fusedLocationClient.lastLocation.await()
 
                             // Save the new location data
                             val lat = ((location?.latitude ?: 0.0) * 100000).roundToInt() / 100000.0
                             val lng =
                                 ((location?.longitude ?: 0.0) * 100000).roundToInt() / 100000.0
-                            Log.d("notif", "onReceive5: $lat $lng")
-                            Log.d("notif", "onReceive6: $givenLat $givenLng")
+                            Log.v("notif", "onReceive5: $lat $lng")
+                            Log.v("notif", "onReceive6: $givenLat $givenLng")
                             //if less than 30 km then send notification
                             if (lat != 0.0 && (stringToLoc < LocalDateTime.now() || calculateDistance(
                                     givenLat,
@@ -103,7 +103,7 @@ class NotificationReceiver : BroadcastReceiver() {
                             ) {
 
                                 notificationManager.notify(notificationId, notification)
-                                Log.d(
+                                Log.v(
                                     "notif",
                                     "onReceive7: Notif in stringToLoc< LocalDateTime.now() ${
                                         calculateDistance(
@@ -125,7 +125,7 @@ class NotificationReceiver : BroadcastReceiver() {
                                     itemName!!
                                 )
 
-                                Log.d(
+                                Log.v(
                                     "notif",
                                     "onReceive8: nothing matches for  ${
                                         calculateDistance(
@@ -143,7 +143,7 @@ class NotificationReceiver : BroadcastReceiver() {
                         }
                     }
                 } else {
-                    Log.d("notif", "onReceive9: no permission")
+                    Log.w("notif", "onReceive9: no permission")
                 }
 
             } else {
@@ -157,17 +157,17 @@ class NotificationReceiver : BroadcastReceiver() {
                         cityMessage,
                         itemName!!
                     )
-                    Log.d("notif", "onReceive10: Notif rescheduled $stringToLoc")
+                    Log.v("notif", "onReceive10: Notif rescheduled $stringToLoc")
                 } else {
                     //if target time is passed then send notification
                     notificationManager.notify(notificationId, notification)
-                    Log.d("notif", "onReceive11: Notif sent $stringToLoc")
+                    Log.v("notif", "onReceive11: Notif sent $stringToLoc")
                 }
             }
 
 
         } else {
-            Log.d("notif", "onReceive: no notif")
+            Log.v("notif", "onReceive: no notif")
         }
 
 

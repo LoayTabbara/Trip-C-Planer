@@ -309,8 +309,8 @@ fun MainScreen(
                         colors = ButtonDefaults.
                         buttonColors(MaterialTheme.colorScheme.secondary)
                     ) {
-                            color = MaterialTheme.colorScheme.secondaryContainer)
-                        Text(text = "Bus",
+
+                        Text(text = "Bus",color = MaterialTheme.colorScheme.secondaryContainer)
                     }
                     Button(
                         onClick = {
@@ -321,8 +321,8 @@ fun MainScreen(
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
                     ) {
-                            color = MaterialTheme.colorScheme.secondaryContainer)
-                        Text(text = "Bicycling",
+
+                        Text(text = "Bicycling",color = MaterialTheme.colorScheme.secondaryContainer)
                     }
 
                 }

@@ -72,7 +72,7 @@ fun StopPicker(
                     tripPickerList[dateIndex].value = ""
                     tripPickerList[placeIndex].value = ""
                 }, colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent, contentColor = Color.Red, disabledContainerColor = Color.Transparent
+                    containerColor = Color.Transparent, contentColor = Color.White, disabledContainerColor = Color.Transparent
                 )
             ) {
                 Text(text = "⌫", fontSize = 18.sp, textAlign = TextAlign.Center)

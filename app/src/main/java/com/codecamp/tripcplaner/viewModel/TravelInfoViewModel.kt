@@ -347,7 +347,8 @@ class TravelInfoViewModel @Inject constructor(
                             action = Intent.ACTION_SEND
                             putExtra(
                                 Intent.EXTRA_TEXT,
-                                "Use the code \n\n$id\n\ninside the TripCPlaner App to see my awesome trip or simply click the link: https://pink-trudy-95.tiiny.site/?id=$id"
+                                        "I am inviting you to join you on my trip!\n" +
+                                                "Use the code: $id  in TripCPlaner App to see trip details or simply click the link: https://teamc.tiiny.site?id=$id"
                             )
                             type = "text/plain"
                         }

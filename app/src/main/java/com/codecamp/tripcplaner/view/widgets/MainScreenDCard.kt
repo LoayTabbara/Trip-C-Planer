@@ -1,6 +1,7 @@
 package com.codecamp.tripcplaner.view.widgets
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -76,13 +78,14 @@ fun DayCard(date: String, day: String, onClick: () -> Unit, month: String, title
             .height(90.dp)
             .width(65.dp)
             .padding(2.dp),
+
         elevation = CardDefaults.cardElevation(5.dp),
         shape = RoundedCornerShape(10.dp),
         border = BorderStroke(2.dp, color = currentColor(date)),
         onClick = onClick
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.secondary),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

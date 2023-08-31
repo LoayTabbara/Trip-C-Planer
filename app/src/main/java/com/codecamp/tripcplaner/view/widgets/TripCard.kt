@@ -59,7 +59,8 @@ fun TripCard(
             elevation = CardDefaults.cardElevation(5.dp),
             shape = RoundedCornerShape(10.dp),
             border = BorderStroke(2.dp, color = Color.Gray),
-            onClick = onClicked
+            onClick = onClicked,
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondary)
         ) {
             Row {
 
@@ -98,11 +99,12 @@ fun TripCard(
                         .fillMaxSize()
                         .padding(10.dp)
                 ) {
-                    Text(text = tripName, style = MaterialTheme.typography.headlineSmall)
+                    Text(text = tripName, style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onPrimary)
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
                         text = tripDescription,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.bodySmall
                     )
 

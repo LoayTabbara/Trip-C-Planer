@@ -44,6 +44,7 @@ fun PackCard(
     Card(modifier = Modifier
         .fillMaxWidth()
         .height(100.dp), elevation = CardDefaults.cardElevation(5.dp),
+        colors= CardDefaults.cardColors(MaterialTheme.colorScheme.secondary),
         shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray),
         onClick = { checked.value = !checked.value }
     ) {
@@ -70,7 +71,8 @@ fun PackCard(
                     .padding(start = 15.dp),
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = item, style = MaterialTheme.typography.bodyMedium)
+                Text(text = item, style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimary)
             }
             Column(
                 horizontalAlignment = Alignment.End,
@@ -82,7 +84,8 @@ fun PackCard(
                 Icon(
                     imageVector = Icons.Rounded.Delete,
                     contentDescription = "Delete",
-                    modifier = Modifier.scale(2f)
+                    modifier = Modifier.scale(2f),
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
 
             }

@@ -180,10 +180,9 @@ fun DetailsScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(if (popUpOn[0].toBooleanStrict()) 0.dp else 10.dp)
                 .blur(if (popUpOn[0].toBooleanStrict()) 20.dp else 0.dp)
                 .verticalScroll(enabled = true, state = rememberScrollState())
-                .background(MaterialTheme.colorScheme.onTertiary)
+                .background(MaterialTheme.colorScheme.tertiary)
 
 
         ) {
@@ -202,14 +201,15 @@ fun DetailsScreen(
                 text = if (viewModel.getNewTitle() != "") viewModel.getNewTitle() else "Untitled Trip",
                 style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier.padding(start = 10.dp),
-                color = MaterialTheme.colorScheme.onSecondary
+                color = Color.White
             )
             StartTargetRows(thisTrip, viewModel)
             var i = 0
             Text(
                 text = remainingChecks.toString() + " of " + viewModel.getPackList().size + " items remaining",
                 style = MaterialTheme.typography.displaySmall,
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(10.dp),
+                color = MaterialTheme.colorScheme.onSecondary
             )
             for (item in viewModel.getPackList()) {
 
@@ -278,7 +278,7 @@ fun DetailsScreen(
                     .fillMaxWidth()
             ) {
 
-                Text(text = "Delete this Trip",color = MaterialTheme.colorScheme.onTertiary)
+                Text(text = "Delete this Trip",color = Color.White)
             }
             //on resume checks if notification enabled of not and updates the state of areNotificationEnabled
             val lifecycleOwner = LocalLifecycleOwner.current
@@ -438,19 +438,20 @@ fun DetailsScreen(
                         Text(
                             text = "Notifications are disabled",
                             fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Please enable the notifications in order to use the reminder functions",
                             fontSize = 16.sp,
-                            color = Color.White,
-                            textAlign = TextAlign.Left
+                            textAlign = TextAlign.Left,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                         Button(
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Red,
-                                contentColor = Color.White
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             onClick = {
                                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)

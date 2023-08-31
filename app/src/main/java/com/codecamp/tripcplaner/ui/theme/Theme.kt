@@ -16,36 +16,38 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = White10,
-    onPrimary = Black,
-    secondary = Grey,
-    tertiary = Black3,
-    onTertiary = Grey20,
-    inversePrimary = Grey,
-    onSecondary = Grey20,
-    onSurface = White10,
-    primaryContainer = Black,
-    secondaryContainer = Black,
-    onTertiaryContainer =  Black,
-    surfaceVariant = White,
-    surfaceTint = Black
+    primary = Violet,
+    secondary = DarkTeal,
+    tertiary = Black,
+    onPrimary = White,
+    onSecondary = Black,
+    //onTertiary = White,
+    //    inversePrimary = Grey,
+    //    onSecondary = Grey20,
+    //    onSurface = White10,
+    //    primaryContainer = Black,
+    //    secondaryContainer = Black,
+    //    onTertiaryContainer =  Black,
+    //    surfaceVariant = White,
+    //    surfaceTint = Black
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = White,
-    onPrimary = Grey20,
-    secondary = Grey20,
-    tertiary = Black4,
-    onTertiary = White,
-    inversePrimary = Grey,
-    onSecondary = Black3,
-    onSurface = Black,
-    primaryContainer = Black4,
-    secondaryContainer = White,
-    onTertiaryContainer = White,
-    surfaceVariant = Black,
-    surfaceTint = White10
+    primary = Violet10,
+    secondary = BlueAccent,
+    tertiary = DarkerGrey,
+    onPrimary = Black,
+    onSecondary = White
 
+    //onTertiary = White,
+    //    inversePrimary = Grey,
+    //    onSecondary = Black3,
+    //    onSurface = Black,
+    //    primaryContainer = Black4,
+    //    secondaryContainer = White,
+    //    onTertiaryContainer = White,
+    //    surfaceVariant = Black,
+    //    surfaceTint = White10
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),

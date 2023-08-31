@@ -3,6 +3,7 @@ package com.codecamp.tripcplaner.view
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -114,9 +117,9 @@ fun SplashScreen(navController: NavController) {
                         popUpTo(0)
                     }
 
-                }) {
+                }, colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.tertiary)) {
 
-                    Text("Skip ->", color = Color.Cyan, fontSize = 32.sp, fontWeight = FontWeight.Bold)
+                    Text("Skip ->", color = Color.White, fontSize = 32.sp, fontWeight = FontWeight.Bold)
                 }
             }
 

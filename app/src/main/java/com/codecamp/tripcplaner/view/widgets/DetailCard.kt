@@ -1,6 +1,7 @@
 package com.codecamp.tripcplaner.view.widgets
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,9 +38,11 @@ fun DetailCard(text: String,hasReminder:Boolean,isChecked:Boolean, content: @Com
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp),
+            .height(100.dp)
+            .background(MaterialTheme.colorScheme.tertiary),
         elevation = CardDefaults.cardElevation(5.dp),
-        shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray),
+        shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Black),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondary)
 
         ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
@@ -60,13 +63,16 @@ fun DetailCard(text: String,hasReminder:Boolean,isChecked:Boolean, content: @Com
                 Text(
                     text = text,
                     modifier = Modifier.padding(start = 10.dp),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
             Card(modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp), elevation = CardDefaults.cardElevation(5.dp),
-                shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Gray),
+                .height(100.dp)
+                .background(MaterialTheme.colorScheme.tertiary),
+                elevation = CardDefaults.cardElevation(5.dp),
+                shape = RoundedCornerShape(10.dp), border = BorderStroke(2.dp, color = Color.Black),
                 onClick = { reminderPressed.value = !reminderPressed.value }
             ) {
                 Column(
@@ -77,12 +83,14 @@ fun DetailCard(text: String,hasReminder:Boolean,isChecked:Boolean, content: @Com
                     Icon(
                         imageVector = Icons.Default.Notifications,
                         contentDescription = "reminder",
-                        modifier = Modifier.padding(bottom = 10.dp)
+                        modifier = Modifier.padding(bottom = 10.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                     Text(
                         text = if(!hasReminder){"Press to set reminder"}else{"Cancel reminder"},
                         modifier = Modifier.padding(horizontal = 10.dp),
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }

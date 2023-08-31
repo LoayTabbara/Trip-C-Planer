@@ -237,7 +237,7 @@ fun DetailsScreen(
                         } else {
                             isChecked.value = "true"
                             clickedItemTitle.value = "Checked " + item.key
-                            clickedItemMessage.value = "You have packed your" + item.key + "!"
+                            clickedItemMessage.value = "You have packed your " + item.key + "!"
                         }
 
                         checkCancelAlert.value = true

@@ -164,7 +164,7 @@ class TravelInfoViewModel @Inject constructor(
             } catch (e: Exception) {
                 Toast.makeText(
                     context,
-                    "Unknown Error! ${e.message}, generating standard answer",
+                    "please top up your openai credit\nGenerating a standard trip for now",
                     Toast.LENGTH_LONG
                 )
                     .show()
@@ -202,7 +202,7 @@ class TravelInfoViewModel @Inject constructor(
                 latLngList = mutableListOf(
                     LatLng(51.3128, 9.4815),
                     LatLng(51.71, 8.766),
-                    LatLng(51.9615, 7.6282),
+                    LatLng(51.955, 7.633),
                     LatLng(51.5142, 7.4684)
                 )
                 times = mutableStateOf(

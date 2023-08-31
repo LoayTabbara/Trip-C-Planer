@@ -90,11 +90,11 @@ fun PackScreen(
             .padding(if (popUpOnAdd.value || popUpOnSave.value) 0.dp else 10.dp)
             .blur(if (popUpOnAdd.value || popUpOnSave.value) 20.dp else 0.dp)
             .verticalScroll(enabled = true, state = rememberScrollState())
-            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .background(MaterialTheme.colorScheme.tertiary)
     ) {
         //Tour plan
         Text(text = "Travel Period ", style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.surfaceVariant)
+            color = Color.White)
         Row {
 
             Text(
@@ -102,11 +102,11 @@ fun PackScreen(
                     viewModel.getStartDate().toString().substring(0, 10)
                 } to ${viewModel.getEndDate().toString().substring(0, 10)}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.surfaceVariant,
+                color = Color.White,
             )
         }
         Text(text = "Places to Visit", style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.surfaceVariant)
+            color = Color.White)
         travelInfoViewModel.citiesWithActivity.forEach {
             Row(Modifier.fillMaxWidth()) {
                 Column(Modifier.fillMaxWidth(0.2f)) {
@@ -115,7 +115,7 @@ fun PackScreen(
                         text = "${it.key}:",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.surfaceVariant
+                        color = Color.White
                     )
                 }
                 Column(Modifier.fillMaxWidth()) {
@@ -123,7 +123,7 @@ fun PackScreen(
                     Text(
                         text = "${it.value[0]}\n${it.value[1]}\n",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.surfaceVariant
+                        color = Color.White
                     )
                 }
             }
@@ -133,9 +133,9 @@ fun PackScreen(
         }
         // Packing List
         Text(text = "Your Packlist", style = MaterialTheme.typography.displayMedium,
-            color = MaterialTheme.colorScheme.surfaceVariant)
+            color = Color.White)
         Column(modifier = Modifier.padding(top = 10.dp)
-            .background(MaterialTheme.colorScheme.onTertiaryContainer)) {
+            .background(MaterialTheme.colorScheme.tertiary)) {
             // Loop through the packing list and display each item
             for (item in travelInfoViewModel.packingList) {
 
@@ -161,6 +161,7 @@ fun PackScreen(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
                         .padding(horizontal = 5.dp)
+                        .background(MaterialTheme.colorScheme.secondary)
 
                 ) {
                     Button(
@@ -174,12 +175,12 @@ fun PackScreen(
                             .fillMaxWidth(),
                         elevation = ButtonDefaults.buttonElevation(5.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = Color.Black)
+                            containerColor = MaterialTheme.colorScheme.secondary)
                     ) {
 
                         Icon(
                             imageVector = Icons.Default.Add,
-                            tint = MaterialTheme.colorScheme.inversePrimary,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                             contentDescription = "Add icon",
                             modifier = Modifier
                                 .scale(1.2f)
@@ -187,7 +188,7 @@ fun PackScreen(
                         )
 
                         Text(text = "Add New Item", style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.inversePrimary)
+                            color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
 
@@ -196,6 +197,7 @@ fun PackScreen(
                     modifier = Modifier
                         .fillMaxWidth(1f)
                         .padding(horizontal = 5.dp)
+                        .background(MaterialTheme.colorScheme.secondary)
 
                 ) {
                     Button(
@@ -207,12 +209,12 @@ fun PackScreen(
                             .height(60.dp)
                             .fillMaxWidth(),
                         elevation = ButtonDefaults.buttonElevation(5.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.DarkGray)
+                        colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.secondary)
                     ) {
 
                         Icon(
                             imageVector = Icons.Default.Add,
-                            tint = MaterialTheme.colorScheme.inversePrimary,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                             contentDescription = "Add icon",
                             modifier = Modifier
                                 .scale(1.2f)
@@ -220,7 +222,7 @@ fun PackScreen(
                         )
 
                         Text(text = "Save ", style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.inversePrimary)
+                            color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
             }
@@ -301,19 +303,20 @@ fun PackScreen(
                         Text(
                             text = "Add Title and Save Your Choices",
                             style = MaterialTheme.typography.displaySmall,
-                            modifier = Modifier.padding(10.dp)
+                            modifier = Modifier.padding(10.dp),
+
                         )
                         TextField(
                             value = newTitle.value,
                             onValueChange = { newTitle.value = it },
-                            label = { Text(text = " + Enter Plan Title") },
+                            label = { Text(text = " + Enter Plan Title", color = MaterialTheme.colorScheme.onPrimary) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(10.dp),
                             singleLine = true,
                             shape = RoundedCornerShape(10.dp),
                             colors = TextFieldDefaults.
-                            textFieldColors(MaterialTheme.colorScheme.surfaceTint),
+                            textFieldColors(MaterialTheme.colorScheme.onPrimary),
                             keyboardActions = KeyboardActions(onDone = {
 
                                 travelInfoViewModel.citiesWithActivity.values.forEach {

@@ -1,6 +1,7 @@
 package com.codecamp.tripcplaner.view
 
 import android.Manifest
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -113,7 +115,7 @@ fun MainScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 5.dp, end = 5.dp, bottom = 10.dp, top = 10.dp)
+                .background(MaterialTheme.colorScheme.tertiary)
         ) {
             //Button to add a new trip by choosing the means of transport
             Button(
@@ -136,11 +138,11 @@ fun MainScreen(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add icon",
-                    tint = MaterialTheme.colorScheme.primaryContainer
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
                 Spacer(modifier = Modifier.width(width = 8.dp))
                 Text(text = "Choose Transportation Options",
-                    color = MaterialTheme.colorScheme.primaryContainer)
+                    color = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }) {
@@ -150,7 +152,7 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(it)
                 .blur(if (popUpOn.value) 20.dp else 0.dp),
-            color = MaterialTheme.colorScheme.background
+            color = MaterialTheme.colorScheme.tertiary
         ) {
             Column(
                 modifier = Modifier
@@ -163,7 +165,8 @@ fun MainScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.fillMaxWidth(0.7f)) {
-                        Text(text = "Your Trips", style = MaterialTheme.typography.displayMedium)
+                        Text(text = "Your Trips", style = MaterialTheme.typography.displayMedium,
+                            color = Color.White)
                             ThemeSwitch(scale = 1.2f,themeViewModel=themeViewModel)
                         Box(modifier = Modifier.padding(start = 8.dp).fillMaxWidth()){
                         }
@@ -178,7 +181,7 @@ fun MainScreen(
                             Text(
                                 text = "Shared Code",
                                 style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                        color = MaterialTheme.colorScheme.onPrimary,
                             )
                         },
                         modifier = Modifier
@@ -186,14 +189,16 @@ fun MainScreen(
                             .padding(end = 8.dp)
                             .border(
                                 width = 2.dp,
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color = Color.White,
                                 shape = RoundedCornerShape(10.dp)
-                            ),
+                            )
+                            .background(MaterialTheme.colorScheme.secondary),
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
                         colors = TextFieldDefaults.textFieldColors(
-                            Color.White, focusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
-                            unfocusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
+                            MaterialTheme.colorScheme.secondary,
+                            focusedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
                         ),
                         keyboardActions = KeyboardActions(onDone = {
                             // Calling fetchTrip from viewModel using the sharedCode value
@@ -259,6 +264,8 @@ fun MainScreen(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .fillMaxHeight(0.5f)
+
+
             ) {
                 Column(
                     modifier = Modifier
@@ -270,7 +277,7 @@ fun MainScreen(
                         text = "Choose Transport Mean",
                         style = MaterialTheme.typography.displaySmall,
                         modifier = Modifier.padding(10.dp),
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        color = MaterialTheme.colorScheme.onPrimary,
                     )
                     Button(
                         onClick = {
@@ -283,7 +290,7 @@ fun MainScreen(
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
                     ) {
                         Text(text = "Walking",
-                          color = MaterialTheme.colorScheme.secondaryContainer)
+                          color = MaterialTheme.colorScheme.onPrimary)
                     }
                     Button(
                         onClick = {
@@ -297,7 +304,7 @@ fun MainScreen(
                             (MaterialTheme.colorScheme.secondary)
                     ) {
                         Text(text = "Car",
-                            color = MaterialTheme.colorScheme.secondaryContainer)
+                            color = MaterialTheme.colorScheme.onPrimary)
                     }
                     Button(
                         onClick = {
@@ -310,7 +317,7 @@ fun MainScreen(
                         buttonColors(MaterialTheme.colorScheme.secondary)
                     ) {
 
-                        Text(text = "Bus",color = MaterialTheme.colorScheme.secondaryContainer)
+                        Text(text = "Bus",color = MaterialTheme.colorScheme.onPrimary)
                     }
                     Button(
                         onClick = {
@@ -322,7 +329,7 @@ fun MainScreen(
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
                     ) {
 
-                        Text(text = "Bicycling",color = MaterialTheme.colorScheme.secondaryContainer)
+                        Text(text = "Bicycling",color = MaterialTheme.colorScheme.onPrimary)
                     }
 
                 }

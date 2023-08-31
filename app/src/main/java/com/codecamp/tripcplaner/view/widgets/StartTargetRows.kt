@@ -62,15 +62,15 @@ fun StartTargetRows(
                     Text(buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = Color.Black, fontSize = 16.sp, fontWeight = FontWeight.Bold,
+                                color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold,
                             ),
                         ) {
                             append(thisTrip.cities.keys.elementAt(i - 1))
                         }
-                        withStyle(style = SpanStyle(color = Color.Blue, fontSize = 16.sp)) {
+                        withStyle(style = SpanStyle(color = Color.White, fontSize = 16.sp)) {
                             append(" ⓘ")
                         }
-                        withStyle(style = SpanStyle(color = Color.Black, fontSize = 12.sp)) {
+                        withStyle(style = SpanStyle(color = Color.White, fontSize = 12.sp)) {
                             append(
                                 "\n${
                                     thisTrip.cities.values.elementAt(i - 1).second.format(
@@ -100,15 +100,15 @@ fun StartTargetRows(
                     Text(buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = Color.Black, fontSize = 16.sp, fontWeight = FontWeight.Bold,
+                                color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold,
                             ),
                         ) {
                             append(thisTrip.cities.keys.elementAt(i))
                         }
-                        withStyle(style = SpanStyle(color = Color.Blue, fontSize = 16.sp)) {
+                        withStyle(style = SpanStyle(color = Color.White, fontSize = 16.sp)) {
                             append(" ⓘ")
                         }
-                        withStyle(style = SpanStyle(color = Color.Black, fontSize = 12.sp)) {
+                        withStyle(style = SpanStyle(color = Color.White, fontSize = 12.sp)) {
                             append("\n${thisTrip.cities.values.elementAt(i).second.format(formatter)}h")
                         }
                     })

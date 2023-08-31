@@ -7,6 +7,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -83,7 +84,7 @@ fun SplashScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(40.dp), horizontalAlignment = Alignment.CenterHorizontally
+                .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "Welcome to TripCPlaner",
@@ -92,24 +93,22 @@ fun SplashScreen(navController: NavController) {
                 color = Color.DarkGray,
                 style = MaterialTheme.typography.displayLarge,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 30.dp)
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(.12f)
             )
             // TypewriterText composable is used to display the text in typewriter animation
             TypewriterText(
                 texts = listOf(
-                    " LIVE YOUR LIFE BY A COMPASS,",
-                    "NOT A CLOCK......",
-                    "– ERICA JONG"
+                    "LIVE YOUR LIFE BY A COMPASS,\n\nNOT A CLOCK......\n\n– ERICA JONG –",
                 ), navController = navController
             )
             Column(modifier= Modifier
                 .fillMaxSize()
-                .padding(60.dp), verticalArrangement = Arrangement.SpaceBetween, horizontalAlignment = Alignment.CenterHorizontally) {
+                .padding(24.dp), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally) {
                 Image(painter = painterResource(id = R.drawable.tripc_icon_black),
                     contentDescription ="logo",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .size(95.dp)
+                        .size(128.dp)
                         .scale(scale.value), alignment = Alignment.Center
                 )
                 TextButton(modifier = Modifier.fillMaxWidth(), onClick = {
@@ -153,10 +152,10 @@ fun TypewriterText(
                     endIndex = charIndex + 1,
                 )
                 // delay for each character
-                delay(45)
+                delay(92)
             }
             // delay for each text
-            delay(150)
+            delay(512)
         }
         navController.navigate(TripCPlanerScreens.MainScreen.name){
             popUpTo(0)
@@ -167,6 +166,8 @@ fun TypewriterText(
         text = textToDisplay,
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
         color = Color.DarkGray,
+        modifier = Modifier.fillMaxWidth().fillMaxHeight(.20f)
     )
 }

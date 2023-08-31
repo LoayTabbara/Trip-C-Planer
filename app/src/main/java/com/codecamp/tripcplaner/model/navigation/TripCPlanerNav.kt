@@ -28,7 +28,7 @@ fun TripCPlanerNav(detailsViewModel: DetailViewModel, travelInfoViewModel: Trave
 
         composable(TripCPlanerScreens.MainScreen.name,deepLinks = listOf(
                     navDeepLink {
-                        uriPattern = "https://pink-trudy-95.tiiny.site/?id={id}"
+                        uriPattern = "https://teamc.tiiny.site?id={id}"
                         action = Intent.ACTION_VIEW
                     }
                 ),

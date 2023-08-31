@@ -90,10 +90,11 @@ fun PackScreen(
             .padding(if (popUpOnAdd.value || popUpOnSave.value) 0.dp else 10.dp)
             .blur(if (popUpOnAdd.value || popUpOnSave.value) 20.dp else 0.dp)
             .verticalScroll(enabled = true, state = rememberScrollState())
-            .background(MaterialTheme.colorScheme.onTertiary)
+            .background(MaterialTheme.colorScheme.secondaryContainer)
     ) {
         //Tour plan
-        Text(text = "Travel Period ", style = MaterialTheme.typography.displaySmall)
+        Text(text = "Travel Period ", style = MaterialTheme.typography.displaySmall,
+            color = MaterialTheme.colorScheme.surfaceVariant)
         Row {
 
             Text(
@@ -101,10 +102,11 @@ fun PackScreen(
                     viewModel.getStartDate().toString().substring(0, 10)
                 } to ${viewModel.getEndDate().toString().substring(0, 10)}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSecondary
+                color = MaterialTheme.colorScheme.surfaceVariant,
             )
         }
-        Text(text = "Places to Visit", style = MaterialTheme.typography.displaySmall,color = MaterialTheme.colorScheme.onSecondary)
+        Text(text = "Places to Visit", style = MaterialTheme.typography.displaySmall,
+            color = MaterialTheme.colorScheme.surfaceVariant)
         travelInfoViewModel.citiesWithActivity.forEach {
             Row(Modifier.fillMaxWidth()) {
                 Column(Modifier.fillMaxWidth(0.2f)) {
@@ -113,7 +115,7 @@ fun PackScreen(
                         text = "${it.key}:",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSecondary
+                        color = MaterialTheme.colorScheme.surfaceVariant
                     )
                 }
                 Column(Modifier.fillMaxWidth()) {
@@ -121,7 +123,7 @@ fun PackScreen(
                     Text(
                         text = "${it.value[0]}\n${it.value[1]}\n",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSecondary
+                        color = MaterialTheme.colorScheme.surfaceVariant
                     )
                 }
             }
@@ -130,8 +132,10 @@ fun PackScreen(
         travelInfoViewModel.citiesWithActivity.keys.forEach {
         }
         // Packing List
-        Text(text = "Your Packlist", style = MaterialTheme.typography.displayMedium,color = MaterialTheme.colorScheme.onSecondary)
-        Column(modifier = Modifier.padding(top = 10.dp)) {
+        Text(text = "Your Packlist", style = MaterialTheme.typography.displayMedium,
+            color = MaterialTheme.colorScheme.surfaceVariant)
+        Column(modifier = Modifier.padding(top = 10.dp)
+            .background(MaterialTheme.colorScheme.onTertiaryContainer)) {
             // Loop through the packing list and display each item
             for (item in travelInfoViewModel.packingList) {
 
@@ -169,7 +173,8 @@ fun PackScreen(
                             .height(60.dp)
                             .fillMaxWidth(),
                         elevation = ButtonDefaults.buttonElevation(5.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.DarkGray)
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color.Black)
                     ) {
 
                         Icon(
@@ -307,7 +312,8 @@ fun PackScreen(
                                 .padding(10.dp),
                             singleLine = true,
                             shape = RoundedCornerShape(10.dp),
-                            colors = TextFieldDefaults.textFieldColors(MaterialTheme.colorScheme.onSecondary),
+                            colors = TextFieldDefaults.
+                            textFieldColors(MaterialTheme.colorScheme.surfaceTint),
                             keyboardActions = KeyboardActions(onDone = {
 
                                 travelInfoViewModel.citiesWithActivity.values.forEach {

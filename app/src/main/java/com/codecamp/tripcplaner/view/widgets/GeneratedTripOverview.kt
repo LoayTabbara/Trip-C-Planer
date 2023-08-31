@@ -1,5 +1,6 @@
 package com.codecamp.tripcplaner.view.widgets
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -28,7 +29,8 @@ fun GeneratedTripOverview(
         Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.8f)
-            .verticalScroll(enabled = true, state = rememberScrollState()),
+            .verticalScroll(enabled = true, state = rememberScrollState())
+            .background(color = MaterialTheme.colorScheme.primaryContainer),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -38,12 +40,13 @@ fun GeneratedTripOverview(
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(8.dp),
             fontSize = 24.sp,
-            color = MaterialTheme.colorScheme.inversePrimary
+            color = MaterialTheme.colorScheme.primary,
         )
 
         for (i in 1 until travelInfoViewModel.citiesWithActivity.keys.size) {
             TravelSegmentRow(
                 travelInfoViewModel.citiesWithActivity.keys.elementAt(i - 1),
+
                 travelInfoViewModel, i
             )
         }
@@ -52,7 +55,7 @@ fun GeneratedTripOverview(
             text = "\nSuggested Packing List(editable later)",
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.inversePrimary
+            color = MaterialTheme.colorScheme.primary,
         )
         Text(
             text = travelInfoViewModel.packingList.toString()
@@ -61,7 +64,7 @@ fun GeneratedTripOverview(
             fontSize = 14.sp,
             modifier = Modifier.padding(8.dp),
             fontWeight = FontWeight.Thin,
-            color = MaterialTheme.colorScheme.inversePrimary
+            color = MaterialTheme.colorScheme.primary,
         )
     }
 }

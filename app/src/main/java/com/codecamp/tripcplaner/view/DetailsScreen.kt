@@ -234,7 +234,7 @@ fun DetailsScreen(
                     .fillMaxWidth()
             ) {
                 Text(text = "Delete this Trip",
-                    color = MaterialTheme.colorScheme.onSecondary)
+                    color = MaterialTheme.colorScheme.onTertiary)
             }
             //on resume checks if notification enabled of not and updates the state of areNotificationEnabled
             val lifecycleOwner = LocalLifecycleOwner.current

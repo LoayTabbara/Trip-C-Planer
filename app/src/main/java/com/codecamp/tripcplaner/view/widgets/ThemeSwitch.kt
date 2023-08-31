@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import com.codecamp.tripcplaner.viewModel.ThemeViewModel
 
 @Composable
 fun ThemeSwitch(scale: Float = 2f,
@@ -32,12 +33,12 @@ fun ThemeSwitch(scale: Float = 2f,
                 strokeWidth: Dp = 2.dp,
                 checkedTrackColor: Color = Color(0xFF35898F),
                 uncheckedTrackColor: Color = Color(0xFFe0e0e0),
-                gapBetweenThumbAndTrackEdge: Dp = 4.dp,content: @Composable (switchOn:Boolean)->Unit={}) {
+                gapBetweenThumbAndTrackEdge: Dp = 4.dp,themeViewModel: ThemeViewModel) {
 
     val switchON = remember {
-        mutableStateOf(false) // Initially the switch is off
+        mutableStateOf(themeViewModel.getIsDark()) // Initially the switch is off
     }
-    content(switchON.value)
+
     val thumbRadius = (height / 2) - gapBetweenThumbAndTrackEdge
 
     // To move thumb, we need to calculate the position (along x axis)
@@ -57,7 +58,8 @@ Row {
                 detectTapGestures(
                     onTap = {
                         // This is called when the user taps on the canvas
-                        switchON.value = !switchON.value
+                        themeViewModel.setIsDark(!switchON.value)
+                        switchON.value=!switchON.value
                     }
                 )
             }

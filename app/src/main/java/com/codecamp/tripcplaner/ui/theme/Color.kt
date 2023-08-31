@@ -9,6 +9,7 @@ val Grey = Color(0xFFe3e3e3)
 val Black3 = Color(0xFF0a2f35)
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)
+val White10 = Color (0xfff5f5f5)
 
 val Violet20 = Color(0xFF3700b3)
 val Purple20 = Color(0xFFd580ff)

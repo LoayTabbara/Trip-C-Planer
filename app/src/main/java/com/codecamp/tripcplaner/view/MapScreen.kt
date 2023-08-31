@@ -106,7 +106,7 @@ fun MapScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.5f)
-                    .background(MaterialTheme.colorScheme.primary),
+                    .background(MaterialTheme.colorScheme.onPrimary),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

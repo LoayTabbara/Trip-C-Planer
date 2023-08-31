@@ -99,6 +99,6 @@ fun currentColor(date: String): Color {
     return if (date == LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd"))) {
         Color.Red
     } else {
-        Color.Gray
+        Color.White
     }
 }

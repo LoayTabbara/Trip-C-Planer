@@ -91,9 +91,7 @@ fun PermissionSnackbar(permissionsState: MultiplePermissionsState) {
                     }
                 },
 
-            ) { Text(text = "${if (permanentlyDenied) "permanently " else " "}denied location".uppercase(
-                Locale.ROOT
-            ), color= Color.White) }
+            ) { Text(text = "${if (permanentlyDenied) "permanently " else " "}denied location\n select 'always allow' access to the location", color= Color.White) }
         if (permissionsState.allPermissionsGranted) {
             setSnackBarState(false)
         }

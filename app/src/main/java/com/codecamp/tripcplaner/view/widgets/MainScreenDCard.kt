@@ -80,8 +80,8 @@ fun DayCard(date: String, day: String, onClick: () -> Unit, month: String, title
             .padding(2.dp),
 
         elevation = CardDefaults.cardElevation(5.dp),
-        shape = RoundedCornerShape(10.dp),
-        border = BorderStroke(2.dp, color = currentColor(date)),
+        //shape = RoundedCornerShape(10.dp),
+        //        border = BorderStroke(2.dp, color = currentColor(date)),
         onClick = onClick
     ) {
         Column(

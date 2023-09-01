@@ -158,6 +158,7 @@ fun MainScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 30.dp, start = 5.dp, end = 5.dp)
+
             ) {
                 //Row to display the title, the switch to change the theme and also to display the shared code
                 Row(
@@ -168,7 +169,9 @@ fun MainScreen(
                         Text(text = "Your Trips", style = MaterialTheme.typography.displayMedium,
                             color = Color.White)
                             ThemeSwitch(scale = 1.2f,themeViewModel=themeViewModel)
-                        Box(modifier = Modifier.padding(start = 8.dp).fillMaxWidth()){
+                        Box(modifier = Modifier
+                            .padding(start = 8.dp)
+                            .fillMaxWidth()){
                         }
 
                     }
@@ -186,19 +189,12 @@ fun MainScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(end = 8.dp)
-                            .border(
-                                width = 2.dp,
-                                color = Color.White,
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                            .background(MaterialTheme.colorScheme.secondary),
+                            .background(MaterialTheme.colorScheme.onPrimary),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp),
                         colors = TextFieldDefaults.textFieldColors(
-                            MaterialTheme.colorScheme.secondary,
-                            focusedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
-                            unfocusedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
+                            MaterialTheme.colorScheme.onPrimary,
+                            focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary,
                         ),
                         keyboardActions = KeyboardActions(onDone = {
                             // Calling fetchTrip from viewModel using the sharedCode value

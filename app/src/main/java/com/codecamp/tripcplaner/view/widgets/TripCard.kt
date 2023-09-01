@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -55,10 +56,11 @@ fun TripCard(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
+                .fillMaxHeight()
                 .padding(it),
-            elevation = CardDefaults.cardElevation(5.dp),
-            shape = RoundedCornerShape(10.dp),
-            border = BorderStroke(2.dp, color = Color.Gray),
+            elevation = CardDefaults.cardElevation(10.dp),
+            shape = RoundedCornerShape(3.dp),
+            border = BorderStroke(2.dp, color = MaterialTheme.colorScheme.secondary),
             onClick = onClicked,
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondary)
         ) {
@@ -68,7 +70,7 @@ fun TripCard(
                     "transit" -> Image(
                         painter = painterResource(id = R.drawable.transit),
                         contentDescription = "transit",
-                        modifier = Modifier.fillMaxWidth(0.3f),
+                        modifier = Modifier.fillMaxWidth(0.3f).padding(5.dp),
                         contentScale = ContentScale.Crop
                     )
 

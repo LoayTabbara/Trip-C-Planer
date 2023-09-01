@@ -337,7 +337,8 @@ fun DetailsScreen(
                                 .padding(16.dp)
                                 .fillMaxWidth()
                         ) {
-                            Text(text = if (date.value == "") "Select Date" else date.value)
+                            Text(text = if (date.value == "") "Select Date" else date.value,
+                                color = Color.White)
                         }
                         Button(
                             onClick = { isDropdownMenuVisible = true },
@@ -345,7 +346,8 @@ fun DetailsScreen(
                                 .padding(16.dp)
                                 .fillMaxWidth()
                         ) {
-                            Text(if (selectedCity == "") "Select City" else selectedCity)
+                            Text(if (selectedCity == "") "Select City" else selectedCity,
+                                color = Color.White)
                         }
 
                         DropdownMenu(
@@ -513,7 +515,7 @@ fun DetailsScreen(
                                 Log.e("errorDetailsScreen", "CheckboxError")
                             }
                         }) {
-                        Text("Ok!")
+                        Text("Ok!", color = Color.White)
                     }
                 }
             )

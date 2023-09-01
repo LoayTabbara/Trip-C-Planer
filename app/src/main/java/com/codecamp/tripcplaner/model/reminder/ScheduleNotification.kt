@@ -20,13 +20,11 @@ fun scheduleNotification (context: Context,id:Int,dateTime:String,channelId:Stri
     contentMessage = if (city!="No place specified"){
 
 
-        "you wanted to pick $itemName up from $city or on $dateTime. Don't forget! "
+        "Don't forget to pick it up from $city"
 
     }
     else {
-
-
-        "you want to pick it up on $dateTime. Don't forget! "
+        "you want to pick it up on $dateTime. Do NOT forget it! "
     }
 
     val notificationManager =context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -44,7 +42,7 @@ fun scheduleNotification (context: Context,id:Int,dateTime:String,channelId:Stri
     val notification = NotificationCompat.Builder(context, channelId)
         .setSmallIcon(androidx.core.R.drawable.notification_bg)
         .setContentTitle(itemName)
-        .setContentText("$contentMessage $id")
+        .setContentText("$contentMessage")
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .build()
 

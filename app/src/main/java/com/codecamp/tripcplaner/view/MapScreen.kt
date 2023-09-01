@@ -251,7 +251,6 @@ fun MapScreen(
                                 CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
                         } else {
                             Log.d("TAG", "Current location is null. Using defaults.")
-                            Log.e("TAG", "Exception: %s", task.exception)
                         }
                     }
                 } else {

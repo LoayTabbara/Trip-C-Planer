@@ -67,7 +67,7 @@ fun DetailCard(text: String,hasReminder:Boolean,isChecked:Boolean, content: @Com
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
-            Card(modifier = Modifier
+            if(!isChecked)Card(modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp)
                 .background(MaterialTheme.colorScheme.tertiary),
@@ -90,11 +90,10 @@ fun DetailCard(text: String,hasReminder:Boolean,isChecked:Boolean, content: @Com
                         text = if(!hasReminder){"Press to set reminder"}else{"Cancel reminder"},
                         modifier = Modifier.padding(horizontal = 10.dp),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = if(!hasReminder) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.error
                     )
                 }
             }
-
 
             content(reminderPressed.value,checkedPressed.value)
             if (reminderPressed.value) reminderPressed.value = false

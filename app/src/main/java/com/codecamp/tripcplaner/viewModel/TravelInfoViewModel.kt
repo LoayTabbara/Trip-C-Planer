@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.codecamp.tripcplaner.MAPS_API_KEY
+import com.codecamp.tripcplaner.model.data.CityInfo
+import com.codecamp.tripcplaner.model.data.ItineraryInfo
 import com.codecamp.tripcplaner.model.data.Message
 import com.codecamp.tripcplaner.model.data.Trip
 import com.codecamp.tripcplaner.model.data.TripRepositoryImplementation
@@ -40,20 +42,6 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 import com.codecamp.tripcplaner.model.util.checkInternet
 
-
-
-
-
-data class CityInfo(
-    @Json(name = "Activities") val activities: List<String>,
-    @Json(name = "Arrival Time") val arrivalTime: String
-)
-
-data class ItineraryInfo(
-    @Json(name = "Packing List") val packingList: List<String>,
-    @Json(name = "Itinerary") val itinerary: Map<String, CityInfo>
-
-)
 
 @HiltViewModel
 class TravelInfoViewModel @Inject constructor(
@@ -164,7 +152,7 @@ class TravelInfoViewModel @Inject constructor(
             } catch (e: Exception) {
                 Toast.makeText(
                     context,
-                    "Unknown Error! ${e.message}, generating standard answer",
+                    "please top up your openai credit\nGenerating a standard trip for now",
                     Toast.LENGTH_LONG
                 )
                     .show()
@@ -202,7 +190,7 @@ class TravelInfoViewModel @Inject constructor(
                 latLngList = mutableListOf(
                     LatLng(51.3128, 9.4815),
                     LatLng(51.71, 8.766),
-                    LatLng(51.9615, 7.6282),
+                    LatLng(51.955, 7.633),
                     LatLng(51.5142, 7.4684)
                 )
                 times = mutableStateOf(
@@ -347,7 +335,7 @@ class TravelInfoViewModel @Inject constructor(
                             action = Intent.ACTION_SEND
                             putExtra(
                                 Intent.EXTRA_TEXT,
-                                        "I am inviting you to join you on my trip!\n" +
+                                        "Join me on my awesome trip!\n" +
                                                 "Use the code: $id  in TripCPlaner App to see trip details or simply click the link: https://teamc.tiiny.site?id=$id"
                             )
                             type = "text/plain"

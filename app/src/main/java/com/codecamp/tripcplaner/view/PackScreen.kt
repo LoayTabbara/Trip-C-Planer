@@ -87,7 +87,7 @@ fun PackScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(if (popUpOnAdd.value || popUpOnSave.value) 0.dp else 10.dp)
+            //.padding(if (popUpOnAdd.value || popUpOnSave.value) 0.dp else 10.dp)
             .blur(if (popUpOnAdd.value || popUpOnSave.value) 20.dp else 0.dp)
             .verticalScroll(enabled = true, state = rememberScrollState())
             .background(MaterialTheme.colorScheme.tertiary)

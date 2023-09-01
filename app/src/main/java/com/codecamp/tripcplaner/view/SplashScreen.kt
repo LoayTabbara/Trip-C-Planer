@@ -98,7 +98,7 @@ fun SplashScreen(navController: NavController) {
             // TypewriterText composable is used to display the text in typewriter animation
             TypewriterText(
                 texts = listOf(
-                    "LIVE YOUR LIFE BY A COMPASS,\n\nNOT A CLOCK......\n\n– ERICA JONG –",
+                    "Travel Smarter!\n\n not harder!\n\n - by The C Team -",
                 ), navController = navController
             )
             Column(modifier= Modifier

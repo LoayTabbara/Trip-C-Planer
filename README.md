@@ -1,4 +1,4 @@
-# Trip-C-Planer
+# The C Plan
 
 ## Requirements
 ### local.properties
@@ -16,6 +16,11 @@ package com.codecamp.tripcplaner<Br>
 
     const val MAPS_API_KEY="PUT UR MAPS_API_KEY HERE"
     const val OPENAI_API_KEY="PUT UR OPENAI_API_KEY HERE"
+
+
+## Download the App
+click the link below to download the app </br>
+[Download the App](https://drive.google.com/u/0/uc?id=1tdGuawdKsocJl5n-0X5s0KEqF-tp0D82&export=download)
 
 
 

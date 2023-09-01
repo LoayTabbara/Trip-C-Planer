@@ -38,6 +38,8 @@
             <intent-filter>
                 <data android:host="teamc.tiiny.site"
                     android:scheme="https" />
+                <data android:host="teamc.tiiny.site"
+                    android:scheme="http" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.APP_BROWSER" />

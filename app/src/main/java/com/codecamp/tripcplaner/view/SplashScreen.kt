@@ -87,7 +87,7 @@ fun SplashScreen(navController: NavController) {
                 .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Welcome to TripCPlaner",
+                text = "Welcome to The C Plan",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.DarkGray,
